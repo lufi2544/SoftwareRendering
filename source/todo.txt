@@ -1,0 +1,5 @@
+
+RENDERING
+
+
+- Study better the CreateTexture functions and the relation between the color_buffer and the color_buffer_texture.
