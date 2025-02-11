@@ -7,8 +7,8 @@
 bool is_running = true;
 
 
-u16 window_width = 800;
-u16 window_height = 600;
+u16 window_width = 0;
+u16 window_height = 0;
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -21,8 +21,16 @@ bool create_window(void)
         return false;
     }
     
+    // Using SDL to query the full width and height of the display.
+    SDL_DisplayMode display_mode;    
+    SDL_GetCurrentDisplayMode(0, &display_mode);
+    
+    window_width = display_mode.w;
+    window_height = display_mode.h;
+    
     window = SDL_CreateWindow(
-                              NULL,
+                              
+NULL,
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
                               window_width,
@@ -45,6 +53,8 @@ bool create_window(void)
         return false;
     }
     
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    
     return true;
 }
 
@@ -54,11 +64,21 @@ SDL_Texture* color_buffer_texture = NULL;
 
 void setup()
 {
+    printf("Updating the texture");
+    auto a = window_width;
+    auto b = window_height;
+    
+
+    
     color_buffer = (u32*)malloc(sizeof(u32) * (window_width * window_height));
     if(!color_buffer)
     {
         fprintf(stderr, "Error allocating the color_buffer.");
+        return;
     }
+    
+    window_width = a;
+    window_height = b;
     
     
     color_buffer_texture = SDL_CreateTexture(
@@ -68,12 +88,7 @@ void setup()
                                              window_width,
                                              window_height
                                              );
-    
-    if(color_buffer_texture)
-    {
-        printf("Texture Created \n");
-    }
-
+   
 }
 
 void process_input()
@@ -117,6 +132,8 @@ void render_color_buffer(void)
                       color_buffer,
                       (int)(window_width * sizeof(u32))
                       );
+    
+
     
     SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
 }
