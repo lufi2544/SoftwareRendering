@@ -63,13 +63,7 @@ SDL_Texture* color_buffer_texture = NULL;
 
 
 void setup()
-{
-    printf("Updating the texture");
-    auto a = window_width;
-    auto b = window_height;
-    
-
-    
+{       
     color_buffer = (u32*)malloc(sizeof(u32) * (window_width * window_height));
     if(!color_buffer)
     {
@@ -77,10 +71,8 @@ void setup()
         return;
     }
     
-    window_width = a;
-    window_height = b;
-    
-    
+
+       
     color_buffer_texture = SDL_CreateTexture(
                                              renderer,
                                              SDL_PIXELFORMAT_ARGB8888,
@@ -138,9 +130,6 @@ void render_color_buffer(void)
     SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
 }
 
-
-
-
 void clear_color_buffer(u32 color)
 {
     for(u16 height_index = 0; height_index < window_height; height_index++)
@@ -152,13 +141,28 @@ void clear_color_buffer(u32 color)
     }
 }
 
+void draw_grid(u16 square_size, u32 color)
+{
+    for(u16 height_index = 0; height_index < window_height; height_index++)
+    {
+        for(u16 width_index = 0; width_index < window_width; width_index++)
+        {
+            if(height_index % square_size == 0 || width_index % square_size == 0)
+            {
+                color_buffer[width_index + (height_index * window_width)] = color;
+            }
+        }
+    }
+}
+
+
+#define GRID_DEFAULT_COLOR 0xA0A0A0
 void render(void)
 {
-   // SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderClear(renderer);
     
     render_color_buffer();
-    clear_color_buffer(0xFFFFFF00);
+    draw_grid(100, GRID_DEFAULT_COLOR); 
     
     SDL_RenderPresent(renderer);
 }
