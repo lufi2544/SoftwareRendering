@@ -61,7 +61,6 @@ NULL,
 u32* color_buffer = NULL;
 SDL_Texture* color_buffer_texture = NULL;
 
-
 void setup()
 {       
     color_buffer = (u32*)malloc(sizeof(u32) * (window_width * window_height));
@@ -116,7 +115,8 @@ void update(void)
 }
 
 
-void render_color_buffer(void)
+// Maps the SDL_texture to the pixels buffer and pass the Texture to the renderer.
+void map_texture_to_pixels_buffer(void)
 {
     SDL_UpdateTexture(
                       color_buffer_texture,
@@ -155,14 +155,32 @@ void draw_grid(u16 square_size, u32 color)
     }
 }
 
+// Draws a rectangle on the screen at a certain coordinate X and Y with a Color.
+void draw_rect(u16 x, u16 y, u16 w, u16 h, u32 color)
+{
+    for(u16 height_index = y; height_index < y + h; ++height_index)
+    {
+        for(u16 width_index = x; width_index < x + w; ++width_index)
+        {
+            if(width_index < window_width && height_index < window_height)
+            {                
+                color_buffer[(height_index * window_width) + width_index] = color;
+            }
+        }
+    }
+}
+
 
 #define GRID_DEFAULT_COLOR 0xA0A0A0
 void render(void)
 {
     SDL_RenderClear(renderer);
+       
+    map_texture_to_pixels_buffer();
     
-    render_color_buffer();
-    draw_grid(100, GRID_DEFAULT_COLOR); 
+    // We have mapped the pixels on the screen on the Texture, changing the pixels on the screen will make the texture to change.
+    clear_color_buffer(0xFFFFFF);
+    draw_rect(100, 100, 500, 500, GRID_DEFAULT_COLOR);
     
     SDL_RenderPresent(renderer);
 }
@@ -179,9 +197,7 @@ void end(void)
 }
 
 int main(int argc, char* argv[])
-{
-    printf("Hello World \n");
-    
+{    
     if(!create_window())
     {
         return 1;

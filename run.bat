@@ -1,3 +1,3 @@
 @echo off
-cd build
+cd bin
  SoftwareRendering
