@@ -2,6 +2,10 @@
 
 ////////////// RENDERER //////////////
 
+global const u32 POINTS_NUM = 9 * 9 * 9;
+global vec3_t cube_points[POINTS_NUM];
+
+
 #define GRID_DEFAULT_COLOR 0xA0A0A0
 void render(void)
 {

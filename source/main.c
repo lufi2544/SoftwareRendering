@@ -1,9 +1,9 @@
 
 ///// H FILES /////
-#include "framework_defines.h"
+#include "framework_includes.h"
 
 ///// C FILES /////
-#include "framework_source.c"
+#include "framework_source.c" 
 
 int main(int argc, char* argv[])
 {           

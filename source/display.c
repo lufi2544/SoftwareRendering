@@ -136,3 +136,29 @@ function void draw_pixel(vec2_t position , u32 color)
     color_buffer[(window_width * ((u32)position.y)) + ((u32)(position.x))] = color;
 }
 
+global const u8 POINTS_PER_ROW = 9;
+global const u32 POINTS_NUM = POINTS_NUM * POINTS_NUM * POINTS_NUM;
+global vec3_t cube_points[POINTS_NUM];
+
+// Fixed points per line cube
+function void draw_points_cube()
+{    
+    
+    const f32 coefficient = 2 / POINTS_PER_ROW;
+    
+    f32 x_coeff = -1;
+    for(u32 x_index = 0; x_index < POINTS_NUM; ++x_index; x_coeff += coefficient)
+    {
+        f32 y_coeff = -1;
+        for(u32 y_index = 0; y_index < POINTS_NUM; ++y_index; y_coeff += coefficient)
+        {
+            f32 z_coeff = -1;
+            for(u32 z_index = 0; z_index < POINTS_NUM; ++z_index; z_coeff += coefficient)
+            {
+                vec3_t point = { x_index, y_index, z_index  };
+                cube_points[x + y + z];
+            }
+        }
+    }
+    
+}
