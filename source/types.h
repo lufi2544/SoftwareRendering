@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <assert.h>
 
 typedef uint8_t u8;
@@ -19,5 +18,9 @@ typedef int32_t b32;
 
 typedef float f32;
 typedef double f64;
+
+#define global static
+#define local static
+#define function static
 
 #define ArrayCount(Array) sizeof(Array) / sizeof((Array)[0])
