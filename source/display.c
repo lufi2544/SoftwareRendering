@@ -57,6 +57,7 @@ function bool create_window(void)
 #define POINTS_NUM POINTS_NUM_SQUARED * POINTS_PER_ROW
 
 global vec3_t cube_points[POINTS_NUM];
+global vec2_t cube_projected_points[POINTS_NUM];
 
 // Fixed points per line cube @see POINTS_PER_ROW
 // Normalized values of the cube points in space.
@@ -84,6 +85,8 @@ function void fill_cube_points()
         x_coeff = -1;
     }
     
+    
+    printf("Filling cube points \n");
 }
 
 
@@ -153,6 +156,11 @@ function void draw_grid(u16 square_size, u32 color)
     }
 }
 
+function void draw_pixel(vec2_t *position , u32 color)
+{
+    color_buffer[(window_width * ((u32)position->y)) + ((u32)(position->x))] = color;
+}
+
 // Draws a rectangle on the screen at a certain coordinate X and Y with a Color.
 function void draw_rect(u16 x, u16 y, u16 w, u16 h, u32 color)
 {
@@ -162,13 +170,10 @@ function void draw_rect(u16 x, u16 y, u16 w, u16 h, u32 color)
         {
             if(width_index < window_width && height_index < window_height)
             {                
-                color_buffer[(height_index * window_width) + width_index] = color;
+                vec2_t pixel_position = { width_index, height_index };
+                draw_pixel(&pixel_position, color);
             }
         }
     }
 }
 
-function void draw_pixel(vec2_t position , u32 color)
-{
-    color_buffer[(window_width * ((u32)position.y)) + ((u32)(position.x))] = color;
-}
