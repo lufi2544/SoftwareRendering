@@ -59,6 +59,7 @@ function bool create_window(void)
 global vec3_t cube_points[POINTS_NUM];
 
 // Fixed points per line cube @see POINTS_PER_ROW
+// Normalized values of the cube points in space.
 function void fill_cube_points()
 {    
     assert(ArrayCount(cube_points) == POINTS_NUM);
