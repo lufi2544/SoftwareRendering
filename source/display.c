@@ -52,6 +52,39 @@ function bool create_window(void)
     return true;
 }
 
+#define POINTS_PER_ROW 9
+#define POINTS_NUM_SQUARED POINTS_PER_ROW * POINTS_PER_ROW
+#define POINTS_NUM POINTS_NUM_SQUARED * POINTS_PER_ROW
+
+global vec3_t cube_points[POINTS_NUM];
+
+// Fixed points per line cube @see POINTS_PER_ROW
+function void fill_cube_points()
+{    
+    assert(ArrayCount(cube_points) == POINTS_NUM);
+    const f32 coefficient = (f32)2 / (f32)(POINTS_PER_ROW - 1);
+    //printf("cube: Targeted Points: %i; Points per Row: %i;  Coefficient: %.4f \n", POINTS_NUM, POINTS_PER_ROW, coefficient);
+    f32 y_coeff = -1;
+    for(u32 y_index = 0; y_index < POINTS_PER_ROW; ++y_index, y_coeff += coefficient)
+    {
+        f32 x_coeff = -1;
+        for(u32 x_index = 0; x_index < POINTS_PER_ROW; ++x_index, x_coeff += coefficient)
+        {
+            f32 z_coeff = -1;
+            for(u32 z_index = 0; z_index < POINTS_PER_ROW; ++z_index, z_coeff += coefficient)
+            {
+                //printf("x: %i, y: %i, z: %i \n", x_index, y_index, z_index);
+                //printf("Filling point x: %.2f y: %.2f z: %.2f \n", x_coeff, y_coeff, z_coeff);
+                vec3_t point = { x_coeff, y_coeff, z_coeff  };
+                cube_points[(y_index * POINTS_NUM_SQUARED) + (x_index * POINTS_PER_ROW) + z_index] = point;
+            }
+            z_coeff = -1;
+        }
+        x_coeff = -1;
+    }
+    
+}
+
 
 function void display_setup()
 {       
@@ -71,6 +104,9 @@ function void display_setup()
                                              window_width,
                                              window_height
                                              );
+    
+    
+    fill_cube_points();
     
 }
 
@@ -134,31 +170,4 @@ function void draw_rect(u16 x, u16 y, u16 w, u16 h, u32 color)
 function void draw_pixel(vec2_t position , u32 color)
 {
     color_buffer[(window_width * ((u32)position.y)) + ((u32)(position.x))] = color;
-}
-
-global const u8 POINTS_PER_ROW = 9;
-global const u32 POINTS_NUM = POINTS_NUM * POINTS_NUM * POINTS_NUM;
-global vec3_t cube_points[POINTS_NUM];
-
-// Fixed points per line cube
-function void draw_points_cube()
-{    
-    
-    const f32 coefficient = 2 / POINTS_PER_ROW;
-    
-    f32 x_coeff = -1;
-    for(u32 x_index = 0; x_index < POINTS_NUM; ++x_index; x_coeff += coefficient)
-    {
-        f32 y_coeff = -1;
-        for(u32 y_index = 0; y_index < POINTS_NUM; ++y_index; y_coeff += coefficient)
-        {
-            f32 z_coeff = -1;
-            for(u32 z_index = 0; z_index < POINTS_NUM; ++z_index; z_coeff += coefficient)
-            {
-                vec3_t point = { x_index, y_index, z_index  };
-                cube_points[x + y + z];
-            }
-        }
-    }
-    
 }
