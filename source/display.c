@@ -27,8 +27,8 @@ function bool create_window(void)
                               NULL,
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
-                              window_width,
-                              window_height,
+                              800,
+                              600,
                               SDL_WINDOW_BORDERLESS
                               );
     

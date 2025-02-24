@@ -26,12 +26,9 @@ void vec2_print(vec2_t *vec)
     printf("x: %.2f; y: %.2f \n", vec->x, vec->y);
 }
 
-function vec2_t project_vec3(vec3_t *point)
+function vec2_t project_vec3(vec3_t *point, f32 *fov)
 {
-    vec2_t projected_point = { point->x, point->y };
-    
-    // TODO Logic later for projecting the point.
-    
+    vec2_t projected_point = { (point->x * (*fov)) / point->z, (point->y * (*fov)) / point->z };       
     return projected_point;
 }
 
@@ -41,7 +38,7 @@ function void vec2_multiply_scalar(vec2_t *point, f32 scalar)
     assert(point != 0);
     
     point->x *= scalar;
-    point->y += scalar;
+    point->y *= scalar;
 }
 
 function void vec3_multiply_scalar(vec3_t *point, f32 scalar)

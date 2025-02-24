@@ -4,14 +4,22 @@
 
 
 #define GRID_DEFAULT_COLOR 0xA0A0A0
+
+global camera_t camera;
+
 void render(void)
 {
     
+    vec3_t camera_position = { 0, 0, -5 };
+    camera.position = camera_position;
+    
+    f32 fov_coefficient = 1000;
     // TEMP: Cube logic 
     for(u32 i = 0; i < POINTS_NUM; ++i)
     {
         vec3_t point = cube_points[i];
-        vec2_t projected_point = project_vec3(&point);
+        point.z -= camera.position.z;
+        vec2_t projected_point = project_vec3(&point, &fov_coefficient);
         
         cube_projected_points[i] = projected_point;
     }
@@ -26,14 +34,13 @@ void render(void)
     
     
     f32 x = 1000.0f;
-    f32 y = 1000.0f;
-    const f32 distance_coefficient = 128;
+    f32 y = 800.0f;
     for(u32 i = 0; i < POINTS_NUM; ++i)
     {
         vec2_t point = cube_projected_points[i];
-        point.x = (point.x * distance_coefficient) + x;
-        point.y = (point.y * distance_coefficient) + y;
-        draw_rect(point.x, point.y,  4, 4, 0x00000000);
+        point.x += x;
+        point.y += y;
+        draw_rect(point.x, point.y,  10, 10, 0x00000000);
     }
     
     vec2_t Position = { 1000, 1000 };  
