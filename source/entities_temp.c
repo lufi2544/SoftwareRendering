@@ -46,7 +46,7 @@ function void temp_cube_create()
 // Temp cube logic
 function void temp_cube_logic()
 {
-    vec3_t camera_position = { 0, 0, -2.75f };
+    vec3_t camera_position = { 0, 0, -5 };
     g_camera.position = camera_position;
     
     f32 fov_coefficient = 1000;
