@@ -6,3 +6,5 @@ typedef struct
     vec3_t rotation;
     f32 fov_angle;
 } camera_t;
+
+global camera_t g_camera;

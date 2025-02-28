@@ -13,6 +13,8 @@ function bool engine_init()
     
     display_setup();
     
+    temp_cube_create();
+    
     return true;
 }
 
@@ -25,11 +27,17 @@ function void engine_end(void)
     SDL_Quit();
 }
 
+global u64 previous_frame_time;
+
 function void update()
 {
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), previous_frame_time + FRAME_TARGET_TIME));
+    previous_frame_time = SDL_GetTicks();
+    
+    
+    temp_cube_logic();         
     
 }
-
 
 function s32 engine_run()
 {

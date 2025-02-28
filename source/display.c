@@ -1,12 +1,6 @@
 
 //////////////////// DISPLAY //////////////////
 
-global u16 window_width;
-global u16 window_height;
-global bool bIsFullScreen;
-
-global SDL_Window* window;
-
 function bool create_window(void)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -52,44 +46,6 @@ function bool create_window(void)
     return true;
 }
 
-#define POINTS_PER_ROW 9
-#define POINTS_NUM_SQUARED POINTS_PER_ROW * POINTS_PER_ROW
-#define POINTS_NUM POINTS_NUM_SQUARED * POINTS_PER_ROW
-
-global vec3_t cube_points[POINTS_NUM];
-global vec2_t cube_projected_points[POINTS_NUM];
-
-// Fixed points per line cube @see POINTS_PER_ROW
-// Normalized values of the cube points in space.
-function void fill_cube_points()
-{    
-    assert(ArrayCount(cube_points) == POINTS_NUM);
-    const f32 coefficient = (f32)2 / (f32)(POINTS_PER_ROW - 1);
-    //printf("cube: Targeted Points: %i; Points per Row: %i;  Coefficient: %.4f \n", POINTS_NUM, POINTS_PER_ROW, coefficient);
-    f32 y_coeff = -1;
-    for(u32 y_index = 0; y_index < POINTS_PER_ROW; ++y_index, y_coeff += coefficient)
-    {
-        f32 x_coeff = -1;
-        for(u32 x_index = 0; x_index < POINTS_PER_ROW; ++x_index, x_coeff += coefficient)
-        {
-            f32 z_coeff = -1;
-            for(u32 z_index = 0; z_index < POINTS_PER_ROW; ++z_index, z_coeff += coefficient)
-            {
-                //printf("x: %i, y: %i, z: %i \n", x_index, y_index, z_index);
-                //printf("Filling point x: %.2f y: %.2f z: %.2f \n", x_coeff, y_coeff, z_coeff);
-                vec3_t point = { x_coeff, y_coeff, z_coeff  };
-                cube_points[(y_index * POINTS_NUM_SQUARED) + (x_index * POINTS_PER_ROW) + z_index] = point;
-            }
-            z_coeff = -1;
-        }
-        x_coeff = -1;
-    }
-    
-    
-    printf("Filling cube points \n");
-}
-
-
 function void display_setup()
 {       
     color_buffer = (u32*)malloc(sizeof(u32) * (window_width * window_height));
@@ -109,9 +65,7 @@ function void display_setup()
                                              window_height
                                              );
     
-    
-    fill_cube_points();
-    
+       
 }
 
 // Maps the SDL_texture to the pixels buffer and pass the Texture to the renderer.
@@ -155,25 +109,3 @@ function void draw_grid(u16 square_size, u32 color)
         }
     }
 }
-
-function void draw_pixel(vec2_t *position , u32 color)
-{
-    color_buffer[(window_width * ((u32)position->y)) + ((u32)(position->x))] = color;
-}
-
-// Draws a rectangle on the screen at a certain coordinate X and Y with a Color.
-function void draw_rect(u16 x, u16 y, u16 w, u16 h, u32 color)
-{
-    for(u16 height_index = y; height_index < y + h; ++height_index)
-    {
-        for(u16 width_index = x; width_index < x + w; ++width_index)
-        {
-            if(width_index < window_width && height_index < window_height)
-            {                
-                vec2_t pixel_position = { width_index, height_index };
-                draw_pixel(&pixel_position, color);
-            }
-        }
-    }
-}
-
