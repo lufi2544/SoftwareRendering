@@ -19,6 +19,7 @@ typedef int32_t b32;
 typedef float f32;
 typedef double f64;
 
+#define internal static
 #define global static
 #define local static
 #define function static

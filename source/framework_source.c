@@ -9,5 +9,6 @@
 #include "display.c"
 
 #include "input.c"
+#include "application.c"
 #include "renderer.c"
 #include "engine.c"

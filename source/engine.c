@@ -4,21 +4,20 @@
 * This file contains all the core engine functions for init, update and end.
 */
 
-function bool engine_init()
+internal bool engine_init()
 {
     if(!create_window())
     {
         return false;
     }
     
-    display_setup();
-    
-    temp_cube_create();
+    display_setup();    		
+	app_init();
     
     return true;
 }
 
-function void engine_end(void)
+internal void engine_end(void)
 {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
@@ -29,8 +28,7 @@ function void engine_end(void)
 
 global u64 previous_frame_time;
 
-
-function void fix_delta_time()
+internal void fix_delta_time()
 {
     // Checking if between the prev frame and this one we have surpass the FRAME_TARGET_TIME
     // if we did, then we will wait some seconds.
@@ -47,12 +45,9 @@ function void fix_delta_time()
     previous_frame_time = SDL_GetTicks();    
 }
 
-function void update()
-{        
-    temp_cube_logic();             
-}
+internal void update();
 
-function s32 engine_run()
+internal s32 engine_run()
 {
     if(!engine_init())
     {
@@ -67,8 +62,14 @@ function s32 engine_run()
         update();
         render();
     }    
-    
+	
+	app_end();
     engine_end();
         
     return 0;
+}
+
+internal void update()
+{        
+	app_update();	
 }

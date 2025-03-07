@@ -1,0 +1,9 @@
+
+//// Software Rendering Engine ////
+
+
+TODO: 
+- Create a cube struct for defining the state of init and the different triangles.
+- Solid understanding of the index array and faces, etc.
+
+
