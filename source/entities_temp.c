@@ -144,7 +144,7 @@ internal void cube_mesh_create()
 	vec3_t camera_position = { 0,0, -5 };
 	g_camera.position = camera_position;
     
-    f32 fov_coefficient = 1000;
+    f32 fov_coefficient = 300;
     cube_rotations[1].y += 0.01;
     cube_rotations[1].z += 0.01;
     cube_rotations[1].x += 0.01;
@@ -186,12 +186,33 @@ internal void cube_mesh_create()
 
 internal void cube_mesh_render()
 {
+	
+	
+	vec2_t position = { 1000, 1000 };
 	for(s32 i = 0; i < N_CUBE_FACES; ++i)
 	{
 		triangle_t triangle = g_cube_triangles[i];
-		draw_rect(triangle.points[0].x + 1000, triangle.points[0].y + 800, 5, 5, 0x000000);
-		draw_rect(triangle.points[1].x + 1000, triangle.points[1].y + 800, 5, 5, 0x000000);
-		draw_rect(triangle.points[2].x + 1000, triangle.points[2].y + 800, 5, 5, 0x000000);						
+		
+		vec2_t position_0 = {triangle.points[0].x + position.x, triangle.points[0].y + position.y};
+		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);	
+		
+		
+		vec2_t position_1 ={triangle.points[1].x + position.x, triangle.points[1].y + position.y};
+		draw_rect(position_1.x, position_1.y, 5, 5, 0x000000);
+		
+		
+		
+		vec2_t position_2 ={triangle.points[2].x + position.x, triangle.points[2].y + position.y};
+		draw_rect(position_2.x, position_2.y, 5, 5, 0x000000);						
+		
+		// A-B
+	    draw_line(position_0.x, position_0.y, position_1.x, position_1.y);
+		
+		// B-C
+	    draw_line(position_1.x, position_1.y, position_2.x, position_2.y);
+				
+		// C-A
+	    draw_line(position_2.x, position_2.y, position_0.x, position_0.y);
 	}
 }
 
