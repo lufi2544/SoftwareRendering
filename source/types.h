@@ -24,4 +24,5 @@ typedef double f64;
 #define local static
 #define function static
 
-#define ArrayCount(Array) sizeof(Array) / sizeof((Array)[0])
+#define ArrayCount(a) sizeof(a) / sizeof((a)[0])
+#define ArraySafe(a, i) Array[i%ArrayCount(a)]

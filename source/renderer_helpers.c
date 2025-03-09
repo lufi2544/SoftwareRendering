@@ -1,11 +1,19 @@
 
-internal void draw_pixel(vec2_t position , u32 color)
+internal void
+draw_pixel(vec2_t position , u32 color)
 {
-    color_buffer[(window_width * ((u32)position.y)) + ((u32)(position.x))] = color;
+	if(position.x < 0 || position.y < 0 || position.x >= window_width || position.y >= window_height)
+	{
+		return;
+	}
+	
+	u32 Index = (window_width * ((u32)position.y)) + ((u32)(position.x));
+	color_buffer[Index] = color;
 }
 
 // Draws a rectangle on the screen at a certain coordinate X and Y with a Color.
-internal void draw_rect(u16 x, u16 y, u16 w, u16 h, u32 color)
+internal void
+draw_rect(u16 x, u16 y, u16 w, u16 h, u32 color)
 {
     for(u16 height_index = y; height_index < y + h; ++height_index)
     {

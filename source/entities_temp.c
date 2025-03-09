@@ -144,7 +144,7 @@ internal void cube_mesh_create()
 	vec3_t camera_position = { 0,0, -5 };
 	g_camera.position = camera_position;
     
-    f32 fov_coefficient = 300;
+    f32 fov_coefficient = 1000;
     cube_rotations[1].y += 0.01;
     cube_rotations[1].z += 0.01;
     cube_rotations[1].x += 0.01;
@@ -165,6 +165,7 @@ internal void cube_mesh_create()
 		for(s32 j = 0; j < 3; ++j)
 		{
 			vec3_t transformed_vertex = face_verteces[j];
+			
 			
 			transformed_vertex = vec3_rotate_x(transformed_vertex, cube_rotations[1].x);
 			transformed_vertex = vec3_rotate_y(transformed_vertex, cube_rotations[1].y);

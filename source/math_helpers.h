@@ -29,7 +29,9 @@ void vec2_print(vec2_t *vec)
 
 function vec2_t project_vec3(vec3_t *point, f32 *fov)
 {
-    vec2_t projected_point = { (point->x * (*fov)) / point->z, (point->y * (*fov)) / point->z };       
+    vec2_t projected_point = { 
+		(point->x * (*fov)) / point->z, 
+		(point->y * (*fov)) / point->z };       
     return projected_point;
 }
 
