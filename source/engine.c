@@ -1,34 +1,54 @@
 
+#ifdef __WINDOWS__
+#include "memoryapi.h"
+#endif //__WINDOWS__
+
 /////////////////// ENGINE ///////////////////
 /**
 * This file contains all the core engine functions for init, update and end.
 */
 
-internal bool engine_init()
+internal void
+engine_memory_init();
+
+internal bool
+engine_init()
 {
     if(!create_window())
     {
         return false;
     }
-    
-    display_setup();    		
-	app_init();
+	
+	engine_memory_init();
+	display_setup(&g_arena);	
+	app_init(&g_arena);
     
     return true;
 }
 
-internal void engine_end(void)
+internal void 
+engine_memory_init()
 {
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyTexture(color_buffer_texture);
-    free(color_buffer);
-    SDL_Quit();
+	// Use the memory arena for initialising the engine.
+	// Init memory
+	void* engine_memory = VirtualAlloc(0, Gigabyte(1), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	if(!engine_memory)
+	{
+		fprintf(stderr, "engine memory failed to be allocated \n");		
+		return;
+	}	
+	
+	initialize_arena(&g_arena, Gigabyte(1), engine_memory);	
 }
+
+
+internal void
+engine_end(void);
 
 global u64 previous_frame_time;
 
-internal void fix_delta_time()
+internal void
+fix_delta_time()
 {
     // Checking if between the prev frame and this one we have surpass the FRAME_TARGET_TIME
     // if we did, then we will wait some seconds.
@@ -47,10 +67,12 @@ internal void fix_delta_time()
 
 internal void update();
 
-internal s32 engine_run()
+internal s32
+engine_run()
 {
     if(!engine_init())
     {
+		engine_end();
         return 1;
     }
     
@@ -63,13 +85,30 @@ internal s32 engine_run()
         render();
     }    
 	
-	app_end();
+	app_end(&g_arena);
     engine_end();
         
     return 0;
 }
 
-internal void update()
+internal void
+update()
 {        
-	app_update();	
+	app_update(&g_arena);	
+}
+
+
+internal void
+engine_end(void)
+{
+	if(g_arena.base != 0)
+	{
+		VirtualFree(0, g_arena.size, MEM_RELEASE);
+	}
+	
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyTexture(color_buffer_texture);
+    free(color_buffer);
+    SDL_Quit();
 }

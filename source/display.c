@@ -46,16 +46,14 @@ function bool create_window(void)
     return true;
 }
 
-function void display_setup()
+function void display_setup(memory_arena_t *_arena)
 {       
-    color_buffer = (u32*)malloc(sizeof(u32) * (window_width * window_height));
+    color_buffer = PushArray(_arena, (window_width * window_height), u32);
     if(!color_buffer)
     {
         fprintf(stderr, "Error allocating the color_buffer.");
         return;
-    }
-    
-    
+    }        
     
     color_buffer_texture = SDL_CreateTexture(
                                              renderer,
