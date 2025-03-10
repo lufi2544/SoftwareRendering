@@ -5,14 +5,14 @@
 
 typedef struct
 {
-	u8* bytes;
+	void* bytes;
 	u64 size;
 		
 } buffer_t;
 
 
 internal buffer_t
-create_buffer(u64 _size)
+create_buffer(memory_arena_t *_arena, u64 _size)
 {
 	buffer_t result;
 	if(!_size)
@@ -21,7 +21,7 @@ create_buffer(u64 _size)
 	}	
 	
 	// If we are in Windows maybe changing this to VAlloc? make this platform depenant
-	u8* allocated_data  = (u8*)(malloc(_size));
+	void* allocated_data  = PushSize(_arena, _size);
 	if(!allocated_data)
 	{
 		return result;

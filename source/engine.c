@@ -31,12 +31,14 @@ engine_memory_init()
 {
 	// Use the memory arena for initialising the engine.
 	// Init memory
-	void* engine_memory = VirtualAlloc(0, Gigabyte(1), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	void* engine_memory = VirtualAlloc(NULL, Gigabyte(1), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	if(!engine_memory)
 	{
 		fprintf(stderr, "engine memory failed to be allocated \n");		
 		return;
 	}	
+	
+	printf("Allocated memory \n");
 	
 	initialize_arena(&g_arena, Gigabyte(1), engine_memory);	
 }
@@ -101,14 +103,13 @@ update()
 internal void
 engine_end(void)
 {
-	if(g_arena.base != 0)
-	{
-		VirtualFree(0, g_arena.size, MEM_RELEASE);
-	}
-	
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
-    SDL_DestroyTexture(color_buffer_texture);
-    free(color_buffer);
+    SDL_DestroyTexture(color_buffer_texture);    
     SDL_Quit();
+	
+	if(g_arena.base != 0)
+	{
+		VirtualFree(g_arena.base, 0, MEM_RELEASE);
+	}		
 }

@@ -4,9 +4,12 @@ typedef struct
 {
 	vec3_t *verteces;
 	face_t *faces;
+	triangle_t *triangles;
 	vec3_t rotation;
 } mesh_t;
 
 
 // Global meshes for the application.
-internal mesh_t *g_meshes;
+global mesh_t *g_meshes;
+
+

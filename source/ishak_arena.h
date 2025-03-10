@@ -33,9 +33,9 @@ initialize_arena(memory_arena_t *_arena, memory_index _size, void *_base)
 	_arena->temp_count = 0;
 }
 
-#define PushStruct(a, t) (t*)PushSize_(a, sizeof(t));
-#define PushArray(a, c, t) (t*)PushSize_(a, (c) * sizeof(t));
-#define PushSize(a, s) PushSize_(a, s);
+#define PushStruct(a, t) (t*)PushSize_(a, sizeof(t))
+#define PushArray(a, c, t) (t*)PushSize_(a, (c) * sizeof(t))
+#define PushSize(a, s) PushSize_(a, s)
 
 internal void* 
 PushSize_(memory_arena_t *_arena, memory_index _size)

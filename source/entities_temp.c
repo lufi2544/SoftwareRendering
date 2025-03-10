@@ -16,7 +16,8 @@ global vec2_t cube_projected_points[POINTS_NUM];
 
 // Fixed points per line cube @see POINTS_PER_ROW
 // Normalized values of the cube points in space.
-function void fill_cube_points()
+function void 
+fill_cube_points()
 {    
     assert(ArrayCount(cube_points) == POINTS_NUM);
     const f32 coefficient = (f32)2 / (f32)(POINTS_PER_ROW - 1);
@@ -46,7 +47,8 @@ function void fill_cube_points()
 
 
 /////////// Cube created with different square as a delimitation points to be rendered and visible.
-internal void temp_cube_create()
+internal void 
+temp_cube_create()
 {
     vec3_t camera_position = { 0, 0, -5 };
     g_camera.position = camera_position;
@@ -73,7 +75,8 @@ internal void temp_cube_create()
 
 }
 
-internal void temp_cube_render()
+internal void 
+temp_cube_render()
 {
     f32 x = 1000.0f;
     f32 y = 800.0f;
@@ -88,8 +91,6 @@ internal void temp_cube_render()
 
 
 ////////////////// Cube Mesh //////////////////
-
-
 
 #define N_CUBE_VERTECES 8
 global const vec3_t g_cube_verteces[N_CUBE_VERTECES] = 
@@ -107,10 +108,6 @@ global const vec3_t g_cube_verteces[N_CUBE_VERTECES] =
 
 // Basically we are pointing to the cube_verteces array on top.
 #define N_CUBE_FACES (6 * 2) // In this case we have to count with the fron face and the back face of the meshes.
-
-// 2 Triangles for each face.
-global triangle_t g_cube_triangles[N_CUBE_FACES];
-
 global const face_t g_cube_faces[N_CUBE_FACES] = 
 {
 	//front
@@ -138,38 +135,70 @@ global const face_t g_cube_faces[N_CUBE_FACES] =
 	{ 5, 0, 3 },	
 };
 
+internal void 
+cube_mesh_init(mesh_t *cube, memory_arena_t *_arena)
+{
+	if(cube == 0)
+	{
+		return;
+	}
+		
+	// Init the cube.
+	
+	// Verteces
+	cube->verteces = PushArray(_arena, N_CUBE_VERTECES, vec3_t);
+	
+	//Faces
+	cube->faces = PushArray(_arena, N_CUBE_FACES, face_t);
+	
+	//Triangles, will be set at runtime when recalculated every frame.
+	cube->triangles = PushArray(_arena, N_CUBE_FACES, triangle_t);
+		
+	for(s32 v = 0; v < N_CUBE_VERTECES; ++v)
+	{
+		cube->verteces[v] = g_cube_verteces[v];
+	}
+	
+	for(s32 f = 0; f < N_CUBE_FACES; ++f)
+	{
+		cube->faces[f] = g_cube_faces[f];
+	}	
+}
 
-internal void cube_mesh_create()
+internal void
+cube_mesh_update(mesh_t *cube)
 {		
-	vec3_t camera_position = { 0,0, -5 };
+	
+	// TODO figure out a better method here.
+
+	vec3_t camera_position = { 0, 0, -5 };
 	g_camera.position = camera_position;
     
     f32 fov_coefficient = 1000;
-    cube_rotations[1].y += 0.01;
-    cube_rotations[1].z += 0.01;
-    cube_rotations[1].x += 0.01;
-		
+    cube->rotation.y += 0.01;
+    cube->rotation.z += 0.01;
+    cube->rotation.x += 0.01;
+	
+	// Maybe storing the faces num is a good idea for future meshes of course
 	for(s32 i = 0; i < N_CUBE_FACES; ++i)
 	{
-		face_t cube_face = g_cube_faces[i];		
+		face_t cube_face = cube->faces[i];		
 		
 		// We get the points in the space from the faces array.
 		vec3_t face_verteces[3];
-		face_verteces[0] = g_cube_verteces[cube_face.a];
-		face_verteces[1] = g_cube_verteces[cube_face.b];
-		face_verteces[2] = g_cube_verteces[cube_face.c];
+		face_verteces[0] = cube->verteces[cube_face.a];
+		face_verteces[1] = cube->verteces[cube_face.b];
+		face_verteces[2] = cube->verteces[cube_face.c];
 		
 		triangle_t projected_triangle;
 		
 		// We transform those points in 3D to 2D screen space
 		for(s32 j = 0; j < 3; ++j)
 		{
-			vec3_t transformed_vertex = face_verteces[j];
-			
-			
-			transformed_vertex = vec3_rotate_x(transformed_vertex, cube_rotations[1].x);
-			transformed_vertex = vec3_rotate_y(transformed_vertex, cube_rotations[1].y);
-			transformed_vertex = vec3_rotate_z(transformed_vertex, cube_rotations[1].z);
+			vec3_t transformed_vertex = face_verteces[j];					
+			transformed_vertex = vec3_rotate_x(transformed_vertex, cube->rotation.x);
+			transformed_vertex = vec3_rotate_y(transformed_vertex, cube->rotation.y);
+			transformed_vertex = vec3_rotate_z(transformed_vertex, cube->rotation.z);
 			
 			transformed_vertex.z -= g_camera.position.z;
 			vec2_t projected_point = project_vec3(&transformed_vertex, &fov_coefficient);
@@ -179,31 +208,27 @@ internal void cube_mesh_create()
 			
 		}			
 		
-		g_cube_triangles[i] = projected_triangle;
+		cube->triangles[i] = projected_triangle;
 	}
 	
 }
 
 
-internal void cube_mesh_render()
-{
-	
-	
+internal void 
+cube_mesh_render(mesh_t *cube)
+{		
 	vec2_t position = { 1000, 1000 };
 	for(s32 i = 0; i < N_CUBE_FACES; ++i)
 	{
-		triangle_t triangle = g_cube_triangles[i];
+		triangle_t triangles = cube->triangles[i];
 		
-		vec2_t position_0 = {triangle.points[0].x + position.x, triangle.points[0].y + position.y};
-		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);	
+		vec2_t position_0 = {triangles.points[0].x + position.x, triangles.points[0].y + position.y};
+		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);			
 		
+		vec2_t position_1 ={triangles.points[1].x + position.x, triangles.points[1].y + position.y};
+		draw_rect(position_1.x, position_1.y, 5, 5, 0x000000);				
 		
-		vec2_t position_1 ={triangle.points[1].x + position.x, triangle.points[1].y + position.y};
-		draw_rect(position_1.x, position_1.y, 5, 5, 0x000000);
-		
-		
-		
-		vec2_t position_2 ={triangle.points[2].x + position.x, triangle.points[2].y + position.y};
+		vec2_t position_2 ={triangles.points[2].x + position.x, triangles.points[2].y + position.y};
 		draw_rect(position_2.x, position_2.y, 5, 5, 0x000000);						
 		
 		// A-B
@@ -216,6 +241,3 @@ internal void cube_mesh_render()
 	    draw_line(position_2.x, position_2.y, position_0.x, position_0.y);
 	}
 }
-
-
-
