@@ -5,6 +5,8 @@
 
 
 #include "ishak_buffer.c"
+#include "file_reader.c"
+
 #include "renderer_helpers.c"
 #include "entities_temp.c"
 
