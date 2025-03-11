@@ -4,7 +4,7 @@
 #include "sys/stat.h"
 
 internal buffer_t
-ReadFile(memory_arena_t *_arena, const char *_file_name)
+read_file(memory_arena_t *_arena, const char *_file_name)
 {
 	buffer_t result;
 	if(!_arena || !_file_name)

@@ -46,9 +46,9 @@ function bool create_window(void)
     return true;
 }
 
-function void display_setup(memory_arena_t *_arena)
+function void display_setup(engine_memory_t *engine_memory)
 {       
-    color_buffer = PushArray(_arena, (window_width * window_height), u32);
+    color_buffer = PushArray(&engine_memory->permanent, (window_width * window_height), u32);
     if(!color_buffer)
     {
         fprintf(stderr, "Error allocating the color_buffer.");

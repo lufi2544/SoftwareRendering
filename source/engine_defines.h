@@ -2,9 +2,9 @@
 
 ////////////////// Global  for the Engine ///////////////
 
-#include "memory.h"
 #include "ishak_arena.h"
+#include "memory.h"
 
 global bool is_running = true;
-global memory_arena_t g_arena;
+global engine_memory_t g_engine_memory;
 

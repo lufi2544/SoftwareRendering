@@ -33,12 +33,12 @@ create_buffer(memory_arena_t *_arena, u64 _size)
 	return result;
 }
 
+// With memory arena this is not needed.
 internal void 
 free_buffer(buffer_t *_buffer)
 {
 	if(_buffer->bytes)
-	{
-		free(_buffer->bytes);
+	{		
 		_buffer->bytes = 0;
 	}	
 }

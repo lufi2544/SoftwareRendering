@@ -20,8 +20,8 @@ engine_init()
     }
 	
 	engine_memory_init();
-	display_setup(&g_arena);	
-	app_init(&g_arena);
+	display_setup(&g_engine_memory);	
+	app_init(&g_engine_memory);
     
     return true;
 }
@@ -31,16 +31,22 @@ engine_memory_init()
 {
 	// Use the memory arena for initialising the engine.
 	// Init memory
-	void* engine_memory = VirtualAlloc(NULL, Gigabyte(1), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-	if(!engine_memory)
+	void* engine_memory_permanent = VirtualAlloc(NULL, ENGINE_MEMORY_PERMANENT_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	if(!engine_memory_permanent)
 	{
-		fprintf(stderr, "engine memory failed to be allocated \n");		
+		fprintf(stderr, "permanent engine memory failed to be allocated \n");		
 		return;
-	}	
+	}
 	
-	printf("Allocated memory \n");
-	
-	initialize_arena(&g_arena, Gigabyte(1), engine_memory);	
+	void* engine_memory_transient = VirtualAlloc(0, ENGINE_MEMORY_TRANSIENT_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	if(!engine_memory_transient)
+	{
+		fprintf(stderr, "transient engine memory failed to be allocated \n");		
+		return;
+	}
+		
+	initialize_arena(&g_engine_memory.permanent, ENGINE_MEMORY_PERMANENT_SIZE, engine_memory_permanent);	
+	initialize_arena(&g_engine_memory.transient, ENGINE_MEMORY_TRANSIENT_SIZE, engine_memory_transient);	
 }
 
 
@@ -87,7 +93,7 @@ engine_run()
         render();
     }    
 	
-	app_end(&g_arena);
+	app_end(&g_engine_memory);
     engine_end();
         
     return 0;
@@ -96,7 +102,7 @@ engine_run()
 internal void
 update()
 {        
-	app_update(&g_arena);	
+	app_update(&g_engine_memory);	
 }
 
 
@@ -108,8 +114,13 @@ engine_end(void)
     SDL_DestroyTexture(color_buffer_texture);    
     SDL_Quit();
 	
-	if(g_arena.base != 0)
+	if (g_engine_memory.permanent.base)
 	{
-		VirtualFree(g_arena.base, 0, MEM_RELEASE);
-	}		
+		VirtualFree(g_engine_memory.permanent.base, 0, MEM_RELEASE);
+	}
+	
+	if (g_engine_memory.transient.base)
+	{
+		VirtualFree(g_engine_memory.transient.base, 0, MEM_RELEASE);
+	}	
 }
