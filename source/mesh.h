@@ -11,5 +11,3 @@ typedef struct
 
 // Global meshes for the application.
 global mesh_t *g_meshes;
-
-

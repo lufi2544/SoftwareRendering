@@ -1,14 +1,4 @@
 
-////////// BUFFER //////////
-
-// This acts as a memory container of data.
-
-typedef struct
-{
-	void* bytes;
-	u64 size;
-		
-} buffer_t;
 
 
 internal buffer_t
@@ -31,6 +21,56 @@ create_buffer(memory_arena_t *_arena, u64 _size)
 	result.size = _size;
 	
 	return result;
+}
+
+internal buffer_t 
+create_buffer_string(memory_arena_t *_arena, u32 _size)
+{
+	buffer_t result = create_buffer(_arena, _size);
+	u8 *bytes_as_u8 = (u8*)result.bytes;
+	bytes_as_u8[result.size - 1] = '\0';
+	
+	return result;
+}
+
+internal bool 
+buffer_is_equal(buffer_t a, buffer_t b)
+{
+	if(a.size != b.size)
+	{
+		return false;
+	}
+	
+	for(u64 i = 0; i < a.size; ++i)
+	{
+		if(a.bytes[i] != b.bytes[i])
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+
+
+internal bool 
+buffer_is_equal_cstring(buffer_t a, const char* b )
+{		
+	if((cstr_len(b) + 1) != a.size)
+	{
+		return false;
+	}
+		
+	for(u64 i = 0; i < a.size; ++i)
+	{
+		if(a.bytes[i] != b[i])
+		{
+			return false;
+		}
+	}
+	
+	return true;
 }
 
 // With memory arena this is not needed.

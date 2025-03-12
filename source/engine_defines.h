@@ -2,6 +2,8 @@
 
 ////////////////// Global  for the Engine ///////////////
 
+#include "ishak_buffer.h"
+#include "ishak_string.h"
 #include "ishak_arena.h"
 #include "memory.h"
 
