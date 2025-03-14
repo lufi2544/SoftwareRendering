@@ -89,4 +89,42 @@ is_equal_cstr(string_t *_str, const char* b)
 	return buffer_is_equal_cstring(_str->buffer, b);
 }
 
-
+internal bool 
+string_contains(string_t *_str, const char* b)
+{	
+	u32 c_str_len = cstr_len(b);
+	if((_str == 0) || (c_str_len == 0) || (_str->len < c_str_len))
+	{
+		return false;
+	}
+	
+	for(u32 i = 0; i < _str->len; ++i)
+	{
+		if(_str->buffer.bytes[i] == b[0])
+		{
+			bool bContains = true;
+			// start comparing potential string
+			for(u32 j = 1; j < c_str_len; ++j)
+			{
+				if(++i >= _str->len)
+				{
+					// _str has ended and the comparison could not end.
+					return false;
+				}
+				
+				if(_str->buffer.bytes[i] != b[j])
+				{
+					bContains = false;
+					break;
+				}
+			}
+			
+			if(bContains)
+			{
+				return true;
+			}			
+		}
+	}
+	
+	return true;
+}

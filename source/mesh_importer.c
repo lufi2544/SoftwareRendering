@@ -25,7 +25,7 @@ typedef struct importer_element_t
 {
 	enum importer_token_type type;
 	buffer_t value;	
-	struct importer_element_t *next_sibling;
+    struct importer_element_t *next_sibling;
 	
 } importer_element_t;
 
@@ -69,6 +69,7 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 	buffer_t source = _importer->source;
 	u64 at = _importer->at;
 	importer_element_t *first_element = 0;
+	importer_element_t *element_ptr = 0;
 	
 	
 	while(is_in_bounds(source, at))
@@ -99,19 +100,27 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 						at++;
 					}									
 					
+					
 					importer_element_t *vertex_element = PushStruct(_temp_arena, importer_element_t);
+					vertex_element->next_sibling = 0;
 					vertex_element->type = token_vertex;
 					vertex_element->value.bytes = source.bytes + start;
 					vertex_element->value.size = at - start;
 					
-					printf("adding a vertex \n");
+					//printf("adding a vertex \n");
 					
-					if(first_element)
+					if(!first_element)
 					{
-						first_element->next_sibling = vertex_element;
+						first_element = vertex_element;
 					}
 					
-					first_element = vertex_element;				
+					if(element_ptr)
+					{
+						element_ptr->next_sibling = vertex_element;
+					}
+					
+					element_ptr = vertex_element;
+										
 				}
 				
 			}break;
@@ -131,18 +140,24 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 					
 					
 					importer_element_t *face_element = PushStruct(_temp_arena, importer_element_t);
-					face_element->type = token_vertex;
+					face_element->next_sibling = 0;
+					face_element->type = token_face;
 					face_element->value.bytes = source.bytes + start;
 					face_element->value.size = at - start;
 					
-					printf("adding a face \n");
+					//printf("adding a face \n");
 					
-					if(first_element)
+					if(!first_element)
 					{
-						first_element->next_sibling = face_element;
+						first_element = face_element;
 					}
 					
-					first_element = face_element;				
+					if(element_ptr)
+					{
+						element_ptr->next_sibling = face_element;
+					}
+					
+					element_ptr = face_element;										
 				}
 				
 			}break;
@@ -173,13 +188,14 @@ enum enum_parsing
 internal mesh_t
 create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 {
-	printf("Importing mesh %s", _file_name);
+	printf("Importing mesh %s \n", _file_name);
 	mesh_t result;
 	
 	if (_file_name == 0)
 	{
 		return result;
 	}	
+	
 	temp_memory_t temp_memory = temp_memory_init(&engine_memory->transient);
 	
 	buffer_t buffer = read_file(temp_memory.arena, _file_name);
@@ -195,8 +211,11 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		
 		s32 count_face = 0;
 		s32 count_vertex = 0;
-		for(importer_element_t *it = element; it; it = element->next_sibling)
+		s32 iterated = 0;
+		
+		for(importer_element_t *it = element; it; it = it->next_sibling)
 		{
+			iterated++;
 			if(it->type == token_face)
 			{
 				count_face++;
@@ -206,8 +225,7 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 				count_vertex++;
 			}
 		}
-		
-		printf("found faces: %i verteces: %i \n", count_face, count_vertex);
+				
 		
 	}
 	
