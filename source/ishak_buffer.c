@@ -1,5 +1,11 @@
 
 
+internal b32 
+is_in_bounds(buffer_t _buffer, u64 _at)
+{
+	b32 result = (_at < _buffer.size);
+	return result;
+}
 
 internal buffer_t
 create_buffer(memory_arena_t *_arena, u64 _size)
@@ -10,7 +16,6 @@ create_buffer(memory_arena_t *_arena, u64 _size)
 		return result;
 	}	
 	
-	// If we are in Windows maybe changing this to VAlloc? make this platform depenant
 	void* allocated_data  = PushSize(_arena, _size);
 	if(!allocated_data)
 	{
