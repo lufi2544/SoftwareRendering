@@ -27,11 +27,8 @@ make_string(memory_arena_t *_arena, u32 _len, const char* _content)
 	
 	u32 string_buffer_size = 0;
 	if(content_len > 0)
-	{
-		if(_len > 0)
-		{
-			string_buffer_size = (_len > 0) ? (content_len + _len) : (content_len);
-		}		
+	{				
+		string_buffer_size = (_len > 0) ? (content_len + _len) : (content_len);	
 	}
 	else
 	{

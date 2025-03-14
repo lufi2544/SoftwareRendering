@@ -76,3 +76,5 @@ temp_memory_end(temp_memory_t _temp)
 	assert(arena->temp_count > 0);
 	--arena->temp_count;
 }
+
+

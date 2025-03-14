@@ -8,12 +8,12 @@ u32 cstr_len(const char* _str)
 	}
 	
 	u32 size = 0;
-	char ptr = 0;
+	char ptr = ' ';
 	while(ptr != '\0')
 	{
-		ptr = _str[size];
+		ptr = _str[size];	
 		++size;
 	}
 	
-	return size;
+	return size - 1;
 }
