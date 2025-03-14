@@ -6,10 +6,9 @@ app_init(engine_memory_t *engine_memory)
 {	
 	TEMP_MEMORY();	
 	string_t hello = STRING_V(temp_arena, "Hello");	
-	TEMP_MEMORY_END();
+	printf("This is the string: %s \n", STRING_CONTENT(hello));
+	TEMP_MEMORY_END();	
 	
-	
-	printf("This is the string: %s \n", (char*)hello.buffer.bytes);
 	
 	// Init the meshes
 	g_meshes = PushArray(&engine_memory->permanent, APP_MESH_NUM, mesh_t);

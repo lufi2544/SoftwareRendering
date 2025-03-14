@@ -18,6 +18,9 @@
 // string verbal lenght, ready to be expanded
 #define STRING_VL(a, l, c) make_string(a, l, c)
 
+// string content macro
+#define STRING_CONTENT(s) (char*)s.buffer.bytes
+
 
 internal string_t
 make_string(memory_arena_t *_arena, u32 _len, const char* _content)
