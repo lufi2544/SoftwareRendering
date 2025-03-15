@@ -9,9 +9,18 @@
 #define ENGINE_MEMORY_PERMANENT_SIZE Gigabyte(1)
 
 
+
+
 typedef struct
 {	
 	memory_arena_t permanent;
 	memory_arena_t transient;
 	
 } engine_memory_t;
+
+
+#define TEMP_MEMORY() \
+temp_memory_t temp_memory = temp_memory_init(&g_engine_memory.transient);    \
+memory_arena_t* temp_arena = temp_memory.arena; \
+
+#define TEMP_MEMORY_END() temp_memory_end(temp_memory);

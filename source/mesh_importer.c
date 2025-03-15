@@ -71,7 +71,6 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 	importer_element_t *first_element = 0;
 	importer_element_t *element_ptr = 0;
 	
-	
 	while(is_in_bounds(source, at))
 	{		
 		
@@ -188,7 +187,6 @@ enum enum_parsing
 internal mesh_t
 create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 {
-	printf("Importing mesh %s \n", _file_name);
 	mesh_t result;
 	
 	if (_file_name == 0)
@@ -196,16 +194,16 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		return result;
 	}	
 	
-	temp_memory_t temp_memory = temp_memory_init(&engine_memory->transient);
+	TEMP_MEMORY();				
 	
 	buffer_t buffer = read_file(temp_memory.arena, _file_name);
 	if (buffer.size > 0)
 	{						
+		printf("Importing mesh %s \n", _file_name);
 		mesh_importer_t importer;
 		importer.source = buffer;
 		importer.at = 0;
-		importer.had_error = false;
-		
+		importer.had_error = false;		
 		
 		importer_element_t *element = import_mesh(temp_memory.arena, &importer);
 		
@@ -213,8 +211,12 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		s32 count_vertex = 0;
 		s32 iterated = 0;
 		
+		
+		list_t string_list = LIST(temp_arena);				
+		
 		for(importer_element_t *it = element; it; it = it->next_sibling)
 		{
+			LIST_ADD(temp_arena, &string_list, it->value, buffer_t);
 			iterated++;
 			if(it->type == token_face)
 			{
@@ -225,10 +227,20 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 				count_vertex++;
 			}
 		}
-				
 		
+		printf("iterated ver: %i", count_vertex);
+		printf("iterated face: %i", count_face);
+		
+		
+		list_node_t *node = string_list.head;
+		while(node != 0)
+		{
+			buffer_t *buffer = (buffer_t*)node->data;
+			printf("%s \n", (char*)(buffer->bytes));
+			node = node->next_sibling;
+		}
 	}
 	
-	temp_memory_end(temp_memory);
+	TEMP_MEMORY_END();
 	return result;
 }

@@ -7,3 +7,7 @@ TODO:
 - Solid understanding of the index array and faces, etc.
 
 
+- print the buffers to string.
+- continue mesh import.
+
+
