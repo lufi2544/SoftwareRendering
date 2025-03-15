@@ -7,6 +7,8 @@ internal buffer_t
 read_file(memory_arena_t *_arena, const char *_file_name)
 {
 	buffer_t result;
+	result.size = 0;
+	result.bytes = 0;
 	if(!_arena || !_file_name)
 	{
 		// TOD LOG

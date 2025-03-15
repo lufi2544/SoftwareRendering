@@ -199,7 +199,7 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 	temp_memory_t temp_memory = temp_memory_init(&engine_memory->transient);
 	
 	buffer_t buffer = read_file(temp_memory.arena, _file_name);
-	if (buffer.bytes)
+	if (buffer.size > 0)
 	{						
 		mesh_importer_t importer;
 		importer.source = buffer;
