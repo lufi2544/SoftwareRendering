@@ -8,6 +8,7 @@ typedef struct
 	s32 a;
 	s32 b;
 	s32 c;
+	
 } face_t;
 
 
@@ -15,4 +16,5 @@ typedef struct
 typedef struct 
 {	
 	vec2_t points[3];
+	
 } triangle_t;

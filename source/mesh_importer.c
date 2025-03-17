@@ -7,7 +7,7 @@ enum importer_token_type
 	token_end_of_stream,
 	token_error,
 	token_number,	
-	token_vertex,
+	token_vertex_comp,
 	token_face,
 	token_null,
 	
@@ -91,35 +91,40 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 				u64 start = at;
 				if(is_in_bounds(source, at) && source.bytes[at] == ' ')
 				{
-					start = at;
+					// advancing to the number
+					start = ++at;
 					
-					// parse until next vertex
-					while(is_in_bounds(source, at) && source.bytes[at + 1] != 'v')
-					{
-						at++;
-					}									
-					
-					
-					importer_element_t *vertex_element = PushStruct(_temp_arena, importer_element_t);
-					vertex_element->next_sibling = 0;
-					vertex_element->type = token_vertex;
-					vertex_element->value.bytes = source.bytes + start;
-					vertex_element->value.size = at - start;
-					
-					//printf("adding a vertex \n");
-					
-					if(!first_element)
-					{
-						first_element = vertex_element;
-					}
-					
-					if(element_ptr)
-					{
-						element_ptr->next_sibling = vertex_element;
-					}
-					
-					element_ptr = vertex_element;
-										
+					// parse until next vertex components
+					while(is_in_bounds(source, at) && source.bytes[at] != 'v')
+					{						
+						u8 val = source.bytes[at];
+						// end of a number
+						if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
+						{
+							importer_element_t *vertex_element = PushStruct(_temp_arena, importer_element_t);
+							vertex_element->next_sibling = 0;
+							vertex_element->type = token_vertex_comp;
+							vertex_element->value.bytes = source.bytes + start;
+							vertex_element->value.size = at - start;	
+							
+							if(!first_element)
+							{
+								first_element = vertex_element;
+							}
+							
+							if(element_ptr)
+							{
+								element_ptr->next_sibling = vertex_element;
+							}
+							
+							element_ptr = vertex_element;
+							start = ++at;
+						}
+						else
+						{
+							at++;							
+						}						
+					}																																												
 				}
 				
 			}break;
@@ -145,6 +150,7 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 					face_element->value.size = at - start;
 					
 					//printf("adding a face \n");
+						
 					
 					if(!first_element)
 					{
@@ -180,6 +186,110 @@ enum enum_parsing
 };
 
 
+internal f64 
+convert_to_sign(buffer_t _source, u64 *_at_result)
+{
+	u64 at = *_at_result;
+	
+	f64 result = 1.0;
+	if(is_in_bounds(_source, at) && (_source.bytes[at] == '-'))
+	{
+		result = -1.0;
+		++at;
+	}
+	
+	*_at_result = at;		
+	return result;
+}
+
+internal f64 convert_to_number(buffer_t _source, u64 *_at_result)
+{
+	u64 at = *_at_result;
+	
+	f64 result = 0.0f;
+	while(is_in_bounds(_source, at))	
+	{
+		u8 value = _source.bytes[at] - (u8)'0';
+		if(value < 10)
+		{
+			result = 10.0 * result + (f64)value;
+			++at;
+		}
+		else
+		{
+			break;
+		}
+	}
+	
+	*_at_result = at;
+	
+	
+	return result;
+}
+
+internal f64
+convert_to_f64(buffer_t _source)
+{
+	f64 result = 0.0;
+	
+	buffer_t source = _source;
+	u64 at = 0;
+	
+	f64 sign = convert_to_sign(source, &at);
+	f64 number = convert_to_number(source, &at);
+	
+	if(is_in_bounds(source, at) && source.bytes[at] == '.')
+	{
+		++at;
+		f64 C = 1.0 / 10.0;
+		while(is_in_bounds(source, at))
+		{
+			u8 value = source.bytes[at] - (u8)'0';
+			if(value < 10)
+			{
+				number = number + C * (f64)value;
+				C *= 1.0/ 10.0;
+				++at;
+			}
+			else				
+			{
+				break;
+			}
+		}
+		
+		result = sign * number;
+	}	
+	
+	return result;
+}
+
+vec3_t convert_to_vertex(importer_element_t *first_vertex_component)
+{
+	vec3_t result;
+	result.x = 0;
+	result.y = 0;
+	result.z = 0;	
+	
+	for(u32 i = 0; i < first_vertex_component->value.size; ++i)
+	{
+		u8 val = first_vertex_component->value.bytes[i];
+//		printf("%c \n", (char)val);
+	}
+	
+	
+	f64 x = convert_to_f64(first_vertex_component->value);
+	f64 y = convert_to_f64(first_vertex_component->next_sibling->value);
+	f64 z = convert_to_f64(first_vertex_component->next_sibling->next_sibling->value);
+	
+	
+	result.x = (f32)x;
+	result.y = (f32)y;
+	result.z = (f32)z;
+	printf("vertex: x: %.6f, y: %.6f, z: %.6f \n", result.x, result.y, result.z);
+	
+	return result;
+}
+
 
 // For now let's make this simple, so we have an array of structs,
 // I would like to change this to struct of arrays, so we can have id DOD and better for cache locality
@@ -188,6 +298,8 @@ internal mesh_t
 create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 {
 	mesh_t result;
+	result.face_num = 0;
+	result.vertex_num = 0;
 	
 	if (_file_name == 0)
 	{
@@ -212,33 +324,127 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		s32 iterated = 0;
 		
 		
-		list_t string_list = LIST(temp_arena);				
-		
+		// convert to while and advace 3;
+		// note:(juanes.rayo): add the same thing for the faces.
 		for(importer_element_t *it = element; it; it = it->next_sibling)
 		{
-			LIST_ADD(temp_arena, &string_list, it->value, buffer_t);
+		
 			iterated++;
 			if(it->type == token_face)
 			{
-				count_face++;
+				result.face_num++;
 			}
-			else if(it->type == token_vertex)
+			else if(it->type == token_vertex_comp)
 			{
-				count_vertex++;
+				result.vertex_num++;
 			}
 		}
 		
-		printf("iterated ver: %i", count_vertex);
-		printf("iterated face: %i", count_face);
+		printf("iterated ver: %i \n", result.vertex_num);
+		printf("iterated face: %i \n", result.face_num);
 		
 		
-		list_node_t *node = string_list.head;
-		while(node != 0)
-		{
-			buffer_t *buffer = (buffer_t*)node->data;
-			printf("%s \n", (char*)(buffer->bytes));
-			node = node->next_sibling;
+		
+		result.verteces = PushArray(&engine_memory->permanent, count_vertex, vec3_t);
+		result.faces = PushArray(&engine_memory->permanent, count_face, face_t);
+		
+		//(juanes.rayo) NOTE: can we figure this out runtime? or is better to store it too? as we have already the verteces and the faces, we could figure this out runtime.
+		result.triangles = PushArray(&engine_memory->permanent, count_face, triangle_t);
+		
+		u32 current_vertex = 0;
+		u32 current_face = 0;				
+		
+		f64 temp_vertex_sign = 1.0f;
+		
+		// Face and Vertex fill
+		
+		
+		importer_element_t *it = element;		
+		while(it != 0)
+		{			
+			if(it->type == token_face)
+			{
+				face_t temp_face;
+				temp_face.a = 0;
+				temp_face.b = 0;
+				temp_face.c = 0;
+				
+				
+				for(u32 i = 0; i < it->value.size; ++i)
+				{
+					u8 value = it->value.bytes[i];
+					if(value == ' ')
+					{
+						continue;
+					}
+					
+					if(value == '/')
+					{
+						continue;
+					}
+					
+					if(value < '0' || value > '9')
+					{
+						continue;
+					}
+					
+					
+					// Find a siplets way I guess? 
+					if(temp_face.a == 0)
+					{
+						temp_face.a = value;
+					}
+					else if(temp_face.b == 0)
+					{
+						temp_face.b = value;
+					}
+					else if(temp_face.c == 0)
+					{
+						temp_face.c = value;
+					}
+					
+					
+					if(temp_face.a != 0 && temp_face.b != 0 && temp_face.c != 0)
+					{
+						// push the face						
+						result.faces[current_face++] = temp_face;
+						temp_face.a = 0;
+						temp_face.b = 0;
+						temp_face.c = 0;
+						break;
+					}
+				}	
+				
+				it = it->next_sibling;
+			}
+			else if(it->type == token_vertex_comp)
+			{								
+				vec3_t vertex = convert_to_vertex(it);
+				result.verteces[current_vertex++] = vertex;
+				
+				it = it->next_sibling->next_sibling->next_sibling;
+			}
 		}
+		
+		// Checking quantity equality between the parsed faces and vertex num and the ones pushed to the mesh_t.
+		
+		printf("parsed: %i result %i", current_vertex, result.vertex_num);
+		assert(current_face == result.face_num);
+		//assert(current_vertex == result.vertex_num);
+		
+		
+		for(u32 i = 0; i < result.vertex_num; ++i)
+		{
+			vec3_t vec = result.verteces[i];
+			printf("Vertex: x: %.5f, y: %.5f, z: %.5f \n", vec.x, vec.y, vec.z);
+			
+		}
+		
+		// Triangles fill
+		
+		
+		
+		
 	}
 	
 	TEMP_MEMORY_END();

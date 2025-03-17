@@ -13,7 +13,7 @@ app_init(engine_memory_t *engine_memory)
 	// for now let's pass the permanent memory
 	cube_mesh_init(cube, &engine_memory->permanent);
 	
-	mesh_t mesh = create_mesh_from_file(engine_memory, "data/mock_cube.obj");
+	mesh_t mesh = create_mesh_from_file(engine_memory, "data/lol.obj");
 }
 
 internal void 
