@@ -18,3 +18,11 @@ typedef struct
 	vec2_t points[3];
 	
 } triangle_t;
+
+
+
+internal void 
+print_face(face_t _face)
+{
+	printf("a: %i b: %i c: %i \n", _face.a, _face.b, _face.c);
+}

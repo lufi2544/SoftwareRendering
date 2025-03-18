@@ -10,17 +10,17 @@ app_init(engine_memory_t *engine_memory)
 	// Create one cube
 	mesh_t* cube = &g_meshes[0];
 	
-	// for now let's pass the permanent memory
-	cube_mesh_init(cube, &engine_memory->permanent);
+	// for now let's pass the permanent memory	
 	
-	mesh_t mesh = create_mesh_from_file(engine_memory, "data/lol.obj");
+	mesh_t mesh = create_mesh_from_file(engine_memory, "data/monkey.obj");		
+	*cube = mesh;
 }
 
 internal void 
 app_update(engine_memory_t *engine_memory)
 {
 	mesh_t* cube = &g_meshes[0];
-	cube_mesh_update(cube);
+	//cube_mesh_update(cube);
 }
 
 internal void 

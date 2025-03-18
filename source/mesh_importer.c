@@ -277,13 +277,7 @@ convert_to_vertex(importer_element_t *first_vertex_component)
 	result.x = 0;
 	result.y = 0;
 	result.z = 0;	
-	
-	for(u32 i = 0; i < first_vertex_component->value.size; ++i)
-	{
-		u8 val = first_vertex_component->value.bytes[i];
-//		printf("%c \n", (char)val);
-	}
-	
+		
 	
 	f64 x = convert_to_f64(first_vertex_component->value);
 	f64 y = convert_to_f64(first_vertex_component->next_sibling->value);
@@ -293,7 +287,6 @@ convert_to_vertex(importer_element_t *first_vertex_component)
 	result.x = (f32)x;
 	result.y = (f32)y;
 	result.z = (f32)z;
-	//printf("vertex: x: %.6f, y: %.6f, z: %.6f \n", result.x, result.y, result.z);
 	
 	return result;
 }
@@ -301,17 +294,20 @@ convert_to_vertex(importer_element_t *first_vertex_component)
 internal face_t
 convert_to_face(importer_element_t *first_face_element)
 {
-	// each face element has 3 components a, b and c
+	// each face element has 3 components a, b and c, which the a is the only element that we care about for now
+	// v1/vt1/vn1
 	face_t result;
 	
+	
+	// Let's make this an array moduled
 	u64 at = 0;
-	result.a = (s32)convert_to_number(first_face_element->value, &at);
-	at++;
+	result.a = (s32)convert_to_number(first_face_element->value, &at) - 1;	
 	
-	result.b = (s32)convert_to_number(first_face_element->value, &at);
-	at++;
+	at = 0;
+	result.b = (s32)convert_to_number(first_face_element->next_sibling->value, &at) - 1;
 	
-	result.c = (s32)convert_to_number(first_face_element->value, &at);
+	at = 0;
+	result.c = (s32)convert_to_number(first_face_element->next_sibling->next_sibling->value, &at) - 1;
 	
 	//printf("face: a: %i, b: %i, c: %i \n", result.a, result.b, result.c);
 	
@@ -328,6 +324,9 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 	mesh_t result;
 	result.face_num = 0;
 	result.vertex_num = 0;
+	result.rotation.x = 0;
+	result.rotation.y = 0;
+	result.rotation.z = 0;
 	
 	if (_file_name == 0)
 	{
@@ -368,16 +367,16 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 			}
 		}
 		
+		result.vertex_num /= 3;
+		result.face_num /= 3;
 		printf("iterated ver: %i \n", result.vertex_num);
-		printf("iterated face: %i \n", result.face_num);
+		printf("iterated face: %i \n", result.face_num);		
 		
-		
-		
-		result.verteces = PushArray(&engine_memory->permanent, count_vertex, vec3_t);
-		result.faces = PushArray(&engine_memory->permanent, count_face, face_t);
+		result.verteces = PushArray(&engine_memory->permanent, result.vertex_num, vec3_t);
+		result.faces = PushArray(&engine_memory->permanent, result.face_num, face_t);
 		
 		//(juanes.rayo) NOTE: can we figure this out runtime? or is better to store it too? as we have already the verteces and the faces, we could figure this out runtime.
-		result.triangles = PushArray(&engine_memory->permanent, count_face, triangle_t);
+		//result.triangles = PushArray(&engine_memory->permanent, count_face, triangle_t);
 		
 		u32 current_vertex = 0;
 		u32 current_face = 0;				
@@ -385,21 +384,22 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		f64 temp_vertex_sign = 1.0f;
 		
 		// Face and Vertex fill
-		
-		
+				
 		importer_element_t *it = element;		
 		while(it != 0)
 		{			
 			if(it->type == token_face_comp)
 			{
-				face_t face = convert_to_face(it);
+				face_t face = convert_to_face(it);								
 				result.faces[current_face++] = face;
-				it = it->next_sibling;
+				it = it->next_sibling->next_sibling->next_sibling;
 			}
 			else if(it->type == token_vertex_comp)
 			{								
-				vec3_t vertex = convert_to_vertex(it);
-				result.verteces[current_vertex++] = vertex;
+				vec3_t vertex = convert_to_vertex(it);				
+				
+				result.verteces[current_vertex] = vertex;
+				current_vertex++;
 				
 				it = it->next_sibling->next_sibling->next_sibling;
 			}
@@ -407,25 +407,16 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		
 		// Checking quantity equality between the parsed faces and vertex num and the ones pushed to the mesh_t.
 		
-		printf("parsed: %i result %i \n", current_face, result.face_num );
-		//assert(current_face == result.face_num);
-		assert(current_vertex == result.vertex_num / 3);
+		//printf("parsed: %i result %i \n", current_face, result.face_num );
 		
-		
-		for(u32 i = 0; i < result.vertex_num; ++i)
-		{
-			vec3_t vec = result.verteces[i];
-			//printf("Vertex: x: %.5f, y: %.5f, z: %.5f \n", vec.x, vec.y, vec.z);
-			
-		}
-		
-		// Triangles fill
-		
-		
-		
-		
+		assert(current_face == result.face_num);
+		assert(current_vertex == result.vertex_num);				
 	}
 	
+	
+	
 	TEMP_MEMORY_END();
+			
+
 	return result;
 }

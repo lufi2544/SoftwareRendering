@@ -145,24 +145,6 @@ cube_mesh_init(mesh_t *cube, memory_arena_t *_arena)
 		
 	// Init the cube.
 	
-	// Verteces
-	cube->verteces = PushArray(_arena, N_CUBE_VERTECES, vec3_t);
-	
-	//Faces
-	cube->faces = PushArray(_arena, N_CUBE_FACES, face_t);
-	
-	//Triangles, will be set at runtime when recalculated every frame.
-	cube->triangles = PushArray(_arena, N_CUBE_FACES, triangle_t);
-		
-	for(s32 v = 0; v < N_CUBE_VERTECES; ++v)
-	{
-		cube->verteces[v] = g_cube_verteces[v];
-	}
-	
-	for(s32 f = 0; f < N_CUBE_FACES; ++f)
-	{
-		cube->faces[f] = g_cube_faces[f];
-	}	
 }
 
 internal void
@@ -171,56 +153,60 @@ cube_mesh_update(mesh_t *cube)
 	
 	// TODO figure out a better method here.
 
+
+}
+
+
+// TODO change this to mesh_render
+internal void 
+cube_mesh_render(mesh_t *cube)
+{				
+	TEMP_MEMORY();
+	
 	vec3_t camera_position = { 0, 0, -5 };
 	g_camera.position = camera_position;
     
-    f32 fov_coefficient = 1000;
-    cube->rotation.y += 0.01;
-    cube->rotation.z += 0.01;
-    cube->rotation.x += 0.01;
-	
-	// Maybe storing the faces num is a good idea for future meshes of course
-	for(s32 i = 0; i < N_CUBE_FACES; ++i)
+    f32 fov_coefficient = 1000;// set this to 2000 and fix bug.
+    cube->rotation.y += 0.01;	
+   // cube->rotation.z += 0;
+   // cube->rotation.x += 0;
+				
+	triangle_t *cube_triangles = PushArray(temp_arena, cube->face_num, triangle_t);	
+	for(u32 i = 0; i < cube->face_num; ++i)
 	{
-		face_t cube_face = cube->faces[i];		
-		
-		// We get the points in the space from the faces array.
+		face_t cube_face = cube->faces[i];
+						
 		vec3_t face_verteces[3];
 		face_verteces[0] = cube->verteces[cube_face.a];
 		face_verteces[1] = cube->verteces[cube_face.b];
-		face_verteces[2] = cube->verteces[cube_face.c];
+		face_verteces[2] = cube->verteces[cube_face.c];		
 		
-		triangle_t projected_triangle;
-		
+		triangle_t projected_triangle;		
 		// We transform those points in 3D to 2D screen space
 		for(s32 j = 0; j < 3; ++j)
 		{
 			vec3_t transformed_vertex = face_verteces[j];					
 			transformed_vertex = vec3_rotate_x(transformed_vertex, cube->rotation.x);
 			transformed_vertex = vec3_rotate_y(transformed_vertex, cube->rotation.y);
+			transformed_vertex.y *= -1;
+			// We are using a +y is down as in this engine the screen up scales that way, flipping that so the meshes can be visialuzed correctly.
 			transformed_vertex = vec3_rotate_z(transformed_vertex, cube->rotation.z);
 			
 			transformed_vertex.z -= g_camera.position.z;
 			vec2_t projected_point = project_vec3(&transformed_vertex, &fov_coefficient);
 			
 			// saving the point for the triangle in screen space.
-			projected_triangle.points[j] = projected_point;
-			
+			projected_triangle.points[j] = projected_point;			
 		}			
 		
-		cube->triangles[i] = projected_triangle;
+		cube_triangles[i] = projected_triangle;
 	}
 	
-}
-
-
-internal void 
-cube_mesh_render(mesh_t *cube)
-{		
-	vec2_t position = { 1000, 1000 };
-	for(s32 i = 0; i < N_CUBE_FACES; ++i)
+	
+	vec2_t position = { 500, 500 };
+	for(s32 i = 0; i < cube->face_num; ++i)
 	{
-		triangle_t triangles = cube->triangles[i];
+		triangle_t triangles = cube_triangles[i];
 		
 		vec2_t position_0 = {triangles.points[0].x + position.x, triangles.points[0].y + position.y};
 		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);			
@@ -240,4 +226,7 @@ cube_mesh_render(mesh_t *cube)
 		// C-A
 	    draw_line(position_2.x, position_2.y, position_0.x, position_0.y);
 	}
+	
+	
+	TEMP_MEMORY_END();
 }

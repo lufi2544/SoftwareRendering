@@ -10,6 +10,7 @@
 #include "ishak_list.c"
 
 #include "file_reader.c"
+#include "mesh.c"
 #include "mesh_importer.c"
 
 #include "renderer_helpers.c"

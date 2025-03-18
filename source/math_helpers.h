@@ -21,10 +21,17 @@ typedef struct
 
 /////// VECTOR ///////
 
-void vec2_print(vec2_t *vec)
+internal void
+vec2_print(vec2_t *vec)
 {
     assert(vec != 0);
     printf("x: %.2f; y: %.2f \n", vec->x, vec->y);
+}
+
+internal void 
+vec3_print(vec3_t vec)
+{
+    printf("x: %.2f; y: %.2f z: %.2f \n", vec.x, vec.y, vec.z);
 }
 
 function vec2_t project_vec3(vec3_t *point, f32 *fov)

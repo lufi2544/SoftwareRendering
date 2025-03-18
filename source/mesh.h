@@ -4,7 +4,7 @@ typedef struct
 {
 	vec3_t *verteces;
 	face_t *faces;
-	triangle_t *triangles;
+	//triangle_t *triangles;
 	vec3_t rotation;
 	u32 vertex_num;
 	u32 face_num;
@@ -14,3 +14,6 @@ typedef struct
 
 // Global meshes for the application.
 global mesh_t *g_meshes;
+
+
+
