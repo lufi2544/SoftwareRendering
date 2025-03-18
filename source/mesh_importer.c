@@ -6,9 +6,9 @@ enum importer_token_type
 {
 	token_end_of_stream,
 	token_error,
-	token_number,	
+	token_number,
 	token_vertex_comp,
-	token_face,
+	token_face_comp,
 	token_null,
 	
 	token_count,
@@ -136,40 +136,46 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 				// parse until the next face which is f in the file.
 				if(is_in_bounds(source, at) && (source.bytes[at] == ' '))
 				{				
-					start = at;
-					while(is_in_bounds(source, at) && source.bytes[at + 1] != 'f')
+					start = ++at;
+					
+					while(is_in_bounds(source, at) && source.bytes[at] != 'f')
 					{
-						at++;
+						u8 val = source.bytes[at];
+						// end of a number
+						if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
+						{
+							importer_element_t *face_element = PushStruct(_temp_arena, importer_element_t);
+							face_element->next_sibling = 0;
+							face_element->type = token_face_comp;
+							face_element->value.bytes = source.bytes + start;
+							face_element->value.size = at - start;	
+							
+							if(!first_element)
+							{
+								first_element = face_element;
+							}
+							
+							if(element_ptr)
+							{
+								element_ptr->next_sibling = face_element;
+							}
+							
+							element_ptr = face_element;
+							start = ++at;							
+						}
+						
+						else
+						{
+							at++;							
+						}						
 					}										
 					
-					
-					importer_element_t *face_element = PushStruct(_temp_arena, importer_element_t);
-					face_element->next_sibling = 0;
-					face_element->type = token_face;
-					face_element->value.bytes = source.bytes + start;
-					face_element->value.size = at - start;
-					
-					//printf("adding a face \n");
-						
-					
-					if(!first_element)
-					{
-						first_element = face_element;
-					}
-					
-					if(element_ptr)
-					{
-						element_ptr->next_sibling = face_element;
-					}
-					
-					element_ptr = face_element;										
-				}
+				}break;
 				
-			}break;
-			
-			default:
-			{
-			}break;
+				default:
+				{
+				}break;
+			}
 		}
 	}
 	
@@ -202,7 +208,8 @@ convert_to_sign(buffer_t _source, u64 *_at_result)
 	return result;
 }
 
-internal f64 convert_to_number(buffer_t _source, u64 *_at_result)
+internal f64 
+convert_to_number(buffer_t _source, u64 *_at_result)
 {
 	u64 at = *_at_result;
 	
@@ -247,7 +254,7 @@ convert_to_f64(buffer_t _source)
 			u8 value = source.bytes[at] - (u8)'0';
 			if(value < 10)
 			{
-				number = number + C * (f64)value;
+				number += (C * (f64)value);
 				C *= 1.0/ 10.0;
 				++at;
 			}
@@ -263,7 +270,8 @@ convert_to_f64(buffer_t _source)
 	return result;
 }
 
-vec3_t convert_to_vertex(importer_element_t *first_vertex_component)
+internal vec3_t 
+convert_to_vertex(importer_element_t *first_vertex_component)
 {
 	vec3_t result;
 	result.x = 0;
@@ -285,7 +293,27 @@ vec3_t convert_to_vertex(importer_element_t *first_vertex_component)
 	result.x = (f32)x;
 	result.y = (f32)y;
 	result.z = (f32)z;
-	printf("vertex: x: %.6f, y: %.6f, z: %.6f \n", result.x, result.y, result.z);
+	//printf("vertex: x: %.6f, y: %.6f, z: %.6f \n", result.x, result.y, result.z);
+	
+	return result;
+}
+
+internal face_t
+convert_to_face(importer_element_t *first_face_element)
+{
+	// each face element has 3 components a, b and c
+	face_t result;
+	
+	u64 at = 0;
+	result.a = (s32)convert_to_number(first_face_element->value, &at);
+	at++;
+	
+	result.b = (s32)convert_to_number(first_face_element->value, &at);
+	at++;
+	
+	result.c = (s32)convert_to_number(first_face_element->value, &at);
+	
+	//printf("face: a: %i, b: %i, c: %i \n", result.a, result.b, result.c);
 	
 	return result;
 }
@@ -330,7 +358,7 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		{
 		
 			iterated++;
-			if(it->type == token_face)
+			if(it->type == token_face_comp)
 			{
 				result.face_num++;
 			}
@@ -362,59 +390,10 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		importer_element_t *it = element;		
 		while(it != 0)
 		{			
-			if(it->type == token_face)
+			if(it->type == token_face_comp)
 			{
-				face_t temp_face;
-				temp_face.a = 0;
-				temp_face.b = 0;
-				temp_face.c = 0;
-				
-				
-				for(u32 i = 0; i < it->value.size; ++i)
-				{
-					u8 value = it->value.bytes[i];
-					if(value == ' ')
-					{
-						continue;
-					}
-					
-					if(value == '/')
-					{
-						continue;
-					}
-					
-					if(value < '0' || value > '9')
-					{
-						continue;
-					}
-					
-					
-					// Find a siplets way I guess? 
-					if(temp_face.a == 0)
-					{
-						temp_face.a = value;
-					}
-					else if(temp_face.b == 0)
-					{
-						temp_face.b = value;
-					}
-					else if(temp_face.c == 0)
-					{
-						temp_face.c = value;
-					}
-					
-					
-					if(temp_face.a != 0 && temp_face.b != 0 && temp_face.c != 0)
-					{
-						// push the face						
-						result.faces[current_face++] = temp_face;
-						temp_face.a = 0;
-						temp_face.b = 0;
-						temp_face.c = 0;
-						break;
-					}
-				}	
-				
+				face_t face = convert_to_face(it);
+				result.faces[current_face++] = face;
 				it = it->next_sibling;
 			}
 			else if(it->type == token_vertex_comp)
@@ -428,15 +407,15 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		
 		// Checking quantity equality between the parsed faces and vertex num and the ones pushed to the mesh_t.
 		
-		printf("parsed: %i result %i", current_vertex, result.vertex_num);
-		assert(current_face == result.face_num);
-		//assert(current_vertex == result.vertex_num);
+		printf("parsed: %i result %i \n", current_face, result.face_num );
+		//assert(current_face == result.face_num);
+		assert(current_vertex == result.vertex_num / 3);
 		
 		
 		for(u32 i = 0; i < result.vertex_num; ++i)
 		{
 			vec3_t vec = result.verteces[i];
-			printf("Vertex: x: %.5f, y: %.5f, z: %.5f \n", vec.x, vec.y, vec.z);
+			//printf("Vertex: x: %.5f, y: %.5f, z: %.5f \n", vec.x, vec.y, vec.z);
 			
 		}
 		
