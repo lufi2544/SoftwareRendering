@@ -26,6 +26,7 @@ typedef struct importer_element_t
 	enum importer_token_type type;
 	buffer_t value;	
     struct importer_element_t *next_sibling;
+	u32 index;
 	
 } importer_element_t;
 
@@ -71,6 +72,8 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 	importer_element_t *first_element = 0;
 	importer_element_t *element_ptr = 0;
 	
+	u32 counter = 0;
+	
 	while(is_in_bounds(source, at))
 	{		
 		
@@ -102,7 +105,6 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 						if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
 						{
 							importer_element_t *vertex_element = PushStruct(_temp_arena, importer_element_t);
-							vertex_element->next_sibling = 0;
 							vertex_element->type = token_vertex_comp;
 							vertex_element->value.bytes = source.bytes + start;
 							vertex_element->value.size = at - start;	
@@ -140,12 +142,17 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 					
 					while(is_in_bounds(source, at) && source.bytes[at] != 'f')
 					{
+						if(counter == 1430)
+						{
+							int a = 0;
+						}
 						u8 val = source.bytes[at];
 						// end of a number
-						if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
+						if ((val == ' ') || (val == '\n') || (val == '\r') || (val == '\t'))							
 						{
 							importer_element_t *face_element = PushStruct(_temp_arena, importer_element_t);
 							face_element->next_sibling = 0;
+							face_element->index = counter++;
 							face_element->type = token_face_comp;
 							face_element->value.bytes = source.bytes + start;
 							face_element->value.size = at - start;	
@@ -162,13 +169,13 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 							
 							element_ptr = face_element;
 							start = ++at;							
-						}
-						
+						}						
 						else
 						{
 							at++;							
 						}						
-					}										
+					}	
+					
 					
 				}break;
 				
@@ -178,6 +185,8 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 			}
 		}
 	}
+	
+	printf("COUNTER: %i \n", counter);
 	
 	
 	return first_element;

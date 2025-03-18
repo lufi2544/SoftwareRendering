@@ -162,11 +162,12 @@ internal void
 cube_mesh_render(mesh_t *cube)
 {				
 	TEMP_MEMORY();
+
 	
 	vec3_t camera_position = { 0, 0, -5 };
 	g_camera.position = camera_position;
     
-    f32 fov_coefficient = 1000;// set this to 2000 and fix bug.
+    f32 fov_coefficient = 1500;// set this to 2000 and fix bug.
     cube->rotation.y += 0.01;	
    // cube->rotation.z += 0;
    // cube->rotation.x += 0;
@@ -203,11 +204,11 @@ cube_mesh_render(mesh_t *cube)
 	}
 	
 	
-	vec2_t position = { 500, 500 };
-	for(s32 i = 0; i < cube->face_num; ++i)
+	vec2_t position = { 800, 800 };
+	for(u64 i = 0; i < cube->face_num; ++i)
 	{
 		triangle_t triangles = cube_triangles[i];
-		
+				
 		vec2_t position_0 = {triangles.points[0].x + position.x, triangles.points[0].y + position.y};
 		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);			
 		
@@ -226,6 +227,8 @@ cube_mesh_render(mesh_t *cube)
 		// C-A
 	    draw_line(position_2.x, position_2.y, position_0.x, position_0.y);
 	}
+	
+	
 	
 	
 	TEMP_MEMORY_END();

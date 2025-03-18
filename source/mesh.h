@@ -4,7 +4,6 @@ typedef struct
 {
 	vec3_t *verteces;
 	face_t *faces;
-	//triangle_t *triangles;
 	vec3_t rotation;
 	u32 vertex_num;
 	u32 face_num;
