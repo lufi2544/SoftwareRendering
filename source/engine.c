@@ -1,7 +1,7 @@
 
-#ifdef __WINDOWS__
+
 #include "memoryapi.h"
-#endif //__WINDOWS__
+
 
 /////////////////// ENGINE ///////////////////
 /**

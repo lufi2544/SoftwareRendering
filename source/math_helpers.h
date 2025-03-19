@@ -104,8 +104,8 @@ internal vec3_t
 vec3_subtract(vec3_t a, vec3_t b)
 {
 	vec3_t result;
-	result.x = a.x - b.x;
-	result.y = a.y - b.y;	
+	result.x = b.x - a.x;
+	result.y = b.y - a.y;	
 	return result;
 }
 

@@ -10,14 +10,20 @@
 #include "ishak_list.c"
 
 #include "file_reader.c"
+
+
+// rendering
+#include "renderer_helpers.c"
+#include "display.c"
 #include "mesh.c"
 #include "mesh_importer.c"
 
-#include "renderer_helpers.c"
+// Other
 #include "entities_temp.c"
 
-#include "display.c"
 
+
+// App framework
 #include "input.c"
 #include "application.c"
 #include "renderer.c"

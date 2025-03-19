@@ -28,7 +28,7 @@ app_render(engine_memory_t *engine_memory)
 {	
 	//	temp_cube_render();
 	mesh_t* cube = &g_meshes[0];
-	cube_mesh_render(cube);
+	mesh_render(cube);
 }
 
 internal void 

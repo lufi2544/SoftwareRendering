@@ -42,7 +42,7 @@ PushSize_(memory_arena_t *_arena, memory_index _size)
 {
 	if(_arena->used + _size > _arena->size)
 	{
-		fprintf(stderr, "arena with size %i trying to add another %llu bytes. No enough space... \n", _arena->size, _size);
+		fprintf(stderr, "arena with size %llu trying to add another %u bytes. No enough space... \n", _arena->size, _size);
 		assert(false);
 	}
 	

@@ -1,23 +1,25 @@
+
 @echo off
-setlocal enabledelayedexpansion
+
 
 :: Set variables
-set SRC_DIR=source
+set SRC_DIR=../source
 set BIN_DIR=bin
-set LIB_DIR=lib
-set CFLAGS=-std=c17 -g 
-set LDFLAGS=-L%LIB_DIR% -lSDL2Main -lSDL2
-set SRC_FILES=
-:: Create the bin directory if it doesn't exist
+set LIB_DIR=../lib
+set CFLAGS=/std:c17 /Zi
+set LDFLAGS=/link /LIBPATH:%LIB_DIR% SDL2main.lib SDL2.lib
+set SRC_FILES=main.c
 if not exist %BIN_DIR% mkdir %BIN_DIR%
 
+cd %BIN_DIR%
 
-:: Compile and link
-gcc %CFLAGS% -I%SRC_DIR% %SRC_DIR%/main.c %LDFLAGS% -o %BIN_DIR%\SoftwareRendering.exe
+:: Create the bin directory if it doesn't exist
 
-:: Print debug information
-echo Compiler: gcc
-echo Compiler Flags: %CFLAGS%
-echo Source Files: main.c
+:: Set up MSVC environment (ensure it's the correct script)
+call "../setup_cl_x64.bat"
 
-exit /b
+:: Compile with MSVC
+:: Using Fe: in stead of OUT, since we are using unity build.
+cl /Fe:SoftwareRendering %CFLAGS% -I%SRC_DIR% %SRC_DIR%\%SRC_FILES% %LDFLAGS% /SUBSYSTEM:CONSOLE /nologo
+
+
