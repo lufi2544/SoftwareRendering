@@ -34,16 +34,18 @@ vec3_print(vec3_t vec)
     printf("x: %.2f; y: %.2f z: %.2f \n", vec.x, vec.y, vec.z);
 }
 
-function vec2_t project_vec3(vec3_t *point, f32 *fov)
+internal vec2_t
+project_vec3(vec3_t point, f32 fov)
 {
     vec2_t projected_point = { 
-		(point->x * (*fov)) / point->z, 
-		(point->y * (*fov)) / point->z };       
+		(point.x * (fov)) / point.z, 
+		(point.y * (fov)) / point.z };       
     return projected_point;
 }
 
 
-function void vec2_multiply_scalar(vec2_t *point, f32 scalar)
+internal void 
+vec2_multiply_scalar(vec2_t *point, f32 scalar)
 {
     assert(point != 0);
     
@@ -51,7 +53,8 @@ function void vec2_multiply_scalar(vec2_t *point, f32 scalar)
     point->y *= scalar;
 }
 
-function void vec3_multiply_scalar(vec3_t *point, f32 scalar)
+internal void
+vec3_multiply_scalar(vec3_t *point, f32 scalar)
 {
     assert(point != 0);
     
@@ -60,7 +63,8 @@ function void vec3_multiply_scalar(vec3_t *point, f32 scalar)
     point->z *= scalar;
 }
 
-function vec3_t vec3_rotate_x(vec3_t v, f32 angle)
+internal vec3_t
+vec3_rotate_x(vec3_t v, f32 angle)
 {
     vec3_t rotated_vector = 
     { 
@@ -72,7 +76,8 @@ function vec3_t vec3_rotate_x(vec3_t v, f32 angle)
     return rotated_vector;
 }
 
-function vec3_t vec3_rotate_y(vec3_t v, f32 angle)
+internal vec3_t
+vec3_rotate_y(vec3_t v, f32 angle)
 {
     vec3_t rotated_vector =
     { 
@@ -84,7 +89,8 @@ function vec3_t vec3_rotate_y(vec3_t v, f32 angle)
     return rotated_vector;
 }
 
-function vec3_t vec3_rotate_z(vec3_t v, f32 angle)
+internal vec3_t
+vec3_rotate_z(vec3_t v, f32 angle)
 {
     vec3_t rotated_vector =
     { 
@@ -97,3 +103,19 @@ function vec3_t vec3_rotate_z(vec3_t v, f32 angle)
 }
 
 
+internal f32 
+vec3_length(vec3_t v)
+{
+	f32 result;	
+	result = sqrt((v.x * v.x) + (v.y * v.y) + (v.z + v.z));	
+	return result;
+}
+
+
+internal f32 
+vec2_length(vec2_t v)
+{
+	f32 result;	
+	result = sqrt((v.x * v.x) + (v.y * v.y));	
+	return result;
+}

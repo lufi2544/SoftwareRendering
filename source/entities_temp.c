@@ -68,7 +68,7 @@ temp_cube_create()
         transformed_point = vec3_rotate_z(transformed_point, cube_rotations[0].z);
         
         transformed_point.z -= g_camera.position.z;
-        vec2_t projected_point = project_vec3(&transformed_point, &fov_coefficient);
+        vec2_t projected_point = project_vec3(transformed_point, fov_coefficient);
         
         cube_projected_points[i] = projected_point;
     }   
@@ -194,7 +194,7 @@ cube_mesh_render(mesh_t *cube)
 			transformed_vertex = vec3_rotate_z(transformed_vertex, cube->rotation.z);
 			
 			transformed_vertex.z -= g_camera.position.z;
-			vec2_t projected_point = project_vec3(&transformed_vertex, &fov_coefficient);
+			vec2_t projected_point = project_vec3(transformed_vertex, fov_coefficient);
 			
 			// saving the point for the triangle in screen space.
 			projected_triangle.points[j] = projected_point;			
