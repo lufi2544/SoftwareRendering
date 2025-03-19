@@ -39,7 +39,9 @@ mesh_render(mesh_t *_mesh)
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
 	vec2_t position = { 800, 800 };
 	
-	triangle_t *mesh_triangles = PushArray(temp_arena, _mesh->face_num, triangle_t);	
+	
+	list_t mesh_triangles_list = LIST(temp_arena);
+	
 	for(u32 i = 0; i < _mesh->face_num; ++i)
 	{
 		face_t mesh_face = _mesh->faces[i];
@@ -54,12 +56,17 @@ mesh_render(mesh_t *_mesh)
 		face_verteces[2] = _mesh->verteces[mesh_face.c];		
 		
 		vec3_t entity_position = { 800, 800,0 };
-/*		if(!can_render_face(entity_position, face_verteces, camera_position))
+		/*if(!can_render_face(entity_position, face_verteces, camera_position))
 		{
 			continue;
 		}*/
 		
 		triangle_t projected_triangle;		
+		
+		if(i == 965)
+		{
+			int a = 0;
+		}
 		// We transform those points in 3D to 2D screen space
 		for(s32 j = 0; j < 3; ++j)
 		{
@@ -75,16 +82,17 @@ mesh_render(mesh_t *_mesh)
 			vec2_t projected_point = project_vec3(transformed_vertex, fov_coefficient);
 			
 			// saving the point for the triangle in screen space.
-			projected_triangle.points[j] = projected_point;			
+			projected_triangle.points[j] = projected_point;				
 		}			
 		
-		mesh_triangles[i] = projected_triangle;
+		list_node_t* node = LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
+		triangle_t t = *((triangle_t*)node->data);		
 	}
-	
-	
-	for(u64 i = 0; i < _mesh->face_num; ++i)
+		
+	list_node_t *it = mesh_triangles_list.head;
+	while(it != 0)
 	{
-		triangle_t triangles = mesh_triangles[i];
+		triangle_t triangles = *((triangle_t*)it->data);
 		
 		vec2_t position_0 = {triangles.points[0].x + position.x, triangles.points[0].y + position.y};
 		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);			
@@ -103,6 +111,7 @@ mesh_render(mesh_t *_mesh)
 		
 		// C-A
 	    draw_line(position_2.x, position_2.y, position_0.x, position_0.y);
+		it = it->next_sibling;
 	}
 			
 	TEMP_MEMORY_END();

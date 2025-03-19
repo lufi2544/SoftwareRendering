@@ -21,23 +21,25 @@ make_list(memory_arena_t *_arena, void* _data)
 }
 
 
-internal void
+internal list_node_t*
 list_add_element(memory_arena_t *_arena, list_t *_list, void* _data, u32 _size)
 {
 	if(_data == 0)
 	{
-		return;
+		return 0;
 	}
 	
 	if(_list)
 	{
 		list_node_t *node = PushStruct(_arena, list_node_t);
-		void *node_data = PushStruct(_arena, void*);
+		void *node_data = PushSize(_arena, _size);
 		node->data = node_data;
+		node->next_sibling = 0;
+		node->index = _list->size;
 		
 		if(node_data == 0)
 		{
-			return;
+			return 0;
 		}
 		
 		// note: (juanes.rayo): Moving this to a .c file to use as raw copy of bytes.
@@ -63,8 +65,10 @@ list_add_element(memory_arena_t *_arena, list_t *_list, void* _data, u32 _size)
 			
 			_list->size++;
 		}
+		
+		return node;
 	}
+	
+	return 0;
+		
 }
-
-#define LIST_ADD(a, l, d, t) list_add_element(a, l, &d, sizeof(t))
-#define LIST(a) make_list(a, 0)
