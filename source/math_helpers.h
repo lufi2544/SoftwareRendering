@@ -96,7 +96,7 @@ internal f32
 vec3_length(vec3_t v)
 {
 	f32 result;	
-	result = sqrt((v.x * v.x) + (v.y * v.y) + (v.z + v.z));	
+	result = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));	
 	return result;
 }
 
@@ -104,8 +104,9 @@ internal vec3_t
 vec3_subtract(vec3_t a, vec3_t b)
 {
 	vec3_t result;
-	result.x = b.x - a.x;
-	result.y = b.y - a.y;	
+	result.x = a.x - b.x;
+	result.y = a.y - b.y;	
+	result.y = a.z - b.z;
 	return result;
 }
 
@@ -116,7 +117,7 @@ vec3_cross(vec3_t a, vec3_t b)
 	{
 		result.x = (a.y * b.z) - (a.z * b.y),		
 		result.y = (a.z * b.x) - (a.x * b.z),	
-		result.z = (a.x * b.y) - (a.y - b.x)		
+		result.z = (a.x * b.y) - (a.y * b.x)		
 	};
 	
 	return result;
@@ -124,8 +125,7 @@ vec3_cross(vec3_t a, vec3_t b)
 
 internal f32 vec3_dot(vec3_t a, vec3_t b)
 {
-	f32 result = 0;	
-	result = a.x * b.x + a.y * b.y;	
+	f32 result = (a.x * b.x) + (a.y * b.y) + (a.z * b.z);	
 	return result;
 }
 

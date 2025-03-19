@@ -14,13 +14,18 @@ can_render_face(vec3_t _mesh_position, vec3_t _face_verteces[3], vec3_t _camera_
 	vec3_t b = _face_verteces[1];
 	vec3_t c = _face_verteces[2];
 	
-	vec3_t ab = vec3_subtract(a, b);
-	vec3_t ac = vec3_subtract(a, c);
+	vec3_t ab = vec3_subtract(b, a);
+	vec3_t ac = vec3_subtract(c, a);
 	
 	vec3_t normal = vec3_cross(ab, ac);	
 	
 	// 2. See if they are pointing to different directions.	
-	result = vec3_dot(_camera_position, normal) > 0;
+	
+	vec3_t camera_to_face = vec3_subtract(_camera_position, a);
+	
+	f32 dot = vec3_dot(normal, camera_to_face); 
+	
+	result = dot > 0;
 	
 	return result;
 }
@@ -30,10 +35,10 @@ mesh_render(mesh_t *_mesh)
 {				
 	TEMP_MEMORY();
 		
-	vec3_t camera_position = { 0, 0, -5 };
+	vec3_t camera_position = { 0, 0, 0 };
 	g_camera.position = camera_position;
     
-    f32 fov_coefficient = 1500;// set this to 2000 and fix bug.
+    f32 fov_coefficient = 650;// set this to 2000 and fix bug.
     _mesh->rotation.y += 0.01;
 	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
@@ -56,17 +61,13 @@ mesh_render(mesh_t *_mesh)
 		face_verteces[2] = _mesh->verteces[mesh_face.c];		
 		
 		vec3_t entity_position = { 800, 800,0 };
-		/*if(!can_render_face(entity_position, face_verteces, camera_position))
+		if(!can_render_face(entity_position, face_verteces, camera_position))
 		{
 			continue;
-		}*/
+		}
 		
 		triangle_t projected_triangle;		
 		
-		if(i == 965)
-		{
-			int a = 0;
-		}
 		// We transform those points in 3D to 2D screen space
 		for(s32 j = 0; j < 3; ++j)
 		{
@@ -78,7 +79,7 @@ mesh_render(mesh_t *_mesh)
 			// We are using a +y is down as in this engine the screen up scales that way, flipping that so the meshes can be visialuzed correctly.
 			transformed_vertex = vec3_rotate_z(transformed_vertex, _mesh->rotation.z);
 			
-			transformed_vertex.z -= g_camera.position.z;
+			transformed_vertex.z += 5;
 			vec2_t projected_point = project_vec3(transformed_vertex, fov_coefficient);
 			
 			// saving the point for the triangle in screen space.

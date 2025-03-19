@@ -12,7 +12,7 @@ app_init(engine_memory_t *engine_memory)
 	
 	// for now let's pass the permanent memory	
 	
-	mesh_t mesh = create_mesh_from_file(engine_memory, "data/monkey.obj");		
+	mesh_t mesh = create_mesh_from_file(engine_memory, "data/lol.obj");		
 	*cube = mesh;
 }
 
