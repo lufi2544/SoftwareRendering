@@ -106,7 +106,7 @@ vec3_subtract(vec3_t a, vec3_t b)
 	vec3_t result;
 	result.x = a.x - b.x;
 	result.y = a.y - b.y;	
-	result.y = a.z - b.z;
+	result.z = a.z - b.z;
 	return result;
 }
 

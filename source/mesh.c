@@ -5,7 +5,7 @@
 
 // TODO pass the entity position here.
 internal bool
-can_render_face(vec3_t _mesh_position, vec3_t _face_verteces[3], vec3_t _camera_position)
+can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
 {
 	bool result = false;
 	
@@ -25,7 +25,7 @@ can_render_face(vec3_t _mesh_position, vec3_t _face_verteces[3], vec3_t _camera_
 	
 	f32 dot = vec3_dot(normal, camera_to_face); 
 	
-	result = dot > 0;
+	result = dot < 0;
 	
 	return result;
 }
@@ -38,8 +38,9 @@ mesh_render(mesh_t *_mesh)
 	vec3_t camera_position = { 0, 0, 0 };
 	g_camera.position = camera_position;
     
-    f32 fov_coefficient = 650;// set this to 2000 and fix bug.
+    f32 fov_coefficient = 1000;// set this to 2000 and fix bug.
     _mesh->rotation.y += 0.01;
+	_mesh->rotation.z += 0.01;
 	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
 	vec2_t position = { 800, 800 };
@@ -61,33 +62,43 @@ mesh_render(mesh_t *_mesh)
 		face_verteces[2] = _mesh->verteces[mesh_face.c];		
 		
 		vec3_t entity_position = { 800, 800,0 };
-		if(!can_render_face(entity_position, face_verteces, camera_position))
-		{
-			continue;
-		}
 		
-		triangle_t projected_triangle;		
 		
-		// We transform those points in 3D to 2D screen space
+		vec3_t transformed_verteces[3];
+		// 1.Check the face verteces and apply transformation
 		for(s32 j = 0; j < 3; ++j)
 		{
 			vec3_t transformed_vertex = face_verteces[j];					
 			transformed_vertex = vec3_rotate_x(transformed_vertex, _mesh->rotation.x);
 			transformed_vertex = vec3_rotate_y(transformed_vertex, _mesh->rotation.y);
 			transformed_vertex.y *= -1;
-			
 			// We are using a +y is down as in this engine the screen up scales that way, flipping that so the meshes can be visialuzed correctly.
 			transformed_vertex = vec3_rotate_z(transformed_vertex, _mesh->rotation.z);
 			
 			transformed_vertex.z += 5;
-			vec2_t projected_point = project_vec3(transformed_vertex, fov_coefficient);
+			
+			transformed_verteces[j] = transformed_vertex;			
+		}
+		
+		
+		// 2. Check the Face Culling from the camera
+		if(!can_render_face(transformed_verteces, camera_position))
+		{
+			continue;
+		}
+		
+		
+		// 3. Project the verteces to screen space and crate a triangle
+		triangle_t projected_triangle;		
+		for(u32 k = 0; k < 3; ++k)			
+		{						
+			vec2_t projected_point = project_vec3(transformed_verteces[k], fov_coefficient);
 			
 			// saving the point for the triangle in screen space.
-			projected_triangle.points[j] = projected_point;				
-		}			
+			projected_triangle.points[k] = projected_point;															
+		}
 		
-		list_node_t* node = LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
-		triangle_t t = *((triangle_t*)node->data);		
+		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}
 		
 	list_node_t *it = mesh_triangles_list.head;
