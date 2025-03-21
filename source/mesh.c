@@ -8,7 +8,7 @@ internal bool
 can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
 {
 	bool result = false;
-	
+		
 	// 1. Get the face normal.
 	vec3_t a = _face_verteces[0];
 	vec3_t b = _face_verteces[1];
@@ -17,15 +17,13 @@ can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
 	vec3_t ab = vec3_subtract(b, a);
 	vec3_t ac = vec3_subtract(c, a);
 	
-	vec3_t normal = vec3_cross(ab, ac);	
+	vec3_t normal = vec3_cross(ab, ac);
 	
-	// 2. See if they are pointing to different directions.	
+	// 2. See if they are pointing to different directions.		
+	vec3_t camera_to_face = vec3_subtract(_camera_position, a);	
+	f32 dot = vec3_dot(normal, camera_to_face);
 	
-	vec3_t camera_to_face = vec3_subtract(_camera_position, a);
-	
-	f32 dot = vec3_dot(normal, camera_to_face); 
-	
-	result = dot < 0;
+	result = dot > 0;
 	
 	return result;
 }
@@ -36,14 +34,18 @@ mesh_render(mesh_t *_mesh)
 	TEMP_MEMORY();
 		
 	vec3_t camera_position = { 0, 0, 0 };
-	g_camera.position = camera_position;
+	g_camera.position = camera_position;	
+
     
-    f32 fov_coefficient = 1000;// set this to 2000 and fix bug.
+    f32 fov_coefficient = 2000;// set this to 2000 and fix bug.
+	/*
     _mesh->rotation.y += 0.01;
-	_mesh->rotation.z += 0.01;
+	_mesh->rotation.z += 0.00;
+	*/
+	_mesh->rotation.x += 0.01;
 	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
-	vec2_t position = { 800, 800 };
+	vec3_t position = { window_width /2, window_height /2, 0 };
 	
 	
 	list_t mesh_triangles_list = LIST(temp_arena);
@@ -61,7 +63,7 @@ mesh_render(mesh_t *_mesh)
 		face_verteces[1] = _mesh->verteces[mesh_face.b];
 		face_verteces[2] = _mesh->verteces[mesh_face.c];		
 		
-		vec3_t entity_position = { 800, 800,0 };
+		vec3_t entity_position = { 0,0, 1000 };
 		
 		
 		vec3_t transformed_verteces[3];
@@ -75,28 +77,34 @@ mesh_render(mesh_t *_mesh)
 			// We are using a +y is down as in this engine the screen up scales that way, flipping that so the meshes can be visialuzed correctly.
 			transformed_vertex = vec3_rotate_z(transformed_vertex, _mesh->rotation.z);
 			
-			transformed_vertex.z += 5;
+			// push the mesh 10u to the screen, left-handed coord system
+			transformed_vertex.z += 10;
 			
-			transformed_verteces[j] = transformed_vertex;			
+			// Transform to world position
+			//transformed_vertex = vec3_add(transformed_vertex, position);
+			
+			transformed_verteces[j] = transformed_vertex;									
 		}
 		
-		
-		// 2. Check the Face Culling from the camera
+		// 3. Check the Face Culling from the camera
 		if(!can_render_face(transformed_verteces, camera_position))
 		{
 			continue;
-		}
+		}	
 		
 		
-		// 3. Project the verteces to screen space and crate a triangle
+		// 2. Project the verteces to screen space and crate a triangle
 		triangle_t projected_triangle;		
 		for(u32 k = 0; k < 3; ++k)			
 		{						
 			vec2_t projected_point = project_vec3(transformed_verteces[k], fov_coefficient);
+			projected_point.x += position.x;
+			projected_point.y += position.y;
 			
 			// saving the point for the triangle in screen space.
 			projected_triangle.points[k] = projected_point;															
-		}
+		}		
+	
 		
 		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}
@@ -106,13 +114,13 @@ mesh_render(mesh_t *_mesh)
 	{
 		triangle_t triangles = *((triangle_t*)it->data);
 		
-		vec2_t position_0 = {triangles.points[0].x + position.x, triangles.points[0].y + position.y};
+		vec2_t position_0 = {triangles.points[0].x, triangles.points[0].y};
 		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);			
 		
-		vec2_t position_1 ={triangles.points[1].x + position.x, triangles.points[1].y + position.y};
+		vec2_t position_1 ={triangles.points[1].x, triangles.points[1].y};
 		draw_rect(position_1.x, position_1.y, 5, 5, 0x000000);				
 		
-		vec2_t position_2 ={triangles.points[2].x + position.x, triangles.points[2].y + position.y};
+		vec2_t position_2 ={triangles.points[2].x, triangles.points[2].y};
 		draw_rect(position_2.x, position_2.y, 5, 5, 0x000000);						
 		
 		// A-B

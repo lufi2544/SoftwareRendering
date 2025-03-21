@@ -3,6 +3,10 @@
 
 /////////// MATH ///////////
 
+
+
+#define PI 3.14159
+
 // Try to use the types according to the memory access limits.
 typedef struct
 {
@@ -28,12 +32,25 @@ vec3_print(vec3_t vec)
     printf("x: %.2f; y: %.2f z: %.2f \n", vec.x, vec.y, vec.z);
 }
 
+internal vec3_t
+vec3_add(vec3_t v, vec3_t other)
+{
+	vec3_t result;
+	result.x = v.x + other.x;
+	result.y = v.y + other.y;
+	result.z = v.z + other.z;
+	
+	return result;
+}
+
 internal vec2_t
 project_vec3(vec3_t point, f32 fov)
 {
+	
     vec2_t projected_point = { 
 		(point.x * (fov)) / point.z, 
 		(point.y * (fov)) / point.z };       
+	
     return projected_point;
 }
 
@@ -123,9 +140,25 @@ vec3_cross(vec3_t a, vec3_t b)
 	return result;
 }
 
-internal f32 vec3_dot(vec3_t a, vec3_t b)
+internal f32 
+vec3_dot(vec3_t a, vec3_t b)
 {
 	f32 result = (a.x * b.x) + (a.y * b.y) + (a.z * b.z);	
+	return result;
+}
+
+internal vec3_t 
+vec3_normalize(vec3_t v)
+{
+	vec3_t result;
+	
+	f32 lenght = vec3_length(v);
+	
+	result.x = v.x / lenght;
+	result.y = v.y / lenght;
+	result.z = v.z / lenght;
+	
+	
 	return result;
 }
 
