@@ -20,8 +20,9 @@ can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
 	vec3_t normal = vec3_cross(ab, ac);
 	
 	// 2. See if they are pointing to different directions.		
-	vec3_t camera_to_face = vec3_subtract(_camera_position, a);	
-	f32 dot = vec3_dot(normal, camera_to_face);
+	vec3_t camera_to_face = vec3_subtract(_camera_position, a);
+	vec3_t camera_to_face_n = vec3_normalize(camera_to_face);
+	f32 dot = vec3_dot(normal, camera_to_face_n);
 	
 	result = dot > 0;
 	
