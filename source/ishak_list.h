@@ -26,3 +26,4 @@ make_list(memory_arena_t *_arena, void* _data);
 
 #define LIST_ADD(a, l, d, t) list_add_element(a, &l, &d, sizeof(t))
 #define LIST(a) make_list(a, 0)
+#define LIST_NODE_DATA(n, t) (t*)n->data

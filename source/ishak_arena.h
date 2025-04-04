@@ -65,13 +65,14 @@ temp_memory_init(memory_arena_t *_arena)
 	
 }
 
-
 internal void 
 temp_memory_end(temp_memory_t _temp)
 {
 	memory_arena_t *arena = _temp.arena;
 	
 	assert(arena->used >= _temp.used);
+	
+	//restore the used index
 	arena->used = _temp.used;
 	assert(arena->temp_count > 0);
 	--arena->temp_count;

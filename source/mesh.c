@@ -112,26 +112,8 @@ mesh_render(mesh_t *_mesh)
 		
 	list_node_t *it = mesh_triangles_list.head;
 	while(it != 0)
-	{
-		triangle_t triangles = *((triangle_t*)it->data);
-		
-		vec2_t position_0 = {triangles.points[0].x, triangles.points[0].y};
-		draw_rect(position_0.x, position_0.y, 5, 5, 0x000000);			
-		
-		vec2_t position_1 ={triangles.points[1].x, triangles.points[1].y};
-		draw_rect(position_1.x, position_1.y, 5, 5, 0x000000);				
-		
-		vec2_t position_2 ={triangles.points[2].x, triangles.points[2].y};
-		draw_rect(position_2.x, position_2.y, 5, 5, 0x000000);						
-		
-		// A-B
-	    draw_line(position_0.x, position_0.y, position_1.x, position_1.y);
-		
-		// B-C
-	    draw_line(position_1.x, position_1.y, position_2.x, position_2.y);
-		
-		// C-A
-	    draw_line(position_2.x, position_2.y, position_0.x, position_0.y);
+	{		
+		draw_linear_triangle(LIST_NODE_DATA(it, triangle_t));
 		it = it->next_sibling;
 	}
 			

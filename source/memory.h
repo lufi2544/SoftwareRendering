@@ -9,8 +9,6 @@
 #define ENGINE_MEMORY_PERMANENT_SIZE Gigabyte(1)
 
 
-
-
 typedef struct
 {	
 	memory_arena_t permanent;
