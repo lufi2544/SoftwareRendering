@@ -1,5 +1,4 @@
 
-
 internal b32 
 is_in_bounds(buffer_t _buffer, u64 _at)
 {
@@ -10,7 +9,7 @@ is_in_bounds(buffer_t _buffer, u64 _at)
 internal buffer_t
 create_buffer(memory_arena_t *_arena, u64 _size)
 {
-	buffer_t result = { };
+	buffer_t result = {0, 0};
 	if(!_size)
 	{
 		return result;

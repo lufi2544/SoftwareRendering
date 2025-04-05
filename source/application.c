@@ -36,8 +36,7 @@ app_render(engine_memory_t *engine_memory)
 	triangle.points[0] = a;
 	triangle.points[1] = b;
 	triangle.points[2] = c;
-	
-	
+		
 	draw_filled_triangle(&triangle);
 
 }
