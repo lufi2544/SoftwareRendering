@@ -146,12 +146,3 @@ cube_mesh_init(mesh_t *cube, memory_arena_t *_arena)
 	// Init the cube.
 	
 }
-
-internal void
-cube_mesh_update(mesh_t *cube)
-{		
-	
-	// TODO figure out a better method here.
-
-
-}

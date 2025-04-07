@@ -94,7 +94,7 @@ mesh_render(mesh_t *_mesh)
 		}	
 		
 		
-		// 2. Project the verteces to screen space and crate a triangle
+		// 2. Project the verteces to screen space and create a triangle
 		triangle_t projected_triangle;		
 		for(u32 k = 0; k < 3; ++k)			
 		{						
@@ -113,7 +113,7 @@ mesh_render(mesh_t *_mesh)
 	list_node_t *it = mesh_triangles_list.head;
 	while(it != 0)
 	{		
-		draw_linear_triangle(LIST_NODE_DATA(it, triangle_t));
+		draw_filled_triangle(LIST_NODE_DATA(it, triangle_t));
 		it = it->next_sibling;
 	}
 			

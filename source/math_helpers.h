@@ -189,6 +189,8 @@ vec2_multiply_scalar(vec2_t *point, f32 scalar)
     point->y *= scalar;
 }
 
+
+// We subtract a - b
 internal vec2_t
 vec2_subtract(vec2_t a, vec2_t b)
 {
