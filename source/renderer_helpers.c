@@ -148,7 +148,7 @@ fill_flat_triangle_bottom(triangle_t *_triangle, u32 _color)
 }
 
 internal void
-draw_filled_triangle(triangle_t *_triangle)
+draw_filled_triangle(triangle_t *_triangle, u32 _color)
 {
 	// sort the verteces of the triangle
 	vec2_t a = _triangle->points[0];
@@ -191,12 +191,10 @@ draw_filled_triangle(triangle_t *_triangle)
 	bottom_triangle.points[1] = c;
 	bottom_triangle.points[2] = m;
 	
-	
-	u32 color = 0xFFFF0000;
-	
+		
 //	draw_linear_triangle(&top_triangle, color);
 	//draw_linear_triangle(&bottom_triangle, color);
-	fill_flat_triangle_top(&top_triangle, color);
-	fill_flat_triangle_bottom(&bottom_triangle, color);
+	fill_flat_triangle_top(&top_triangle, _color);
+	fill_flat_triangle_bottom(&bottom_triangle, _color);
 	
 }

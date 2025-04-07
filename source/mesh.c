@@ -113,7 +113,8 @@ mesh_render(mesh_t *_mesh)
 	list_node_t *it = mesh_triangles_list.head;
 	while(it != 0)
 	{		
-		draw_filled_triangle(LIST_NODE_DATA(it, triangle_t));
+	    draw_filled_triangle(LIST_NODE_DATA(it, triangle_t), 0x00000000);
+	    draw_linear_triangle(LIST_NODE_DATA(it, triangle_t), 0xffffffff);
 		it = it->next_sibling;
 	}
 			
