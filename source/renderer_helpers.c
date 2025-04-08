@@ -90,33 +90,42 @@ f32_swap_values(f32 *a, f32 *b)
 	
 }
 
-
 internal void 
 fill_flat_triangle_top(triangle_t *_triangle, u32 _color)
 {
 	// NOTE:(ishak) We have to  calculate the inv slope here so Delta X / Delta Y.
 	vec2_t a = _triangle->points[0];
 	vec2_t b = _triangle->points[1];
-	vec2_t c = _triangle->points[2];
+	vec2_t c = _triangle->points[2];		
 	
-	vec2_t ab = vec2_subtract(b, a);
-	vec2_t ac = vec2_subtract(c, a);
+	s32 x0 = a.x;
+	s32 y0 = a.y;
 	
-	f32 inv_slope_1 = ab.x / ab.y;
-	f32 inv_slope_2 = ac.x / ac.y;
+	s32 x1 = b.x;
+	s32 y1 = b.y;
+	
+	s32 x2 = c.x;
+	s32 y2 = c.y;		
+	
+//  printf("x0 %i y0 %i x1 %i y1 %i x2 %i y2 %i \n", x0, y0, x1, y1, x2, y2);
+					
+	f32 inv_slope_1 = ((f32)(x1 - x0) / (y1 - y0));
+	f32 inv_slope_2 = ((f32)(x2 - x0) / (y2 - y0));
 	
 	// from a to b incrementing y by the inv slope	
-	f32 x_start = a.x;
-	f32 x_end = a.x;
-	for (u32 y = a.y; y < b.y; ++y)
+	f32 x_start = x0;
+	f32 x_end = x0;
+	for (s32 y = y0; y <= y2; ++y)
 	{
+	    //printf("s:%.4f, e: %.4f \n", x_start, x_end);
 		draw_line(x_start, y, x_end, y, _color);
 		x_start += inv_slope_1;
 		x_end += inv_slope_2;
 	}
+	
+//	printf("--------- \n");
 										
 }
-
 
 internal void 
 fill_flat_triangle_bottom(triangle_t *_triangle, u32 _color)
@@ -127,18 +136,26 @@ fill_flat_triangle_bottom(triangle_t *_triangle, u32 _color)
 	vec2_t c = _triangle->points[2];
 	
 	//the bottom is b here.
+			
+	s32 x0 = b.x;
+	s32 y0 = b.y;
 	
-	// a - b 
-	vec2_t ba = vec2_subtract(a, b);
-	vec2_t bc = vec2_subtract(c, b);
+	s32 x1 = a.x;
+	s32 y1 = a.y;
 	
-	f32 inv_slope_1 = ba.x / ba.y;
-	f32 inv_slope_2 = bc.x / bc.y;
+	s32 x2 = c.x;
+	s32 y2 = c.y;
+	
+	
+	f32 inv_slope_1 = ((f32)(x1 - x0) / (f32)(y1 - y0));
+	f32 inv_slope_2 = ((f32)(x2 - x0) / (f32)(y2 - y0));
+	
+	//printf("p1: %.4f, p2: %.4f \n", inv_slope_1, inv_slope_2);
 	
 	// from a to b incrementing y by the inv slope	
-	f32 x_start = b.x;
-	f32 x_end = b.x;
-	for (u32 y = b.y; y >= a.y; --y)
+	f32 x_start = x0;
+	f32 x_end = x0;
+	for (s32 y = y0; y > y2; y--)
 	{
 		draw_line(x_start, y, x_end, y, _color);
 		x_start -= inv_slope_1;
@@ -160,7 +177,7 @@ draw_filled_triangle(triangle_t *_triangle, u32 _color)
 	{
 		f32_swap_values(&a.y, &b.y);
 		f32_swap_values(&a.x, &b.x);
-	}	
+	}
 	
 	if (b.y > c.y)	
 	{
@@ -173,9 +190,9 @@ draw_filled_triangle(triangle_t *_triangle, u32 _color)
 		f32_swap_values(&a.y, &b.y);
 		f32_swap_values(&a.x, &b.x);
 	}
-	
+		
 	// Calculate the new vertex Mx and My
-	f32 mx = a.x + (c.x - a.x) * ((b.y - a.y) / (c.y - a.y));
+	f32 mx = a.x + ((f32)(c.x - a.x) * ((b.y - a.y)) / (f32)(c.y - a.y));
 	
 	f32 my = b.y;
 	
@@ -190,11 +207,10 @@ draw_filled_triangle(triangle_t *_triangle, u32 _color)
 	bottom_triangle.points[0] = b;
 	bottom_triangle.points[1] = c;
 	bottom_triangle.points[2] = m;
-	
 		
-//	draw_linear_triangle(&top_triangle, color);
-	//draw_linear_triangle(&bottom_triangle, color);
+    fill_flat_triangle_bottom(&bottom_triangle, _color);
 	fill_flat_triangle_top(&top_triangle, _color);
-	fill_flat_triangle_bottom(&bottom_triangle, _color);
+//	draw_linear_triangle(&bottom_triangle, COLOR_RED);
+	//draw_linear_triangle(&top_triangle, COLOR_RED);
 	
 }

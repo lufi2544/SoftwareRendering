@@ -28,6 +28,19 @@ app_render(engine_memory_t *engine_memory)
 	mesh_t* rendered_mesh = &g_meshes[0];
 	mesh_render(rendered_mesh);
 	
+	
+	/*triangle_t t;
+	t.points[0].x = 1000;
+	t.points[0].y = 500;
+	
+	t.points[1].x = 2000;
+	t.points[1].y = 100;
+	
+	t.points[2].x = 600;
+	t.points[2].y = 300;
+	
+	draw_filled_triangle(&t,COLOR_BLACK);
+	*/
 
 }
 

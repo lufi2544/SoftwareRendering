@@ -207,3 +207,10 @@ vec2_divide_scalar(vec2_t *v, f32 s)
 	v->x /= s;
 	v->y /= s;
 }
+
+
+internal f32
+vec2_cross(vec2_t u, vec2_t v)
+{
+	return u.x * v.y - u.y * v.x;
+}

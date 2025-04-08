@@ -38,11 +38,9 @@ mesh_render(mesh_t *_mesh)
 	g_camera.position = camera_position;	
 
     
-    f32 fov_coefficient = 2000;// set this to 2000 and fix bug.
-	/*
+    f32 fov_coefficient = 1000;// set this to 2000 and fix bug.
+	
     _mesh->rotation.y += 0.01;
-	_mesh->rotation.z += 0.00;
-	*/
 	_mesh->rotation.x += 0.01;
 	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
@@ -114,7 +112,7 @@ mesh_render(mesh_t *_mesh)
 	while(it != 0)
 	{		
 	    draw_filled_triangle(LIST_NODE_DATA(it, triangle_t), 0x00000000);
-	    draw_linear_triangle(LIST_NODE_DATA(it, triangle_t), 0xffffffff);
+	    draw_linear_triangle(LIST_NODE_DATA(it, triangle_t), COLOR_RED);
 		it = it->next_sibling;
 	}
 			
