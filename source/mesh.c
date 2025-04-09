@@ -38,7 +38,7 @@ mesh_render(mesh_t *_mesh)
 	g_camera.position = camera_position;	
 
     
-    f32 fov_coefficient = 1000;// set this to 2000 and fix bug.
+    f32 fov_coefficient = 2000;// set this to 2000 and fix bug.
 	
     _mesh->rotation.y += 0.01;
 	_mesh->rotation.x += 0.01;
@@ -86,7 +86,7 @@ mesh_render(mesh_t *_mesh)
 		}
 		
 		// 3. Check the Face Culling from the camera
-		if(!can_render_face(transformed_verteces, camera_position))
+		if(!can_render_face(transformed_verteces, camera_position) && render_settings_check_flag(flag_back_face_culling))
 		{
 			continue;
 		}	
@@ -110,9 +110,14 @@ mesh_render(mesh_t *_mesh)
 		
 	list_node_t *it = mesh_triangles_list.head;
 	while(it != 0)
-	{		
-	    draw_filled_triangle(LIST_NODE_DATA(it, triangle_t), 0x00000000);
-	    draw_linear_triangle(LIST_NODE_DATA(it, triangle_t), COLOR_RED);
+	{
+		if(render_settings_check_flag(flag_display_filled_triangles) || render_settings_check_flag(flag_display_filled_triangles_wire))
+		{
+			draw_filled_triangle(LIST_NODE_DATA(it, triangle_t), 0x00000000);
+		}
+		
+		bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
+	    draw_linear_triangle(LIST_NODE_DATA(it, triangle_t), COLOR_RED, bDrawDots);
 		it = it->next_sibling;
 	}
 			

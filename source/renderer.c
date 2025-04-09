@@ -5,7 +5,8 @@
 #define GRID_DEFAULT_COLOR 0xA0A0A0
 
 
-function void render(void)
+function void
+render(void)
 {
     
     SDL_RenderClear(renderer);   

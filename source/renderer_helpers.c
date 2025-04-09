@@ -60,16 +60,18 @@ draw_line(s32 x0, s32 y0, s32 x1, s32 y1, u32 _color)
 }
 
 internal void 
-draw_linear_triangle(triangle_t *_triangle, u32 _color)
+draw_linear_triangle(triangle_t *_triangle, u32 _color, bool bDrawDots)
 {
 	vec2_t position_0 = {_triangle->points[0].x, _triangle->points[0].y};
-	draw_rect(position_0.x, position_0.y, 5, 5, _color);			
-	
 	vec2_t position_1 ={_triangle->points[1].x, _triangle->points[1].y};
-	draw_rect(position_1.x, position_1.y, 5, 5, _color);				
-	
 	vec2_t position_2 ={_triangle->points[2].x, _triangle->points[2].y};
-	draw_rect(position_2.x, position_2.y, 5, 5, _color);
+	
+	if(bDrawDots)
+	{				
+		draw_rect(position_0.x, position_0.y, 5, 5, _color);			
+		draw_rect(position_1.x, position_1.y, 5, 5, _color);				
+		draw_rect(position_2.x, position_2.y, 5, 5, _color);
+	}
 	
 	// A-B
 	draw_line(position_0.x, position_0.y, position_1.x, position_1.y, _color);
@@ -191,26 +193,45 @@ draw_filled_triangle(triangle_t *_triangle, u32 _color)
 		f32_swap_values(&a.x, &b.x);
 	}
 		
-	// Calculate the new vertex Mx and My
-	f32 mx = a.x + ((f32)(c.x - a.x) * ((b.y - a.y)) / (f32)(c.y - a.y));
-	
-	f32 my = b.y;
-	
-	vec2_t m = { mx, my };
-	
 	triangle_t top_triangle;
-	top_triangle.points[0] = a;
-	top_triangle.points[1] = b;
-	top_triangle.points[2] = m;	
-	
 	triangle_t bottom_triangle;
-	bottom_triangle.points[0] = b;
-	bottom_triangle.points[1] = c;
-	bottom_triangle.points[2] = m;
+	bottom_triangle.points[0] = a;
+	bottom_triangle.points[1] = b;
+	bottom_triangle.points[2] = c;
+	
+	
+	if(b.y == c.y)
+	{		
+		fill_flat_triangle_top(&bottom_triangle, _color);
 		
-    fill_flat_triangle_bottom(&bottom_triangle, _color);
-	fill_flat_triangle_top(&top_triangle, _color);
-//	draw_linear_triangle(&bottom_triangle, COLOR_RED);
-	//draw_linear_triangle(&top_triangle, COLOR_RED);
+	} 
+	else if(a.y == b.y)
+	{
+		fill_flat_triangle_bottom(&bottom_triangle, _color);
+	}
+	else
+	{
+		
+		// Calculate the new vertex Mx and My
+		f32 mx = a.x + ((f32)(c.x - a.x) * ((b.y - a.y)) / (f32)(c.y - a.y));
+		
+		f32 my = b.y;
+		
+		vec2_t m = { mx, my };
+		
+		top_triangle.points[0] = a;
+		top_triangle.points[1] = b;
+		top_triangle.points[2] = m;	
+		
+		bottom_triangle.points[0] = b;
+		bottom_triangle.points[1] = c;
+		bottom_triangle.points[2] = m;
+		
+		
+		fill_flat_triangle_bottom(&bottom_triangle, _color);
+		fill_flat_triangle_top(&top_triangle, _color);
+		//	draw_linear_triangle(&bottom_triangle, COLOR_RED);
+		//draw_linear_triangle(&top_triangle, COLOR_RED);
+	}
 	
 }

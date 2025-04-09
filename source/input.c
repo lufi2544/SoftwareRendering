@@ -16,14 +16,54 @@ function void process_input()
         
         case SDL_KEYDOWN:
         {
-            if(event.key.keysym.sym == SDLK_ESCAPE)
+			SDL_Keycode key = event.key.keysym.sym;
+            if(key == SDLK_ESCAPE)
             {
                 is_running = false;
             }
-        }
-        break;
-        
-        default:
-        break;
-    }
-}
+			else if(key == SDLK_1)
+			{
+				render_settings_set_flag(flag_display_wireframe_only, false);
+				
+				bool bValue = !render_settings_check_flag(flag_display_wireframe_entirely);				
+				render_settings_set_flag(flag_display_wireframe_entirely, bValue);
+			}
+			else if(key == SDLK_2)
+			{
+				
+				render_settings_set_flag(flag_display_wireframe_entirely, false);
+				
+				bool bValue = !render_settings_check_flag(flag_display_wireframe_only);
+				render_settings_set_flag(flag_display_wireframe_only, bValue);					
+				
+				
+			}
+			else if(key == SDLK_3)
+			{
+				bool bValue = !render_settings_check_flag(flag_display_filled_triangles);
+				render_settings_set_flag(flag_display_filled_triangles, bValue);
+			}
+			else if(key == SDLK_4)
+			{
+				bool bValue1 = !render_settings_check_flag(flag_display_filled_triangles);
+				bool bValue2 = !render_settings_check_flag(flag_display_wireframe_only);
+				render_settings_set_flag(flag_display_filled_triangles, bValue1);				
+				render_settings_set_flag(flag_display_wireframe_only, bValue2);
+				
+			}
+			else if(key == SDLK_c)
+			{
+				bool bValue = !render_settings_check_flag(flag_back_face_culling);											
+				render_settings_set_flag(flag_back_face_culling, bValue);
+			}
+			
+		}
+		break;
+		default:
+		break;
+	}
+}			
+
+
+
+
