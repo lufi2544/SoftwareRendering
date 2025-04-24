@@ -111,13 +111,14 @@ mesh_render(mesh_t *_mesh)
 	list_node_t *it = mesh_triangles_list.head;
 	while(it != 0)
 	{
+		triangle_t *triangle = LIST_NODE_DATA(it, triangle_t);
 		if(render_settings_check_flag(flag_display_filled_triangles) || render_settings_check_flag(flag_display_filled_triangles_wire))
 		{
-			draw_filled_triangle(LIST_NODE_DATA(it, triangle_t), 0x00000000);
+			draw_filled_triangle(triangle, 0x00000000);
 		}
 		
 		bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
-	    draw_linear_triangle(LIST_NODE_DATA(it, triangle_t), COLOR_RED, bDrawDots);
+	    draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
 		it = it->next_sibling;
 	}
 			
