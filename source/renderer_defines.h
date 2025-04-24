@@ -33,7 +33,7 @@ typedef struct
 global render_settings g_render_settings;
 
 
-function bool
+internal_f bool
 render_settings_check_flag(enum_render_settings_flags flag)
 {
 	u32 mask = 1 << (u32)flag;
@@ -41,7 +41,7 @@ render_settings_check_flag(enum_render_settings_flags flag)
 	return g_render_settings.flags & mask;
 }
 
-function void
+internal_f void
 render_settings_set_flag(enum_render_settings_flags flag, bool bValue)
 {
 	u32 mask = (1 << (u32)flag);

@@ -8,10 +8,10 @@
 * This file contains all the core engine functions for init, update and end.
 */
 
-internal void
+internal_f void
 engine_memory_init();
 
-internal bool
+internal_f bool
 engine_init()
 {
     if(!create_window())
@@ -19,43 +19,20 @@ engine_init()
         return false;
     }
 	
-	engine_memory_init();
-	display_setup(&g_engine_memory);	
-	app_init(&g_engine_memory);
+	Mayorana_Framework_Init();
+	
+	display_setup(&g_memory);	
+	app_init(&g_memory);
     
     return true;
 }
 
-internal void 
-engine_memory_init()
-{
-	// Use the memory arena for initialising the engine.
-	// Init memory
-	void* engine_memory_permanent = VirtualAlloc(NULL, ENGINE_MEMORY_PERMANENT_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-	if(!engine_memory_permanent)
-	{
-		fprintf(stderr, "permanent engine memory failed to be allocated \n");		
-		return;
-	}
-	
-	void* engine_memory_transient = VirtualAlloc(0, ENGINE_MEMORY_TRANSIENT_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-	if(!engine_memory_transient)
-	{
-		fprintf(stderr, "transient engine memory failed to be allocated \n");		
-		return;
-	}
-		
-	initialize_arena(&g_engine_memory.permanent, ENGINE_MEMORY_PERMANENT_SIZE, engine_memory_permanent);	
-	initialize_arena(&g_engine_memory.transient, ENGINE_MEMORY_TRANSIENT_SIZE, engine_memory_transient);	
-}
-
-
-internal void
+internal_f void
 engine_end(void);
 
 global u64 previous_frame_time;
 
-internal void
+internal_f void
 fix_delta_time()
 {
     // Checking if between the prev frame and this one we have surpass the FRAME_TARGET_TIME
@@ -73,9 +50,9 @@ fix_delta_time()
     previous_frame_time = SDL_GetTicks();    
 }
 
-internal void update();
+internal_f void update();
 
-internal s32
+internal_f s32
 engine_run()
 {
     if(!engine_init())
@@ -93,20 +70,20 @@ engine_run()
         render();
     }    
 	
-	app_end(&g_engine_memory);
+	app_end(&g_memory);
     engine_end();
         
     return 0;
 }
 
-internal void
+internal_f void
 update()
 {        
-	app_update(&g_engine_memory);	
+	app_update(&g_memory);	
 }
 
 
-internal void
+internal_f void
 engine_end(void)
 {
     SDL_DestroyWindow(window);
@@ -114,13 +91,5 @@ engine_end(void)
     SDL_DestroyTexture(color_buffer_texture);    
     SDL_Quit();
 	
-	if (g_engine_memory.permanent.base)
-	{
-		VirtualFree(g_engine_memory.permanent.base, 0, MEM_RELEASE);
-	}
-	
-	if (g_engine_memory.transient.base)
-	{
-		VirtualFree(g_engine_memory.transient.base, 0, MEM_RELEASE);
-	}	
+	Mayorana_Framework_End();
 }

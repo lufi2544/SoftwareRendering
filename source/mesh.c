@@ -4,7 +4,7 @@
 ////// MESH //////
 
 // TODO pass the entity position here.
-internal bool
+internal_f bool
 can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
 {
 	bool result = false;
@@ -29,10 +29,10 @@ can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
 	return result;
 }
 
-internal void 
+internal_f void 
 mesh_render(mesh_t *_mesh)
 {				
-	TEMP_MEMORY();
+	SCRATCH();
 		
 	vec3_t camera_position = { 0, 0, 0 };
 	g_camera.position = camera_position;	
@@ -122,5 +122,5 @@ mesh_render(mesh_t *_mesh)
 		it = it->next_sibling;
 	}
 			
-	TEMP_MEMORY_END();
+	SCRATCH_END();
 }

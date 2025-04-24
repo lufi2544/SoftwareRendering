@@ -1,13 +1,13 @@
 
-internal b32 
+internal_f b32 
 is_in_bounds(buffer_t _buffer, u64 _at)
 {
 	b32 result = (_at < _buffer.size);
 	return result;
 }
 
-internal buffer_t
-create_buffer(memory_arena_t *_arena, u64 _size)
+internal_f buffer_t
+create_buffer(arena_t *_arena, u64 _size)
 {
 	buffer_t result = {0, 0};
 	if(!_size)
@@ -15,8 +15,8 @@ create_buffer(memory_arena_t *_arena, u64 _size)
 		return result;
 	}	
 	
-	void* allocated_data  = PushSize(_arena, _size);
-	if(!allocated_data)
+	void* allocated_data  = push_size(_arena, _size);
+	if(allocated_data == 0)
 	{
 		return result;
 	}
@@ -27,8 +27,8 @@ create_buffer(memory_arena_t *_arena, u64 _size)
 	return result;
 }
 
-internal buffer_t 
-create_buffer_string(memory_arena_t *_arena, u32 _size)
+internal_f buffer_t 
+create_buffer_string(arena_t *_arena, u32 _size)
 {
 	buffer_t result = create_buffer(_arena, _size);
 	u8 *bytes_as_u8 = (u8*)result.bytes;
@@ -37,7 +37,7 @@ create_buffer_string(memory_arena_t *_arena, u32 _size)
 	return result;
 }
 
-internal bool 
+internal_f bool 
 buffer_is_equal(buffer_t a, buffer_t b)
 {
 	if(a.size != b.size)
@@ -58,7 +58,7 @@ buffer_is_equal(buffer_t a, buffer_t b)
 
 
 
-internal bool 
+internal_f bool 
 buffer_is_equal_cstring(buffer_t a, const char* b )
 {		
 	if((cstr_len(b) + 1) != a.size)
@@ -78,7 +78,7 @@ buffer_is_equal_cstring(buffer_t a, const char* b )
 }
 
 // With memory arena this is not needed.
-internal void 
+internal_f void 
 free_buffer(buffer_t *_buffer)
 {
 	if(_buffer->bytes)

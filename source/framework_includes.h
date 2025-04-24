@@ -4,11 +4,12 @@
 ////////////// Framework Header Files //////////////
 
 // External Defines like SDL and std lib stuff //
+#include "MayoranaFramework/mayorana.h"
 #include "external_defines.h"
 
+/////// MAYORANA FRAMEWORK //////
 
 // Application Framework includes //
-#include "types.h"
 #include "display_defines.h"
 #include "math_helpers.h"
 #include "engine_defines.h"

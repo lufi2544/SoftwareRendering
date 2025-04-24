@@ -1,0 +1,6 @@
+[submodule "source/SDL"]
+	path = source/SDL
+	url = git@github.com:lufi2544/SDL.git
+[submodule "source/MayoranaFramework"]
+	path = source/MayoranaFramework
+	url = git@github.com:lufi2544/MayoranaFramework.git

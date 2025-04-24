@@ -1,7 +1,7 @@
 
 ////////////////// INPUT ////////////////
 
-function void process_input()
+internal_f void process_input()
 {
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -63,7 +63,3 @@ function void process_input()
 		break;
 	}
 }			
-
-
-
-

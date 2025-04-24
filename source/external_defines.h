@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <assert.h>
 
+
 #include <SDL/SDL.h>
 #ifdef __WIN32__
 

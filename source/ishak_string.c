@@ -22,8 +22,8 @@
 #define STRING_CONTENT(s) (char*)s.buffer.bytes
 
 
-internal string_t
-make_string(memory_arena_t *_arena, u32 _len, const char* _content)
+internal_f string_t
+make_string(arena_t *_arena, u32 _len, const char* _content)
 {
 	string_t result;
 	u32 content_len = cstr_len(_content);
@@ -67,7 +67,7 @@ make_string(memory_arena_t *_arena, u32 _len, const char* _content)
 
 
 
-internal void
+internal_f void
 string_push_char(string_t *_str, u8 character)
 {
 	if(_str == 0)
@@ -82,14 +82,14 @@ string_push_char(string_t *_str, u8 character)
     _str->buffer.bytes[_str->len] = '\0';		
 }
 
-internal bool 
+internal_f bool 
 is_equal_cstr(string_t *_str, const char* b)
 {
 	
 	return buffer_is_equal_cstring(_str->buffer, b);
 }
 
-internal bool 
+internal_f bool 
 string_contains(string_t *_str, const char* b)
 {	
 	u32 c_str_len = cstr_len(b);

@@ -1,11 +1,11 @@
 
 //// MAIN APPLICATION PIPELINE ////
 
-internal void 
-app_init(engine_memory_t *engine_memory)
+internal_f void 
+app_init(memory_t *engine_memory)
 {		
 	// Init the meshes
-	g_meshes = PushArray(&engine_memory->permanent, APP_MESH_NUM, mesh_t);
+	g_meshes = push_array(&engine_memory->permanent, APP_MESH_NUM, mesh_t);
 		
 	// Create one cube
 	mesh_t* rendered_mesh = &g_meshes[0];
@@ -16,14 +16,14 @@ app_init(engine_memory_t *engine_memory)
 	*rendered_mesh = mesh;
 }
 
-internal void 
-app_update(engine_memory_t *engine_memory)
+internal_f void 
+app_update(memory_t *engine_memory)
 {
 	mesh_t* cube = &g_meshes[0];
 }
 
-internal void 
-app_render(engine_memory_t *engine_memory)
+internal_f void 
+app_render(memory_t *engine_memory)
 {	
 	mesh_t* rendered_mesh = &g_meshes[0];
 	mesh_render(rendered_mesh);
@@ -44,8 +44,8 @@ app_render(engine_memory_t *engine_memory)
 
 }
 
-internal void 
-app_end(engine_memory_t *engine_memory)
+internal_f void 
+app_end(memory_t *engine_memory)
 {
 	
 }

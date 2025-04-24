@@ -3,8 +3,8 @@
 
 #include "sys/stat.h"
 
-internal buffer_t
-read_file(memory_arena_t *_arena, const char *_file_name)
+internal_f buffer_t
+read_file(arena_t *_arena, const char *_file_name)
 {
 	buffer_t result;
 	result.size = 0;

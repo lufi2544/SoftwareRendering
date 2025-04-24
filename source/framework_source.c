@@ -7,7 +7,6 @@
 
 #include "ishak_buffer.c"
 #include "ishak_string.c"
-#include "ishak_list.c"
 
 #include "file_reader.c"
 

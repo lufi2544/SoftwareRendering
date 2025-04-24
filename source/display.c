@@ -1,7 +1,7 @@
 
 //////////////////// DISPLAY //////////////////
 
-function bool create_window(void)
+internal_f bool create_window(void)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
@@ -46,9 +46,9 @@ function bool create_window(void)
     return true;
 }
 
-function void display_setup(engine_memory_t *engine_memory)
+internal_f void display_setup(memory_t *engine_memory)
 {       
-    color_buffer = PushArray(&engine_memory->permanent, (window_width * window_height), u32);
+    color_buffer = push_array(&engine_memory->permanent, (window_width * window_height), u32);
     if(!color_buffer)
     {
         fprintf(stderr, "Error allocating the color_buffer.");
@@ -67,7 +67,7 @@ function void display_setup(engine_memory_t *engine_memory)
 }
 
 // Maps the SDL_texture to the pixels buffer and pass the Texture to the renderer.
-function void map_texture_to_pixels_buffer(void)
+internal_f void map_texture_to_pixels_buffer(void)
 {
     SDL_UpdateTexture(
                       color_buffer_texture,
@@ -83,7 +83,7 @@ function void map_texture_to_pixels_buffer(void)
 
 
 ///////////////////// HELPER ///////////////////// 
-function void clear_color_buffer(u32 color)
+internal_f void clear_color_buffer(u32 color)
 {
     for(u16 height_index = 0; height_index < window_height; height_index++)
     {
@@ -94,7 +94,7 @@ function void clear_color_buffer(u32 color)
     }
 }
 
-function void draw_grid(u16 square_size, u32 color)
+internal_f void draw_grid(u16 square_size, u32 color)
 {
     for(u16 height_index = 0; height_index < window_height; height_index++)
     {

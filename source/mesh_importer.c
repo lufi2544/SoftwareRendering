@@ -23,10 +23,11 @@ typedef struct
 
 typedef struct importer_element_t
 {
-	enum importer_token_type type;
-	buffer_t value;	
+	u32 start;
+	u32 size;
     struct importer_element_t *next_sibling;
 	u32 index;
+	enum importer_token_type type;
 	
 } importer_element_t;
 
@@ -38,7 +39,7 @@ typedef struct
 	
 } mesh_importer_t;
 
-internal b32 
+internal_f b32 
 is_white_space(buffer_t _source, u64 _at)
 {
 	b32 result = false;	
@@ -51,7 +52,7 @@ is_white_space(buffer_t _source, u64 _at)
 	return result;
 }
 
-internal b32
+internal_f b32
 is_digit(buffer_t _source, u64 _at)
 {
 	b32 result = false;
@@ -64,8 +65,8 @@ is_digit(buffer_t _source, u64 _at)
 	return result;
 }
 
-internal importer_element_t*
-import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
+internal_f importer_element_t*
+import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 {	
 	buffer_t source = _importer->source;
 	u64 at = _importer->at;
@@ -104,10 +105,10 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 						// end of a number
 						if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
 						{
-							importer_element_t *vertex_element = PushStruct(_temp_arena, importer_element_t);
+							importer_element_t *vertex_element = push_struct(_temp_arena, importer_element_t);
 							vertex_element->type = token_vertex_comp;
-							vertex_element->value.bytes = source.bytes + start;
-							vertex_element->value.size = at - start;	
+							vertex_element->start = start;
+							vertex_element->size = at - start;	
 							
 							if(!first_element)
 							{
@@ -150,12 +151,12 @@ import_mesh(memory_arena_t *_temp_arena, const mesh_importer_t *_importer)
 						// end of a number
 						if ((val == ' ') || (val == '\n') || (val == '\r') || (val == '\t'))							
 						{
-							importer_element_t *face_element = PushStruct(_temp_arena, importer_element_t);
+							importer_element_t *face_element = push_struct(_temp_arena, importer_element_t);
 							face_element->next_sibling = 0;
 							face_element->index = counter++;
 							face_element->type = token_face_comp;
-							face_element->value.bytes = source.bytes + start;
-							face_element->value.size = at - start;	
+							face_element->start = start;
+							face_element->size = at - start;	
 							
 							if(!first_element)
 							{
@@ -201,7 +202,7 @@ enum enum_parsing
 };
 
 
-internal f64 
+internal_f f64 
 convert_to_sign(buffer_t _source, u64 *_at_result)
 {
 	u64 at = *_at_result;
@@ -217,7 +218,7 @@ convert_to_sign(buffer_t _source, u64 *_at_result)
 	return result;
 }
 
-internal f64 
+internal_f f64 
 convert_to_number(buffer_t _source, u64 *_at_result)
 {
 	u64 at = *_at_result;
@@ -243,7 +244,7 @@ convert_to_number(buffer_t _source, u64 *_at_result)
 	return result;
 }
 
-internal f64
+internal_f f64
 convert_to_f64(buffer_t _source)
 {
 	f64 result = 0.0;
@@ -279,18 +280,29 @@ convert_to_f64(buffer_t _source)
 	return result;
 }
 
-internal vec3_t 
-convert_to_vertex(importer_element_t *first_vertex_component)
+internal_f vec3_t 
+convert_to_vertex(importer_element_t *first_vertex_component, buffer_t buffer)
 {
 	vec3_t result;
 	result.x = 0;
 	result.y = 0;
 	result.z = 0;	
 		
+	buffer_t x_buff;
+	x_buff.bytes = buffer.bytes + first_vertex_component->start;
+	x_buff.size = first_vertex_component->size;
 	
-	f64 x = convert_to_f64(first_vertex_component->value);
-	f64 y = convert_to_f64(first_vertex_component->next_sibling->value);
-	f64 z = convert_to_f64(first_vertex_component->next_sibling->next_sibling->value);
+	buffer_t y_buff;
+	y_buff.bytes = buffer.bytes + first_vertex_component->next_sibling->start;
+	y_buff.size = first_vertex_component->next_sibling->size;
+	
+	buffer_t z_buff;
+	z_buff.bytes = buffer.bytes + first_vertex_component->next_sibling->next_sibling->start;
+	z_buff.size = first_vertex_component->next_sibling->next_sibling->size;
+	
+	f64 x = convert_to_f64(x_buff);
+	f64 y = convert_to_f64(y_buff);
+	f64 z = convert_to_f64(z_buff);
 	
 	
 	result.x = (f32)x;
@@ -300,8 +312,8 @@ convert_to_vertex(importer_element_t *first_vertex_component)
 	return result;
 }
 
-internal face_t
-convert_to_face(importer_element_t *first_face_element)
+internal_f face_t
+convert_to_face(importer_element_t *first_face_element, buffer_t source)
 {
 	// each face element has 3 components a, b and c, which the a is the only element that we care about for now
 	// v1/vt1/vn1
@@ -310,13 +322,22 @@ convert_to_face(importer_element_t *first_face_element)
 	
 	// Let's make this an array moduled
 	u64 at = 0;
-	result.a = (s32)convert_to_number(first_face_element->value, &at) - 1;	
+	buffer_t a_buffer;
+	a_buffer.bytes = source.bytes + first_face_element->start;
+	a_buffer.size = first_face_element->size;
+	result.a = (s32)convert_to_number(a_buffer, &at) - 1;	
 	
 	at = 0;
-	result.b = (s32)convert_to_number(first_face_element->next_sibling->value, &at) - 1;
+	buffer_t b_buffer;
+	b_buffer.bytes = source.bytes + first_face_element->next_sibling->start;
+	b_buffer.size = first_face_element->next_sibling->size;
+	result.b = (s32)convert_to_number(b_buffer, &at) - 1;
 	
 	at = 0;
-	result.c = (s32)convert_to_number(first_face_element->next_sibling->next_sibling->value, &at) - 1;
+	buffer_t c_buffer;
+	c_buffer.bytes = source.bytes + first_face_element->next_sibling->next_sibling->start;
+	c_buffer.size = first_face_element->next_sibling->next_sibling->size;
+	result.c = (s32)convert_to_number(c_buffer, &at) - 1;
 	
 	//printf("face: a: %i, b: %i, c: %i \n", result.a, result.b, result.c);
 	
@@ -327,8 +348,8 @@ convert_to_face(importer_element_t *first_face_element)
 // For now let's make this simple, so we have an array of structs,
 // I would like to change this to struct of arrays, so we can have id DOD and better for cache locality
 // in this case, maybe allocting everything in the temp memory and then passing it to the permanent memory?..
-internal mesh_t
-create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
+internal_f mesh_t
+create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 {
 	mesh_t result;
 	result.face_num = 0;
@@ -341,10 +362,10 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 	{
 		return result;
 	}	
+		
+	SCRATCH();
 	
-	TEMP_MEMORY();				
-	
-	buffer_t buffer = read_file(temp_memory.arena, _file_name);
+	buffer_t buffer = read_file(temp_arena, _file_name);
 	if (buffer.size > 0)
 	{						
 		printf("Importing mesh %s \n", _file_name);
@@ -353,7 +374,7 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		importer.at = 0;
 		importer.had_error = false;		
 		
-		importer_element_t *element = import_mesh(temp_memory.arena, &importer);
+		importer_element_t *element = import_mesh(temp_arena, &importer);
 		
 		s32 count_face = 0;
 		s32 count_vertex = 0;
@@ -381,8 +402,8 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		printf("iterated ver: %i \n", result.vertex_num);
 		printf("iterated face: %i \n", result.face_num);		
 		
-		result.verteces = PushArray(&engine_memory->permanent, result.vertex_num, vec3_t);
-		result.faces = PushArray(&engine_memory->permanent, result.face_num, face_t);
+		result.verteces = push_array(&engine_memory->permanent, result.vertex_num, vec3_t);
+		result.faces = push_array(&engine_memory->permanent, result.face_num, face_t);
 		
 		//(juanes.rayo) NOTE: can we figure this out runtime? or is better to store it too? as we have already the verteces and the faces, we could figure this out runtime.
 		//result.triangles = PushArray(&engine_memory->permanent, count_face, triangle_t);
@@ -399,13 +420,13 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 		{			
 			if(it->type == token_face_comp)
 			{
-				face_t face = convert_to_face(it);								
+				face_t face = convert_to_face(it, importer.source);
 				result.faces[current_face++] = face;
 				it = it->next_sibling->next_sibling->next_sibling;
 			}
 			else if(it->type == token_vertex_comp)
 			{								
-				vec3_t vertex = convert_to_vertex(it);				
+				vec3_t vertex = convert_to_vertex(it, importer.source);				
 				
 				result.verteces[current_vertex] = vertex;
 				current_vertex++;
@@ -424,7 +445,7 @@ create_mesh_from_file(engine_memory_t *engine_memory, const char *_file_name)
 	
 	
 	
-	TEMP_MEMORY_END();
+	SCRATCH_END();
 			
 
 	return result;

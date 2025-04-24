@@ -26,13 +26,13 @@ typedef struct
 /////// VECTOR ///////
 
 ///// V3 //////
-internal void 
+internal_f void 
 vec3_print(vec3_t vec)
 {
     printf("x: %.2f; y: %.2f z: %.2f \n", vec.x, vec.y, vec.z);
 }
 
-internal vec3_t
+internal_f vec3_t
 vec3_add(vec3_t v, vec3_t other)
 {
 	vec3_t result;
@@ -43,7 +43,7 @@ vec3_add(vec3_t v, vec3_t other)
 	return result;
 }
 
-internal vec2_t
+internal_f vec2_t
 project_vec3(vec3_t point, f32 fov)
 {
 	
@@ -54,7 +54,7 @@ project_vec3(vec3_t point, f32 fov)
     return projected_point;
 }
 
-internal void
+internal_f void
 vec3_multiply_scalar(vec3_t *point, f32 scalar)
 {    
     point->x *= scalar;
@@ -62,7 +62,7 @@ vec3_multiply_scalar(vec3_t *point, f32 scalar)
     point->z *= scalar;
 }
 
-internal void
+internal_f void
 vec3_divide_scalar(vec3_t *v, f32 s)
 {
 	v->x /= s;
@@ -70,7 +70,7 @@ vec3_divide_scalar(vec3_t *v, f32 s)
 	v->z /= s;
 }
 
-internal vec3_t
+internal_f vec3_t
 vec3_rotate_x(vec3_t v, f32 angle)
 {
     vec3_t rotated_vector = 
@@ -83,7 +83,7 @@ vec3_rotate_x(vec3_t v, f32 angle)
     return rotated_vector;
 }
 
-internal vec3_t
+internal_f vec3_t
 vec3_rotate_y(vec3_t v, f32 angle)
 {
     vec3_t rotated_vector =
@@ -96,7 +96,7 @@ vec3_rotate_y(vec3_t v, f32 angle)
     return rotated_vector;
 }
 
-internal vec3_t
+internal_f vec3_t
 vec3_rotate_z(vec3_t v, f32 angle)
 {
     vec3_t rotated_vector =
@@ -109,7 +109,7 @@ vec3_rotate_z(vec3_t v, f32 angle)
     return rotated_vector;
 }
 
-internal f32 
+internal_f f32 
 vec3_length(vec3_t v)
 {
 	f32 result;	
@@ -117,7 +117,7 @@ vec3_length(vec3_t v)
 	return result;
 }
 
-internal vec3_t
+internal_f vec3_t
 vec3_subtract(vec3_t a, vec3_t b)
 {
 	vec3_t result;
@@ -127,7 +127,7 @@ vec3_subtract(vec3_t a, vec3_t b)
 	return result;
 }
 
-internal vec3_t
+internal_f vec3_t
 vec3_cross(vec3_t a, vec3_t b)
 {
 	vec3_t result = 
@@ -140,14 +140,14 @@ vec3_cross(vec3_t a, vec3_t b)
 	return result;
 }
 
-internal f32 
+internal_f f32 
 vec3_dot(vec3_t a, vec3_t b)
 {
 	f32 result = (a.x * b.x) + (a.y * b.y) + (a.z * b.z);	
 	return result;
 }
 
-internal vec3_t 
+internal_f vec3_t 
 vec3_normalize(vec3_t v)
 {
 	vec3_t result;
@@ -165,14 +165,14 @@ vec3_normalize(vec3_t v)
 
 ////// VEC2 //////
 
-internal void
+internal_f void
 vec2_print(vec2_t *vec)
 {
     assert(vec != 0);
     printf("x: %.2f; y: %.2f \n", vec->x, vec->y);
 }
 
-internal f32 
+internal_f f32 
 vec2_length(vec2_t v)
 {
 	f32 result;	
@@ -180,7 +180,7 @@ vec2_length(vec2_t v)
 	return result;
 }
 
-internal void 
+internal_f void 
 vec2_multiply_scalar(vec2_t *point, f32 scalar)
 {
     assert(point != 0);
@@ -191,7 +191,7 @@ vec2_multiply_scalar(vec2_t *point, f32 scalar)
 
 
 // We subtract a - b
-internal vec2_t
+internal_f vec2_t
 vec2_subtract(vec2_t a, vec2_t b)
 {
 	vec2_t result;
@@ -201,7 +201,7 @@ vec2_subtract(vec2_t a, vec2_t b)
 }
 
 
-internal void
+internal_f void
 vec2_divide_scalar(vec2_t *v, f32 s)
 {
 	v->x /= s;
@@ -209,7 +209,7 @@ vec2_divide_scalar(vec2_t *v, f32 s)
 }
 
 
-internal f32
+internal_f f32
 vec2_cross(vec2_t u, vec2_t v)
 {
 	return u.x * v.y - u.y * v.x;

@@ -16,7 +16,7 @@ global vec2_t cube_projected_points[POINTS_NUM];
 
 // Fixed points per line cube @see POINTS_PER_ROW
 // Normalized values of the cube points in space.
-function void 
+internal_f void 
 fill_cube_points()
 {    
     assert(ArrayCount(cube_points) == POINTS_NUM);
@@ -47,7 +47,7 @@ fill_cube_points()
 
 
 /////////// Cube created with different square as a delimitation points to be rendered and visible.
-internal void 
+internal_f void 
 temp_cube_create()
 {
     vec3_t camera_position = { 0, 0, -5 };
@@ -75,7 +75,7 @@ temp_cube_create()
 
 }
 
-internal void 
+internal_f void 
 temp_cube_render()
 {
     f32 x = 1000.0f;
@@ -135,8 +135,8 @@ global const face_t g_cube_faces[N_CUBE_FACES] =
 	{ 5, 0, 3 },	
 };
 
-internal void 
-cube_mesh_init(mesh_t *cube, memory_arena_t *_arena)
+internal_f void 
+cube_mesh_init(mesh_t *cube, arena_t *_arena)
 {
 	if(cube == 0)
 	{

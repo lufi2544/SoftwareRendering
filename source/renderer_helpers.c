@@ -1,5 +1,5 @@
 
-internal void
+internal_f void
 draw_pixel(vec2_t position , u32 color)
 {
 	if(position.x < 0 || position.y < 0 || position.x >= window_width || position.y >= window_height)
@@ -12,7 +12,7 @@ draw_pixel(vec2_t position , u32 color)
 }
 
 // Draws a rectangle on the screen at a certain coordinate X and Y with a Color.
-internal void
+internal_f void
 draw_rect(s32 x, s32 y, s32 w, s32 h, u32 color)
 {
     for(s32 height_index = y; height_index < y + h; ++height_index)
@@ -29,7 +29,7 @@ draw_rect(s32 x, s32 y, s32 w, s32 h, u32 color)
     
 }
 
-internal void
+internal_f void
 draw_line(s32 x0, s32 y0, s32 x1, s32 y1, u32 _color)
 {
 	// using the DDA algorithm for now, which has in count the rise of the line to draw the pixels
@@ -59,7 +59,7 @@ draw_line(s32 x0, s32 y0, s32 x1, s32 y1, u32 _color)
 	}	
 }
 
-internal void 
+internal_f void 
 draw_linear_triangle(triangle_t *_triangle, u32 _color, bool bDrawDots)
 {
 	vec2_t position_0 = {_triangle->points[0].x, _triangle->points[0].y};
@@ -83,7 +83,7 @@ draw_linear_triangle(triangle_t *_triangle, u32 _color, bool bDrawDots)
 	draw_line(position_2.x, position_2.y, position_0.x, position_0.y, _color);
 }
 
-internal void 
+internal_f void 
 f32_swap_values(f32 *a, f32 *b)
 {
 	f32 temp = *a;
@@ -92,7 +92,7 @@ f32_swap_values(f32 *a, f32 *b)
 	
 }
 
-internal void 
+internal_f void 
 fill_flat_triangle_top(triangle_t *_triangle, u32 _color)
 {
 	// NOTE:(ishak) We have to  calculate the inv slope here so Delta X / Delta Y.
@@ -129,7 +129,7 @@ fill_flat_triangle_top(triangle_t *_triangle, u32 _color)
 										
 }
 
-internal void 
+internal_f void 
 fill_flat_triangle_bottom(triangle_t *_triangle, u32 _color)
 {
 	// NOTE:(ishak) We have to  calculate the inv slope here so Delta X / Delta Y.
@@ -166,7 +166,7 @@ fill_flat_triangle_bottom(triangle_t *_triangle, u32 _color)
 	
 }
 
-internal void
+internal_f void
 draw_filled_triangle(triangle_t *_triangle, u32 _color)
 {
 	// sort the verteces of the triangle
