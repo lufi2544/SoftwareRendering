@@ -19,8 +19,8 @@ engine_init()
         return false;
     }
 	
-	Mayorana_Framework_Init();
-	
+	Mayorana_Framework_Init();	
+		
 	display_setup(&g_memory);	
 	app_init(&g_memory);
     

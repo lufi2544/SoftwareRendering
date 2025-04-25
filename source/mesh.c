@@ -101,25 +101,38 @@ mesh_render(mesh_t *_mesh)
 			projected_point.y += position.y;
 			
 			// saving the point for the triangle in screen space.
-			projected_triangle.points[k] = projected_point;															
-		}		
-	
+			projected_triangle.points[k] = projected_point;
+		}
+		
+		projected_triangle.avg_depth = ((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3;
+		projected_triangle.color = 0x00000000;
 		
 		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}
-		
-	list_node_t *it = mesh_triangles_list.head;
-	while(it != 0)
+	
+	
+	
 	{
-		triangle_t *triangle = LIST_NODE_DATA(it, triangle_t);
-		if(render_settings_check_flag(flag_display_filled_triangles) || render_settings_check_flag(flag_display_filled_triangles_wire))
-		{
-			draw_filled_triangle(triangle, 0x00000000);
+		triangle_t *triangle = 0;
+		LIST_FOREACH(triangle_t, triangle, mesh_triangles_list)
+		{		
+			// sort the triangles by avg_depth
 		}
-		
-		bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
-	    draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
-		it = it->next_sibling;
+	}
+	
+	
+	{
+		triangle_t *triangle = 0;
+		LIST_FOREACH(triangle_t, triangle, mesh_triangles_list)
+		{		
+			if(render_settings_check_flag(flag_display_filled_triangles) || render_settings_check_flag(flag_display_filled_triangles_wire))
+			{
+				draw_filled_triangle(triangle, triangle->color);
+			}
+			
+			bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
+			draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
+		}
 	}
 			
 	SCRATCH_END();

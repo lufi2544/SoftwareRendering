@@ -3,6 +3,9 @@
 //////////////// TRIANGLE RELATED STUFF ///////////////
 
 /** Defining face. Stores the vertex indexes.  */
+
+typedef u32 color_t;
+
 typedef struct
 {
 	s32 a;
@@ -16,7 +19,8 @@ typedef struct
 typedef struct 
 {	
 	vec2_t points[3];
-	
+	color_t color;
+	f32 avg_depth;	
 } triangle_t;
 
 

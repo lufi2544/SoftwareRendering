@@ -319,7 +319,7 @@ convert_to_face(importer_element_t *first_face_element, buffer_t source)
 	// v1/vt1/vn1
 	face_t result;
 	
-	
+	// TODO:(optimization) use the same buffer here.
 	// Let's make this an array moduled
 	u64 at = 0;
 	buffer_t a_buffer;

@@ -5,8 +5,6 @@
 
 #include "std_helpers.c"
 
-#include "ishak_buffer.c"
-#include "ishak_string.c"
 
 #include "file_reader.c"
 
