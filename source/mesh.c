@@ -29,6 +29,26 @@ can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
 	return result;
 }
 
+
+internal_f s8
+compare_triangle(const void *_a, const void *_b)
+{
+	triangle_t *triangle_a  = (triangle_t*)_a;
+	triangle_t *triangle_b  = (triangle_t*)_b;
+	
+	if(triangle_a->avg_depth < triangle_b->avg_depth)
+	{
+		return -1;
+	}
+	else if(triangle_a->avg_depth == triangle_b->avg_depth)
+	{
+		return 0;
+	}
+	
+	// a_avg >= b_avg
+	return 1;
+}
+
 internal_f void 
 mesh_render(mesh_t *_mesh)
 {				
@@ -111,15 +131,8 @@ mesh_render(mesh_t *_mesh)
 	}
 	
 	
-	
-	{
-		triangle_t *triangle = 0;
-		LIST_FOREACH(triangle_t, triangle, mesh_triangles_list)
-		{		
-			// sort the triangles by avg_depth
-		}
-	}
-	
+	// Sort by avg_depth
+	merge_sort(&mesh_triangles_list.head, &compare_triangle);
 	
 	{
 		triangle_t *triangle = 0;

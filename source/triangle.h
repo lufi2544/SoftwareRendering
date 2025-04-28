@@ -21,6 +21,7 @@ typedef struct
 	vec2_t points[3];
 	color_t color;
 	f32 avg_depth;	
+	
 } triangle_t;
 
 
