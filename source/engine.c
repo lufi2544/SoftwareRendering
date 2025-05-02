@@ -19,7 +19,7 @@ engine_init()
         return false;
     }
 	
-	Mayorana_Framework_Init();	
+	mayorana_init();
 		
 	display_setup(&g_memory);	
 	app_init(&g_memory);
@@ -91,5 +91,5 @@ engine_end(void)
     SDL_DestroyTexture(color_buffer_texture);    
     SDL_Quit();
 	
-	Mayorana_Framework_End();
+	mayorana_shutdown();
 }

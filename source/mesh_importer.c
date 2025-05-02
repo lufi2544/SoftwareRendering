@@ -45,7 +45,7 @@ is_white_space(buffer_t _source, u64 _at)
 	b32 result = false;	
 	if(is_in_bounds(_source, _at))
 	{
-		u8 val = _source.bytes[_at];
+		u8 val = BUFFER_DATA(_source, u8, _at);
 		result = ((val == ' ') || (val == '\t') || (val == '\n') || (val == '\r'));
 	}
 	
@@ -58,7 +58,7 @@ is_digit(buffer_t _source, u64 _at)
 	b32 result = false;
 	if(is_in_bounds(_source, _at))
 	{
-		u8 val = _source.bytes[_at];
+		u8 val = BUFFER_DATA(_source, u8, _at);
 		result = ((val >= '0') && (val <= '9'));
 	}
 	
@@ -84,7 +84,7 @@ import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 			++at;
 		}
 		
-		u8 val = source.bytes[at++];
+		u8 val = ((u8*)source.data)[at++];
 		
 		// we move the parsing pointer until we reach something significant and save the buffer.
 		switch(val)
@@ -93,15 +93,15 @@ import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 			{
 				// potential vertex and other data			
 				u64 start = at;
-				if(is_in_bounds(source, at) && source.bytes[at] == ' ')
+				if((is_in_bounds(source, at)) && (BUFFER_DATA(source, u8, at) == ' '))
 				{
 					// advancing to the number
 					start = ++at;
 					
 					// parse until next vertex components
-					while(is_in_bounds(source, at) && source.bytes[at] != 'v')
+					while(is_in_bounds(source, at) && BUFFER_DATA(source, u8, at) != 'v')
 					{						
-						u8 val = source.bytes[at];
+						u8 val = BUFFER_DATA(source, u8, at);
 						// end of a number
 						if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
 						{
@@ -137,17 +137,17 @@ import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 				u64 start = at;
 				
 				// parse until the next face which is f in the file.
-				if(is_in_bounds(source, at) && (source.bytes[at] == ' '))
+				if(is_in_bounds(source, at) && (BUFFER_DATA(source, u8, at) == ' '))
 				{				
 					start = ++at;
 					
-					while(is_in_bounds(source, at) && source.bytes[at] != 'f')
+					while(is_in_bounds(source, at) && BUFFER_DATA(source, u8, at) != 'f')
 					{
 						if(counter == 1430)
 						{
 							int a = 0;
 						}
-						u8 val = source.bytes[at];
+						u8 val = BUFFER_DATA(source, u8, at);
 						// end of a number
 						if ((val == ' ') || (val == '\n') || (val == '\r') || (val == '\t'))							
 						{
@@ -208,7 +208,7 @@ convert_to_sign(buffer_t _source, u64 *_at_result)
 	u64 at = *_at_result;
 	
 	f64 result = 1.0;
-	if(is_in_bounds(_source, at) && (_source.bytes[at] == '-'))
+	if(is_in_bounds(_source, at) && (BUFFER_DATA(_source, u8, at) == '-'))
 	{
 		result = -1.0;
 		++at;
@@ -226,7 +226,7 @@ convert_to_number(buffer_t _source, u64 *_at_result)
 	f64 result = 0.0f;
 	while(is_in_bounds(_source, at))	
 	{
-		u8 value = _source.bytes[at] - (u8)'0';
+		u8 value = BUFFER_DATA(_source, u8, at) - (u8)'0';
 		if(value < 10)
 		{
 			result = 10.0 * result + (f64)value;
@@ -255,13 +255,13 @@ convert_to_f64(buffer_t _source)
 	f64 sign = convert_to_sign(source, &at);
 	f64 number = convert_to_number(source, &at);
 	
-	if(is_in_bounds(source, at) && source.bytes[at] == '.')
+	if(is_in_bounds(source, at) && BUFFER_DATA(source, u8, at) == '.')
 	{
 		++at;
 		f64 C = 1.0 / 10.0;
 		while(is_in_bounds(source, at))
 		{
-			u8 value = source.bytes[at] - (u8)'0';
+			u8 value = BUFFER_DATA(source, u8, at) - (u8)'0';
 			if(value < 10)
 			{
 				number += (C * (f64)value);
@@ -289,15 +289,15 @@ convert_to_vertex(importer_element_t *first_vertex_component, buffer_t buffer)
 	result.z = 0;	
 		
 	buffer_t x_buff;
-	x_buff.bytes = buffer.bytes + first_vertex_component->start;
+	x_buff.data = BUFFER(buffer, u8) + first_vertex_component->start;
 	x_buff.size = first_vertex_component->size;
 	
 	buffer_t y_buff;
-	y_buff.bytes = buffer.bytes + first_vertex_component->next_sibling->start;
+	y_buff.data = BUFFER(buffer, u8) + first_vertex_component->next_sibling->start;
 	y_buff.size = first_vertex_component->next_sibling->size;
 	
 	buffer_t z_buff;
-	z_buff.bytes = buffer.bytes + first_vertex_component->next_sibling->next_sibling->start;
+	z_buff.data = BUFFER(buffer, u8) + first_vertex_component->next_sibling->next_sibling->start;
 	z_buff.size = first_vertex_component->next_sibling->next_sibling->size;
 	
 	f64 x = convert_to_f64(x_buff);
@@ -323,19 +323,19 @@ convert_to_face(importer_element_t *first_face_element, buffer_t source)
 	// Let's make this an array moduled
 	u64 at = 0;
 	buffer_t a_buffer;
-	a_buffer.bytes = source.bytes + first_face_element->start;
+	a_buffer.data = BUFFER(source, u8) + first_face_element->start;
 	a_buffer.size = first_face_element->size;
 	result.a = (s32)convert_to_number(a_buffer, &at) - 1;	
 	
 	at = 0;
 	buffer_t b_buffer;
-	b_buffer.bytes = source.bytes + first_face_element->next_sibling->start;
+	b_buffer.data = BUFFER(source, u8) + first_face_element->next_sibling->start;
 	b_buffer.size = first_face_element->next_sibling->size;
 	result.b = (s32)convert_to_number(b_buffer, &at) - 1;
 	
 	at = 0;
 	buffer_t c_buffer;
-	c_buffer.bytes = source.bytes + first_face_element->next_sibling->next_sibling->start;
+	c_buffer.data = BUFFER(source, u8) + first_face_element->next_sibling->next_sibling->start;
 	c_buffer.size = first_face_element->next_sibling->next_sibling->size;
 	result.c = (s32)convert_to_number(c_buffer, &at) - 1;
 	

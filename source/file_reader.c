@@ -8,7 +8,7 @@ read_file(arena_t *_arena, const char *_file_name)
 {
 	buffer_t result;
 	result.size = 0;
-	result.bytes = 0;
+	result.data = 0;
 	if(!_arena || !_file_name)
 	{
 		// TOD LOG
@@ -36,7 +36,7 @@ read_file(arena_t *_arena, const char *_file_name)
 	}	
 	
 	result = create_buffer(_arena, sizeof(u8) * stat.st_size); // reduntand but well..		
-	u64 read_elements = fread(result.bytes, sizeof(u8), result.size, file);
+	u64 read_elements = fread(result.data, sizeof(u8), result.size, file);
 	if(read_elements == 0)
 	{
 		// successfully read the file do stuff
