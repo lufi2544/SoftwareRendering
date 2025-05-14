@@ -5,6 +5,8 @@ typedef struct
 	vec3_t *verteces;
 	face_t *faces;
 	vec3_t rotation;
+	vec3_t scale;
+	vec3_t location;
 	u32 vertex_num;
 	u32 face_num;
 	

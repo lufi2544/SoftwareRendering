@@ -5,14 +5,14 @@
 
 // TODO pass the entity position here.
 internal_f bool
-can_render_face(vec3_t _face_verteces[3], vec3_t _camera_position)
+can_render_face(vec4_t _face_verteces[3], vec3_t _camera_position)
 {
 	bool result = false;
 		
 	// 1. Get the face normal.
-	vec3_t a = _face_verteces[0];
-	vec3_t b = _face_verteces[1];
-	vec3_t c = _face_verteces[2];
+	vec3_t a = vec3_from_vec4(_face_verteces[0]);
+	vec3_t b = vec3_from_vec4(_face_verteces[1]);
+	vec3_t c = vec3_from_vec4(_face_verteces[2]);
 	
 	vec3_t ab = vec3_subtract(b, a);
 	vec3_t ac = vec3_subtract(c, a);
@@ -64,7 +64,7 @@ mesh_render(mesh_t *_mesh)
 	_mesh->rotation.x += 0.01;
 	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
-	vec3_t position = { window_width /2, window_height /2, 0 };
+	vec3_t position = _mesh->location;
 	
 	
 	list_t mesh_triangles_list = LIST(temp_arena);
@@ -80,21 +80,22 @@ mesh_render(mesh_t *_mesh)
 		vec3_t face_verteces[3];
 		face_verteces[0] = _mesh->verteces[mesh_face.a];
 		face_verteces[1] = _mesh->verteces[mesh_face.b];
-		face_verteces[2] = _mesh->verteces[mesh_face.c];		
+		face_verteces[2] = _mesh->verteces[mesh_face.c];				
 		
-		vec3_t entity_position = { 0,0, 1000 };
-		
-		
-		vec3_t transformed_verteces[3];
 		// 1.Check the face verteces and apply transformation
+		vec4_t transformed_verteces[3];
+		mat4_t scale_matrix = mat4_make_scale(_mesh->scale.x, _mesh->scale.y, _mesh->scale.z); 
+		
 		for(s32 j = 0; j < 3; ++j)
 		{
-			vec3_t transformed_vertex = face_verteces[j];					
-			transformed_vertex = vec3_rotate_x(transformed_vertex, _mesh->rotation.x);
-			transformed_vertex = vec3_rotate_y(transformed_vertex, _mesh->rotation.y);
+			vec4_t transformed_vertex = vec4_from_vec3(face_verteces[j]);
+			
+			// Use the rotation matrix for this.
+			transformed_vertex = vec4_from_vec3(vec3_rotate_x(vec3_from_vec4(transformed_vertex), _mesh->rotation.x));
+			transformed_vertex = vec4_from_vec3(vec3_rotate_y(vec3_from_vec4(transformed_vertex), _mesh->rotation.y));
 			transformed_vertex.y *= -1;
 			// We are using a +y is down as in this engine the screen up scales that way, flipping that so the meshes can be visialuzed correctly.
-			transformed_vertex = vec3_rotate_z(transformed_vertex, _mesh->rotation.z);
+			transformed_vertex = vec4_from_vec3(vec3_rotate_z(vec3_from_vec4(transformed_vertex), _mesh->rotation.z));
 			
 			// push the mesh 10u to the screen, left-handed coord system
 			transformed_vertex.z += 10;
@@ -102,7 +103,7 @@ mesh_render(mesh_t *_mesh)
 			// Transform to world position
 			//transformed_vertex = vec3_add(transformed_vertex, position);
 			
-			transformed_verteces[j] = transformed_vertex;									
+			transformed_verteces[j] = transformed_vertex;
 		}
 		
 		// 3. Check the Face Culling from the camera
@@ -116,7 +117,7 @@ mesh_render(mesh_t *_mesh)
 		triangle_t projected_triangle;		
 		for(u32 k = 0; k < 3; ++k)			
 		{						
-			vec2_t projected_point = project_vec3(transformed_verteces[k], fov_coefficient);
+			vec2_t projected_point = project_vec3(vec3_from_vec4(transformed_verteces[k]), fov_coefficient);
 			projected_point.x += position.x;
 			projected_point.y += position.y;
 			

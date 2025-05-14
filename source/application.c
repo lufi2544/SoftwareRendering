@@ -20,6 +20,9 @@ internal_f void
 app_update(memory_t *engine_memory)
 {
 	mesh_t* cube = &g_meshes[0];
+	
+	vec3_t position = { window_width /2, window_height /2, 0 };
+	cube->location = position;
 }
 
 internal_f void 
