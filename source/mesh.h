@@ -7,6 +7,7 @@ typedef struct
 	vec3_t rotation;
 	vec3_t scale;
 	vec3_t location;
+	vec3_t translation; // TODO see if this is needed...
 	u32 vertex_num;
 	u32 face_num;
 	

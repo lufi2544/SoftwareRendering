@@ -64,7 +64,7 @@ mesh_render(mesh_t *_mesh)
 	_mesh->rotation.x += 0.01;
 	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
-	vec3_t position = _mesh->location;
+	//vec3_t position = _mesh->location;
 	
 	
 	list_t mesh_triangles_list = LIST(temp_arena);
@@ -85,20 +85,24 @@ mesh_render(mesh_t *_mesh)
 		// 1.Check the face verteces and apply transformation
 		vec4_t transformed_verteces[3];
 		mat4_t scale_matrix = mat4_make_scale(_mesh->scale.x, _mesh->scale.y, _mesh->scale.z); 
+		mat4_t translation_matrix = mat4_make_translation(_mesh->translation.x, _mesh->translation.y, _mesh->translation.z);
 		
 		for(s32 j = 0; j < 3; ++j)
 		{
 			vec4_t transformed_vertex = vec4_from_vec3(face_verteces[j]);
+			transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
+			transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
 			
 			// Use the rotation matrix for this.
-			transformed_vertex = vec4_from_vec3(vec3_rotate_x(vec3_from_vec4(transformed_vertex), _mesh->rotation.x));
-			transformed_vertex = vec4_from_vec3(vec3_rotate_y(vec3_from_vec4(transformed_vertex), _mesh->rotation.y));
-			transformed_vertex.y *= -1;
+			//transformed_vertex = vec4_from_vec3(vec3_rotate_x(vec3_from_vec4(transformed_vertex), _mesh->rotation.x));
+			//transformed_vertex = vec4_from_vec3(vec3_rotate_y(vec3_from_vec4(transformed_vertex), _mesh->rotation.y));			
+			//transformed_vertex = vec4_from_vec3(vec3_rotate_z(vec3_from_vec4(transformed_vertex), _mesh->rotation.z));
+			
 			// We are using a +y is down as in this engine the screen up scales that way, flipping that so the meshes can be visialuzed correctly.
-			transformed_vertex = vec4_from_vec3(vec3_rotate_z(vec3_from_vec4(transformed_vertex), _mesh->rotation.z));
+			transformed_vertex.y *= -1;
 			
 			// push the mesh 10u to the screen, left-handed coord system
-			transformed_vertex.z += 10;
+			
 			
 			// Transform to world position
 			//transformed_vertex = vec3_add(transformed_vertex, position);
@@ -118,8 +122,10 @@ mesh_render(mesh_t *_mesh)
 		for(u32 k = 0; k < 3; ++k)			
 		{						
 			vec2_t projected_point = project_vec3(vec3_from_vec4(transformed_verteces[k]), fov_coefficient);
-			projected_point.x += position.x;
-			projected_point.y += position.y;
+			
+			// NOTE: By adding this we would treat the triangles relative to the center of the screen
+			projected_point.x += (window_width/ 2);
+			projected_point.y += (window_height / 2);
 			
 			// saving the point for the triangle in screen space.
 			projected_triangle.points[k] = projected_point;
@@ -132,7 +138,7 @@ mesh_render(mesh_t *_mesh)
 	}
 	
 	
-	// Sort by avg_depth
+	// Sort by avg_depth -> kind of a Z buffer.
 	merge_sort(&mesh_triangles_list.head, &compare_triangle);
 	
 	{

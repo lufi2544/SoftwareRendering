@@ -48,7 +48,7 @@ typedef struct
 
 ///// V4 //////
 
-global_def mat4_t 
+global_f mat4_t 
 mat4_identity(void)
 {
 	
@@ -64,7 +64,7 @@ mat4_identity(void)
 }
 
 
-global_def mat4_t
+global_f mat4_t
 mat4_make_scale(f32 sx, f32 sy, f32 sz)
 {	        	
 	mat4_t result = 
@@ -78,7 +78,24 @@ mat4_make_scale(f32 sx, f32 sy, f32 sz)
 	return result;
 }
 
-global_def vec4_t
+global_f mat4_t
+mat4_make_translation(f32 tx, f32 ty, f32 tz)
+{
+	mat4_t result = 
+	{
+		{
+			{1, 0, 0, tx},
+			{0, 1, 0, ty},
+			{0, 0, 1, tz},
+			{0, 0, 0, 1}
+		}
+	};
+					
+	return result;
+}
+
+
+global_f vec4_t
 mat4_mul_vec4(mat4_t m, vec4_t v)
 {
 	vec4_t result;
@@ -91,7 +108,7 @@ mat4_mul_vec4(mat4_t m, vec4_t v)
 }
 
 
-global_def vec4_t
+global_f vec4_t
 rotate_vec4_x(vec4_t v, f32 angle)
 {
 	
@@ -109,14 +126,14 @@ rotate_vec4_x(vec4_t v, f32 angle)
 }
 
 ///// V3 //////
-global_def void 
+global_f void 
 vec3_print(vec3_t vec)
 {
     printf("x: %.2f; y: %.2f z: %.2f \n", vec.x, vec.y, vec.z);
 }
 
 
-global_def vec3_t 
+global_f vec3_t 
 vec3_from_vec4(vec4_t v)
 {
 	vec3_t result = { v.x, v.y, v.z };		
@@ -124,14 +141,14 @@ vec3_from_vec4(vec4_t v)
 }
 
 
-global_def vec4_t
+global_f vec4_t
 vec4_from_vec3(vec3_t v)
 {
 	vec4_t result = {v.x, v.y, v.z, 1};	
 	return result;
 }
 
-global_def vec3_t
+global_f vec3_t
 vec3_add(vec3_t v, vec3_t other)
 {
 	vec3_t result;
@@ -142,7 +159,7 @@ vec3_add(vec3_t v, vec3_t other)
 	return result;
 }
 
-global_def vec2_t
+global_f vec2_t
 project_vec3(vec3_t point, f32 fov)
 {
 	

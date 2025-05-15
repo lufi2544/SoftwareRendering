@@ -12,17 +12,30 @@ app_init(memory_t *engine_memory)
 	
 	// for now let's pass the permanent memory	
 	
+	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
 	mesh_t mesh = create_mesh_from_file(engine_memory, "data/monkey.obj");
-	*rendered_mesh = mesh;
+	vec3_t position = {0, 0, 10};//{ window_width /2, window_height /2, 10 };
+	mesh.translation = position;
+	vec3_t scale = {0, 0, 0};
+	mesh.scale = scale;
+	
+	
+	*rendered_mesh = mesh;			
 }
 
 internal_f void 
 app_update(memory_t *engine_memory)
 {
 	mesh_t* cube = &g_meshes[0];
+	if(cube->scale.x < 2)
+	{
+		cube->scale.x += 0.01;
+		cube->scale.y += 0.01;
+		cube->scale.z += 0.01;		
+	}
 	
-	vec3_t position = { window_width /2, window_height /2, 0 };
-	cube->location = position;
+	cube->translation.x += 0.01;
+	
 }
 
 internal_f void 
