@@ -63,7 +63,6 @@ mat4_identity(void)
 	return result;	
 }
 
-
 global_f mat4_t
 mat4_make_scale(f32 sx, f32 sy, f32 sz)
 {	        	
@@ -79,7 +78,7 @@ mat4_make_scale(f32 sx, f32 sy, f32 sz)
 }
 
 global_f mat4_t
-mat4_make_translation(f32 tx, f32 ty, f32 tz)
+mat4_make_translation_matrix(f32 tx, f32 ty, f32 tz)
 {
 	mat4_t result = 
 	{
@@ -94,6 +93,56 @@ mat4_make_translation(f32 tx, f32 ty, f32 tz)
 	return result;
 }
 
+global_f mat4_t 
+mat4_make_rotation_matrix_x(f32 angle)
+{
+	mat4_t result = 
+	{
+		{
+			{1, 0, 0, 0},
+			{0, cos(angle), -sin(angle), 0},
+			{0, sin(angle), cos(angle), 0},
+			{0, 0, 0, 1}
+		}
+	};
+	
+	return result;
+}
+
+global_f mat4_t 
+mat4_make_rotation_matrix_y(f32 angle)
+{
+	// keep the direction to rotate it counter clock wise.
+	mat4_t result = 
+	{
+		{
+			{cos(angle), 0, sin(angle), 0},
+			{0, 1, 0, 0},
+			{-sin(angle), 0, cos(angle), 0},
+			{0, 0, 0, 1}
+		}
+	};
+	
+	return result;
+}
+
+global_f mat4_t 
+mat4_make_rotation_matrix_z(f32 angle)
+{
+	mat4_t result = 
+	{
+		{
+			{cos(angle), -sin(angle), 0, 0},
+			{sin(angle), cos(angle), 0, 0},
+			{0, 0, 1, 0},
+			{0, 0, 0, 1}
+		}
+	};
+	
+	return result;
+}
+
+
 
 global_f vec4_t
 mat4_mul_vec4(mat4_t m, vec4_t v)
@@ -106,7 +155,6 @@ mat4_mul_vec4(mat4_t m, vec4_t v)
 	
 	return result;
 }
-
 
 global_f vec4_t
 rotate_vec4_x(vec4_t v, f32 angle)
@@ -199,11 +247,12 @@ vec3_rotate_x(vec3_t v, f32 angle)
     return rotated_vector;
 }
 
+
 internal_f vec3_t
 vec3_rotate_y(vec3_t v, f32 angle)
 {
     vec3_t rotated_vector =
-    { 
+    {
         v.x * cos(angle) - v.z * sin(angle),
         v.y,
         v.x * sin(angle) + v.z * cos(angle)

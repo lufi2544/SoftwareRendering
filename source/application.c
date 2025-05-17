@@ -14,11 +14,9 @@ app_init(memory_t *engine_memory)
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
 	mesh_t mesh = create_mesh_from_file(engine_memory, "data/monkey.obj");
+	
 	vec3_t position = {0, 0, 10};//{ window_width /2, window_height /2, 10 };
 	mesh.translation = position;
-	vec3_t scale = {0, 0, 0};
-	mesh.scale = scale;
-	
 	
 	*rendered_mesh = mesh;			
 }
@@ -34,7 +32,12 @@ app_update(memory_t *engine_memory)
 		cube->scale.z += 0.01;		
 	}
 	
-	cube->translation.x += 0.01;
+//	cube->translation.x += 0.01;
+	
+	cube->rotation.x += 0.01;
+	cube->rotation.y += 0.01;
+	cube->rotation.z += 0.01;
+	
 	
 }
 

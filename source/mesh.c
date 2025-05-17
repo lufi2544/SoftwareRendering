@@ -59,9 +59,8 @@ mesh_render(mesh_t *_mesh)
 
     
     f32 fov_coefficient = 2000;// set this to 2000 and fix bug.
-	
-    _mesh->rotation.y += 0.01;
-	_mesh->rotation.x += 0.01;
+    
+		
 	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
 	//vec3_t position = _mesh->location;
@@ -85,27 +84,28 @@ mesh_render(mesh_t *_mesh)
 		// 1.Check the face verteces and apply transformation
 		vec4_t transformed_verteces[3];
 		mat4_t scale_matrix = mat4_make_scale(_mesh->scale.x, _mesh->scale.y, _mesh->scale.z); 
-		mat4_t translation_matrix = mat4_make_translation(_mesh->translation.x, _mesh->translation.y, _mesh->translation.z);
+		mat4_t translation_matrix = mat4_make_translation_matrix(_mesh->translation.x, _mesh->translation.y, _mesh->translation.z);
+		
+		mat4_t rotation_matrix_x = mat4_make_rotation_matrix_x(_mesh->rotation.x);
+		mat4_t rotation_matrix_y = mat4_make_rotation_matrix_y(_mesh->rotation.y);
+		mat4_t rotation_matrix_z = mat4_make_rotation_matrix_z(_mesh->rotation.z);
 		
 		for(s32 j = 0; j < 3; ++j)
 		{
+			// Apply the scale, rotation and translation matrices here for the mesh
 			vec4_t transformed_vertex = vec4_from_vec3(face_verteces[j]);
 			transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
+			
+			transformed_vertex = mat4_mul_vec4(rotation_matrix_x, transformed_vertex);
+			transformed_vertex = mat4_mul_vec4(rotation_matrix_y, transformed_vertex);
+			transformed_vertex = mat4_mul_vec4(rotation_matrix_z, transformed_vertex);						
+			
 			transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
 			
-			// Use the rotation matrix for this.
-			//transformed_vertex = vec4_from_vec3(vec3_rotate_x(vec3_from_vec4(transformed_vertex), _mesh->rotation.x));
-			//transformed_vertex = vec4_from_vec3(vec3_rotate_y(vec3_from_vec4(transformed_vertex), _mesh->rotation.y));			
-			//transformed_vertex = vec4_from_vec3(vec3_rotate_z(vec3_from_vec4(transformed_vertex), _mesh->rotation.z));
 			
-			// We are using a +y is down as in this engine the screen up scales that way, flipping that so the meshes can be visialuzed correctly.
-			transformed_vertex.y *= -1;
+			// The screen space grows from up to down.ks
+			transformed_vertex.y *= -1;						
 			
-			// push the mesh 10u to the screen, left-handed coord system
-			
-			
-			// Transform to world position
-			//transformed_vertex = vec3_add(transformed_vertex, position);
 			
 			transformed_verteces[j] = transformed_vertex;
 		}

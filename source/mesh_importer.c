@@ -357,6 +357,9 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 	result.rotation.x = 0;
 	result.rotation.y = 0;
 	result.rotation.z = 0;
+	result.scale.x = 1;
+	result.scale.y = 1;
+	result.scale.z = 1;
 	
 	if (_file_name == 0)
 	{

@@ -4,6 +4,7 @@
 
 :: Set variables
 set SRC_DIR=../source
+set MAYORANA=%SRC_DIR%/MayoranaFramework/source
 set BIN_DIR=bin
 set LIB_DIR=../lib
 set CFLAGS=/std:c17 /Zi
@@ -20,6 +21,6 @@ call "../setup_cl_x64.bat"
 
 :: Compile with MSVC
 :: Using Fe: in stead of OUT, since we are using unity build.
-cl /Fe:SoftwareRendering %CFLAGS% -I%SRC_DIR% %SRC_DIR%\%SRC_FILES% %LDFLAGS% /SUBSYSTEM:CONSOLE /nologo
+cl /Fe:SoftwareRendering %CFLAGS% -I%SRC_DIR% -I%MAYORANA% %SRC_DIR%\%SRC_FILES% %LDFLAGS% /SUBSYSTEM:CONSOLE /nologo
 
 
