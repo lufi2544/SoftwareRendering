@@ -81,7 +81,7 @@ mesh_render(mesh_t *_mesh)
 		face_verteces[1] = _mesh->verteces[mesh_face.b];
 		face_verteces[2] = _mesh->verteces[mesh_face.c];				
 		
-		// 1.Check the face verteces and apply transformation
+		// 1.Check the face verteces and apply space matreces
 		vec4_t transformed_verteces[3];
 		mat4_t scale_matrix = mat4_make_scale(_mesh->scale.x, _mesh->scale.y, _mesh->scale.z); 
 		mat4_t translation_matrix = mat4_make_translation_matrix(_mesh->translation.x, _mesh->translation.y, _mesh->translation.z);
@@ -94,14 +94,19 @@ mesh_render(mesh_t *_mesh)
 		{
 			// Apply the scale, rotation and translation matrices here for the mesh
 			vec4_t transformed_vertex = vec4_from_vec3(face_verteces[j]);
-			transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
 			
+			
+			// (NOTE): For some reason if I apply the rotation matrix before the others, it won't work.
+			// Rotation Matrix
 			transformed_vertex = mat4_mul_vec4(rotation_matrix_x, transformed_vertex);
 			transformed_vertex = mat4_mul_vec4(rotation_matrix_y, transformed_vertex);
 			transformed_vertex = mat4_mul_vec4(rotation_matrix_z, transformed_vertex);						
 			
-			transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
+			// Scale Matrix
+			transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
 			
+			// Translation Matrix
+			transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
 			
 			// The screen space grows from up to down.ks
 			transformed_vertex.y *= -1;						
@@ -124,8 +129,8 @@ mesh_render(mesh_t *_mesh)
 			vec2_t projected_point = project_vec3(vec3_from_vec4(transformed_verteces[k]), fov_coefficient);
 			
 			// NOTE: By adding this we would treat the triangles relative to the center of the screen
-			projected_point.x += (window_width/ 2);
-			projected_point.y += (window_height / 2);
+			//projected_point.x += (window_width/ 2);
+			//projected_point.y += (window_height / 2);
 			
 			// saving the point for the triangle in screen space.
 			projected_triangle.points[k] = projected_point;
