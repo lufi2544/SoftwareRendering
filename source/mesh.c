@@ -3,7 +3,7 @@
 
 ////// MESH //////
 
-// TODO pass the entity position here.
+// TODO pass the entity position here. When we have world space.
 internal_f bool
 can_render_face(vec4_t _face_verteces[3], vec3_t _camera_position)
 {
@@ -95,18 +95,24 @@ mesh_render(mesh_t *_mesh)
 			// Apply the scale, rotation and translation matrices here for the mesh
 			vec4_t transformed_vertex = vec4_from_vec3(face_verteces[j]);
 			
+			// World matrix
+			mat4_t world_matrix = mat4_identity();
 			
-			// (NOTE): For some reason if I apply the rotation matrix before the others, it won't work.
+			//Scale Matrix
+			world_matrix = mat4_mul_mat4(scale_matrix, world_matrix);
+			
 			// Rotation Matrix
-			transformed_vertex = mat4_mul_vec4(rotation_matrix_x, transformed_vertex);
-			transformed_vertex = mat4_mul_vec4(rotation_matrix_y, transformed_vertex);
-			transformed_vertex = mat4_mul_vec4(rotation_matrix_z, transformed_vertex);						
+			world_matrix = mat4_mul_mat4(rotation_matrix_x, world_matrix);
+			world_matrix = mat4_mul_mat4(rotation_matrix_y, world_matrix);
+			world_matrix = mat4_mul_mat4(rotation_matrix_z, world_matrix);
 			
-			// Scale Matrix
-			transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
+			// Translation Matrix( this is in local space for the mesh and we are rotating also in local space, so the model would be
+			// rotating around the 0,0,0)
+			world_matrix = mat4_mul_mat4(translation_matrix, world_matrix);
+			
 			
 			// Translation Matrix
-			transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
+			transformed_vertex = mat4_mul_vec4(world_matrix, transformed_vertex);
 			
 			// The screen space grows from up to down.ks
 			transformed_vertex.y *= -1;						

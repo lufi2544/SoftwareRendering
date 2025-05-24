@@ -17,6 +17,8 @@ app_init(memory_t *engine_memory)
 	
 	vec3_t position = {0, 0, 10};//{ window_width /2, window_height /2, 10 };
 	mesh.translation = position;
+	vec3_t scale = {0.5, 0.5, 0.5};
+	mesh.scale = scale;
 	
 	*rendered_mesh = mesh;			
 }
@@ -37,6 +39,10 @@ app_update(memory_t *engine_memory)
 	cube->rotation.x += 0.01;
 	cube->rotation.y += 0.01;
 	cube->rotation.z += 0.01;
+	
+	cube->translation.x += 0.01;
+	cube->translation.y -= 0.01;
+	//cube->translation.z += 0.01;
 	
 	
 }

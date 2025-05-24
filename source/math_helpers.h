@@ -156,6 +156,22 @@ mat4_mul_vec4(mat4_t m, vec4_t v)
 	return result;
 }
 
+global_f mat4_t
+mat4_mul_mat4(mat4_t a, mat4_t b)
+{
+	mat4_t result;
+	
+	for(u8 i = 0; i < 4; ++i)
+	{
+		for(u8 j = 0; j < 4; ++j)
+		{
+			result.m[i][j] = a.m[i][0] * b.m[0][j] + a.m[i][1] * b.m[1][j] + a.m[i][2] * b.m[2][j] + a.m[i][3] * b.m[3][j];
+		}
+	}	
+
+	return result;
+}
+
 global_f vec4_t
 rotate_vec4_x(vec4_t v, f32 angle)
 {
