@@ -110,7 +110,7 @@ mesh_render(mesh_t *_mesh)
 			transformed_vertex = mat4_mul_vec4(world_matrix, transformed_vertex);
 			
 			// The screen space grows from up to down.ks
-			transformed_vertex.y *= -1;						
+			//transformed_vertex.y *= -1;						
 			
 			
 			transformed_verteces[j] = transformed_vertex;
