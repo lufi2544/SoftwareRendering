@@ -3,8 +3,8 @@
 #include "display_config.h"
 
 /////// DISPLAY DATA ///////
-global u16 window_width;
-global u16 window_height;
+global u16 g_window_width;
+global u16 g_window_height;
 global bool bIsFullScreen;
 
 global SDL_Window* window;

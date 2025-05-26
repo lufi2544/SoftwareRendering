@@ -2,12 +2,12 @@
 internal_f void
 draw_pixel(vec2_t position , u32 color)
 {
-	if(position.x < 0 || position.y < 0 || position.x >= window_width || position.y >= window_height)
+	if(position.x < 0 || position.y < 0 || position.x >= g_window_width|| position.y >= g_window_height)
 	{
 		return;
 	}
 	
-	u32 Index = (window_width * ((u32)position.y)) + ((u32)(position.x));
+	u32 Index = (g_window_width* ((u32)position.y)) + ((u32)(position.x));
 	color_buffer[Index] = color;
 }
 
@@ -19,7 +19,7 @@ draw_rect(s32 x, s32 y, s32 w, s32 h, u32 color)
     {
         for(s32 width_index = x; width_index < x + w; ++width_index)
         {
-            if(width_index < window_width && height_index < window_height)
+            if(width_index < g_window_width&& height_index < g_window_height)
             {                
                 vec2_t pixel_position = { width_index, height_index };
                 draw_pixel(pixel_position, color);

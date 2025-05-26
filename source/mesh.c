@@ -6,7 +6,7 @@
 // TODO pass the entity position here. When we have world space.
 internal_f bool
 can_render_face(vec4_t _face_verteces[3], vec3_t _camera_position)
-{
+{	
 	bool result = false;
 		
 	// 1. Get the face normal.
@@ -20,7 +20,7 @@ can_render_face(vec4_t _face_verteces[3], vec3_t _camera_position)
 	vec3_t normal = vec3_cross(ab, ac);
 	
 	// 2. See if they are pointing to different directions.		
-	vec3_t camera_to_face = vec3_subtract(_camera_position, a);
+	vec3_t camera_to_face = vec3_subtract(a, _camera_position);
 	vec3_t camera_to_face_n = vec3_normalize(camera_to_face);
 	f32 dot = vec3_dot(normal, camera_to_face_n);
 	
@@ -49,19 +49,14 @@ compare_triangle(const void *_a, const void *_b)
 	return 1;
 }
 
-internal_f void 
+global_f void 
 mesh_render(mesh_t *_mesh)
 {				
 	SCRATCH();
 		
 	vec3_t camera_position = { 0, 0, 0 };
 	g_camera.position = camera_position;	
-
-    
-    f32 fov_coefficient = 2000;// set this to 2000 and fix bug.
-    
-		
-	
+        	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
 	//vec3_t position = _mesh->location;
 	
@@ -132,14 +127,19 @@ mesh_render(mesh_t *_mesh)
 		triangle_t projected_triangle;		
 		for(u32 k = 0; k < 3; ++k)			
 		{						
-			vec2_t projected_point = project_vec3(vec3_from_vec4(transformed_verteces[k]), fov_coefficient);
+			//OPTIMIZE:  we can obtain the avg_depth here.
 			
-			// NOTE: By adding this we would treat the triangles relative to the center of the screen
-			//projected_point.x += (window_width/ 2);
-			//projected_point.y += (window_height / 2);
+			vec4_t projected_point = mat4_mul_vec4_project(projection_matrix, transformed_verteces[k]);
 			
 			// saving the point for the triangle in screen space.
-			projected_triangle.points[k] = projected_point;
+			vec2_t point = {};
+			point.x = projected_point.x;
+			point.y = projected_point.y;
+											
+			// Scale into the view, since we are in a -1 to +1 space
+			point.x *= g_window_width ;
+			point.y *= g_window_height;
+			projected_triangle.points[k] = point;						
 		}
 		
 		projected_triangle.avg_depth = ((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3;

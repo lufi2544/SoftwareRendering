@@ -7,11 +7,6 @@
 
 #define PI 3.14159
 
-
-////////////////////////////
-///////// MATRIX //////////
-
-
 typedef struct
 {
 	f32 m[4][4];
@@ -46,7 +41,7 @@ typedef struct
 
 /////// VECTOR ///////
 
-///// V4 //////
+///// MATRIX //////
 
 global_f mat4_t 
 mat4_identity(void)
@@ -61,6 +56,24 @@ mat4_identity(void)
 		}};
 	
 	return result;	
+}
+
+
+
+global_f mat4_t
+mat4_mul_mat4(mat4_t a, mat4_t b)
+{
+	mat4_t result;
+	
+	for(u8 i = 0; i < 4; ++i)
+	{
+		for(u8 j = 0; j < 4; ++j)
+		{
+			result.m[i][j] = a.m[i][0] * b.m[0][j] + a.m[i][1] * b.m[1][j] + a.m[i][2] * b.m[2][j] + a.m[i][3] * b.m[3][j];
+		}
+	}	
+	
+	return result;
 }
 
 global_f mat4_t
@@ -142,7 +155,21 @@ mat4_make_rotation_matrix_z(f32 angle)
 	return result;
 }
 
-
+global_f mat4_t
+mat4_make_perspective(f32 _fov, f32 _aspect, f32 _znear, f32 _zfar)
+{
+	mat4_t m = {{{ 0 }}};
+	m.m[0][0] = _aspect * (1 / tan(_fov / 2)); 
+	m.m[1][1] = 1 / tan(_fov / 2);
+	m.m[2][2] = _zfar / (_zfar - _znear);
+	m.m[3][3] = (-_zfar * _znear) / (_zfar - _znear);
+	
+	// Storing the original Z value in the W value of the Matrix.
+	// Saving the original value becaue this is going to be saved and used in texturing, etc.
+	m.m[3][2] = 1.0f;		
+		
+	return m;
+}
 
 global_f vec4_t
 mat4_mul_vec4(mat4_t m, vec4_t v)
@@ -156,19 +183,21 @@ mat4_mul_vec4(mat4_t m, vec4_t v)
 	return result;
 }
 
-global_f mat4_t
-mat4_mul_mat4(mat4_t a, mat4_t b)
-{
-	mat4_t result;
-	
-	for(u8 i = 0; i < 4; ++i)
-	{
-		for(u8 j = 0; j < 4; ++j)
-		{
-			result.m[i][j] = a.m[i][0] * b.m[0][j] + a.m[i][1] * b.m[1][j] + a.m[i][2] * b.m[2][j] + a.m[i][3] * b.m[3][j];
-		}
-	}	
 
+global_f vec4_t
+mat4_mul_vec4_project(mat4_t _mat_proj, vec4_t _v)
+{
+	vec4_t result = mat4_mul_vec4(_mat_proj, _v);
+	
+	// perform the perspective divide with the original Z-value
+	if(result.w != 0.0f)
+	{
+		result.x /= result.w;
+		result.y /= result.w;
+		result.z /= result.w;
+	}
+	
+	// this is now in a kind of image space per say, from -1 to +1.
 	return result;
 }
 
