@@ -107,11 +107,7 @@ mesh_render(mesh_t *_mesh)
 			
 			
 			// Translation Matrix
-			transformed_vertex = mat4_mul_vec4(world_matrix, transformed_vertex);
-			
-			// The screen space grows from up to down.ks
-			//transformed_vertex.y *= -1;						
-			
+			transformed_vertex = mat4_mul_vec4(world_matrix, transformed_vertex);							
 			
 			transformed_verteces[j] = transformed_vertex;
 		}
@@ -139,6 +135,15 @@ mesh_render(mesh_t *_mesh)
 			// Scale into the view, since we are in a -1 to +1 space
 			point.x *= g_window_width ;
 			point.y *= g_window_height;
+			
+			
+			// The draw_filled_triangle function assumes a Y-up coordinate system,
+			// where Y increases from bottom to top (i.e., (0,0) is at the bottom-left).
+			// Since our screen space uses a Y-down system (Y increases from top to bottom),
+			// we need to flip the Y axis during projection so triangles are correctly
+			// ordered from top to bottom for rasterization.			
+			point.y = g_window_height - point.y;
+			
 			projected_triangle.points[k] = point;						
 		}
 		

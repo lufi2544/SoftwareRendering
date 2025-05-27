@@ -160,7 +160,7 @@ mat4_make_perspective(f32 _fov, f32 _aspect, f32 _znear, f32 _zfar)
 {
 	mat4_t m = {{{ 0 }}};
 	m.m[0][0] = _aspect * (1 / tan(_fov / 2)); 
-	m.m[1][1] = 1 / tan(_fov / 2);
+	m.m[1][1] = 1 / tan(_fov / 2); // flipping here the y coord as in screen space we are growing downwards
 	m.m[2][2] = _zfar / (_zfar - _znear);
 	m.m[3][3] = (-_zfar * _znear) / (_zfar - _znear);
 	

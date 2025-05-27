@@ -230,8 +230,6 @@ draw_filled_triangle(triangle_t *_triangle, u32 _color)
 		
 		fill_flat_triangle_bottom(&bottom_triangle, _color);
 		fill_flat_triangle_top(&top_triangle, _color);
-		//	draw_linear_triangle(&bottom_triangle, COLOR_RED);
-		//draw_linear_triangle(&top_triangle, COLOR_RED);
 	}
 	
 }
