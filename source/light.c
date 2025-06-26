@@ -3,6 +3,13 @@
 ////////// LIGHT RELATED LOGIC
 
 
+//// SHADING /////
+
+
+/** 
+* This is part of the flat shading pipeline, in this case we are using this in this engine to render the meshes, but could expand it more
+* and use Gouraud (interpolation between verteces or Phong shading)
+  **/
 
 /**
 * Applies intensity to a color.
