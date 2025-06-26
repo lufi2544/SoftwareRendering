@@ -2,6 +2,8 @@
 //// MAIN APPLICATION PIPELINE ////
 
 
+global light_t global_light;
+
 internal_f void 
 app_init(memory_t *engine_memory)
 {		
@@ -24,11 +26,15 @@ app_init(memory_t *engine_memory)
 	*rendered_mesh = mesh;			
 	
 	
-	const f32 fov = PI / 2.0f;
+	const f32 fov = PI / 3.0f;
 	const f32 aspect =  (f32)g_window_height / (f32)g_window_width;
-	const f32 znear = 0.1;
+	const f32 znear = 0.1f;
 	const f32 zfar = 100.0f;
 	projection_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
+	
+	
+	vec3_t light_dir = {0, 0, 0};
+	global_light.direction = light_dir;
 	
 }
 
@@ -58,21 +64,7 @@ internal_f void
 app_render(memory_t *engine_memory)
 {	
 	mesh_t* rendered_mesh = &g_meshes[0];
-	mesh_render(rendered_mesh);
-	
-	
-	/*triangle_t t;
-	t.points[0].x = 1000;
-	t.points[0].y = 500;
-	
-	t.points[1].x = 2000;
-	t.points[1].y = 100;
-	
-	t.points[2].x = 600;
-	t.points[2].y = 300;
-	
-	draw_filled_triangle(&t,COLOR_BLACK);
-	*/
+	mesh_render(rendered_mesh);			
 
 }
 

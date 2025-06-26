@@ -3,6 +3,7 @@
 ////////////////// Global defines for the Rendere ///////////////
 
 #include "triangle.h"
+#include "light_defines.h"
 #include "mesh.h"
 
 global SDL_Renderer* renderer;

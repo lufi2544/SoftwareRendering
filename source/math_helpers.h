@@ -162,7 +162,7 @@ mat4_make_perspective(f32 _fov, f32 _aspect, f32 _znear, f32 _zfar)
 	m.m[0][0] = _aspect * (1 / tan(_fov / 2)); 
 	m.m[1][1] = 1 / tan(_fov / 2); // flipping here the y coord as in screen space we are growing downwards
 	m.m[2][2] = _zfar / (_zfar - _znear);
-	m.m[3][3] = (-_zfar * _znear) / (_zfar - _znear);
+	m.m[2][3] = (-_zfar * _znear) / (_zfar - _znear);
 	
 	// Storing the original Z value in the W value of the Matrix.
 	// Saving the original value becaue this is going to be saved and used in texturing, etc.
@@ -189,7 +189,7 @@ mat4_mul_vec4_project(mat4_t _mat_proj, vec4_t _v)
 {
 	vec4_t result = mat4_mul_vec4(_mat_proj, _v);
 	
-	// perform the perspective divide with the original Z-value
+	// perform the perspective divide with the original Z-value, stored in the W component of the Matrix
 	if(result.w != 0.0f)
 	{
 		result.x /= result.w;
@@ -197,7 +197,7 @@ mat4_mul_vec4_project(mat4_t _mat_proj, vec4_t _v)
 		result.z /= result.w;
 	}
 	
-	// this is now in a kind of image space per say, from -1 to +1.
+	// this is now in a kind of image space per say, from 0 to 1.
 	return result;
 }
 

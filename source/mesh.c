@@ -5,24 +5,17 @@
 
 // TODO pass the entity position here. When we have world space.
 internal_f bool
-can_render_face(vec4_t _face_verteces[3], vec3_t _camera_position)
+can_render_face(vec3_t _a, vec3_t _face_normal, vec3_t _camera_position)
 {	
-	bool result = false;
-		
-	// 1. Get the face normal.
-	vec3_t a = vec3_from_vec4(_face_verteces[0]);
-	vec3_t b = vec3_from_vec4(_face_verteces[1]);
-	vec3_t c = vec3_from_vec4(_face_verteces[2]);
+	bool result = false;			
+	//////
+	/// See if they are pointing to different directions.		
 	
-	vec3_t ab = vec3_subtract(b, a);
-	vec3_t ac = vec3_subtract(c, a);
+	// In this case using the a vertex of the face as the point for calculating the facing vector
 	
-	vec3_t normal = vec3_cross(ab, ac);
-	
-	// 2. See if they are pointing to different directions.		
-	vec3_t camera_to_face = vec3_subtract(a, _camera_position);
+	vec3_t camera_to_face = vec3_subtract(_a, _camera_position);
 	vec3_t camera_to_face_n = vec3_normalize(camera_to_face);
-	f32 dot = vec3_dot(normal, camera_to_face_n);
+	f32 dot = vec3_dot(_face_normal, camera_to_face_n);
 	
 	result = dot > 0;
 	
@@ -71,12 +64,14 @@ mesh_render(mesh_t *_mesh)
 		//if the camera rotation is different than the face normal, then we skip the rendering for this face, as they are pointing to different orientations.
 		
 		
+		// Relating the vertex number of the mesh, numbered with the face, which contains the vertex number for the face, like (3, 4, 7)
+		// which are the vertex numbers.
 		vec3_t face_verteces[3];
 		face_verteces[0] = _mesh->verteces[mesh_face.a];
 		face_verteces[1] = _mesh->verteces[mesh_face.b];
 		face_verteces[2] = _mesh->verteces[mesh_face.c];				
 		
-		// 1.Check the face verteces and apply space matreces
+		// Check the face verteces and apply space matreces
 		vec4_t transformed_verteces[3];
 		mat4_t scale_matrix = mat4_make_scale(_mesh->scale.x, _mesh->scale.y, _mesh->scale.z); 
 		mat4_t translation_matrix = mat4_make_translation_matrix(_mesh->translation.x, _mesh->translation.y, _mesh->translation.z);
@@ -112,14 +107,27 @@ mesh_render(mesh_t *_mesh)
 			transformed_verteces[j] = transformed_vertex;
 		}
 		
-		// 3. Check the Face Culling from the camera
-		if(!can_render_face(transformed_verteces, camera_position) && render_settings_check_flag(flag_back_face_culling))
+		
+		// Calculating the normal for the face
+		vec3_t a = vec3_from_vec4(transformed_verteces[0]);
+		vec3_t b = vec3_from_vec4(transformed_verteces[1]);
+		vec3_t c = vec3_from_vec4(transformed_verteces[2]);
+		
+		vec3_t ab = vec3_subtract(b, a);
+		vec3_t ac = vec3_subtract(c, a);
+		
+		vec3_t normal = vec3_cross(ab, ac);
+		normal = vec3_normalize(normal);
+		
+		// Check the Face Culling from the camera
+		//TODO: this second check makes not much sense.
+		if(!can_render_face(a, normal, camera_position) && render_settings_check_flag(flag_back_face_culling))
 		{
 			continue;
 		}	
 		
 		
-		// 2. Project the verteces to screen space and create a triangle
+		// Project the verteces to screen space and create a triangle
 		triangle_t projected_triangle;		
 		for(u32 k = 0; k < 3; ++k)			
 		{						
@@ -148,7 +156,17 @@ mesh_render(mesh_t *_mesh)
 		}
 		
 		projected_triangle.avg_depth = ((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3;
+		
+		// TODO Mesh, make the different mesh faces of a color. I think this will be in the texture itself, so it is fine. Maybe for debug
+		// pruposes I can set it like this, to a specific color.
+		
+		
+		// Do a light pass here to determine the color for the projected triangle.
+		
 		projected_triangle.color = 0x00000000;
+		light_t light;
+		light.direction = 0;
+		projected_triangle.color = lighti_flat_pass(light, normal, projected_triangle.color);
 		
 		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}
