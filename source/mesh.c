@@ -136,7 +136,7 @@ mesh_render(mesh_t *_mesh)
 			vec4_t projected_point = mat4_mul_vec4_project(projection_matrix, transformed_verteces[k]);
 			
 			// saving the point for the triangle in screen space.
-			vec2_t point = {};
+			vec2_t point;
 			point.x = projected_point.x;
 			point.y = projected_point.y;
 											
@@ -163,10 +163,8 @@ mesh_render(mesh_t *_mesh)
 		
 		// Do a light pass here to determine the color for the projected triangle.
 		
-		projected_triangle.color = 0x00000000;
-		light_t light;
-		light.direction = 0;
-		projected_triangle.color = lighti_flat_pass(light, normal, projected_triangle.color);
+		projected_triangle.color = 0xFFFFFFFF;
+		projected_triangle.color = light_flat_pass(global_light, normal, projected_triangle.color);
 		
 		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}

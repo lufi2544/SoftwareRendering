@@ -11,10 +11,7 @@ render(void)
 {
     
     SDL_RenderClear(renderer);   
-    map_texture_to_pixels_buffer();
-    
-    // We have mapped the pixels on the screen on the Texture, changing the pixels on the screen will make the texture to change.
-    clear_color_buffer(0xFFFFFF);
+    map_texture_to_pixels_buffer();    
         
 	app_render(&g_memory);
     

@@ -1,6 +1,6 @@
 /* date = February 21st 2025 10:16 am */
 
-////////////////// Global defines for the Rendere ///////////////
+////////////////// Global defines for the Renderer ///////////////
 
 #include "triangle.h"
 #include "light_defines.h"

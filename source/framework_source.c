@@ -12,9 +12,9 @@
 // rendering
 #include "renderer_helpers.c"
 #include "display.c"
+#include "light.c"
 #include "mesh.c"
 #include "mesh_importer.c"
-#include "light.c"
 
 // Other
 #include "entities_temp.c"
