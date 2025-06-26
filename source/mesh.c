@@ -48,7 +48,7 @@ mesh_render(mesh_t *_mesh)
 	SCRATCH();
 		
 	vec3_t camera_position = { 0, 0, 0 };
-	g_camera.position = camera_position;	
+	g_camera.position = camera_position;
         	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
 	//vec3_t position = _mesh->location;
@@ -133,35 +133,36 @@ mesh_render(mesh_t *_mesh)
 		{						
 			//OPTIMIZE:  we can obtain the avg_depth here.
 			
-			vec4_t projected_point = mat4_mul_vec4_project(projection_matrix, transformed_verteces[k]);
+			vec4_t projected_triangle_point = mat4_mul_vec4_project(projection_matrix, transformed_verteces[k]);
 			
-			// saving the point for the triangle in screen space.
-			vec2_t point;
-			point.x = projected_point.x;
-			point.y = projected_point.y;
-											
-			// Scale into the view, since we are in a -1 to +1 space
-			point.x *= g_window_width ;
-			point.y *= g_window_height;
-			
-			
+									
 			// The draw_filled_triangle function assumes a Y-up coordinate system,
 			// where Y increases from bottom to top (i.e., (0,0) is at the bottom-left).
 			// Since our screen space uses a Y-down system (Y increases from top to bottom),
 			// we need to flip the Y axis during projection so triangles are correctly
 			// ordered from top to bottom for rasterization.			
-			point.y = g_window_height - point.y;
+//			point.y = g_window_height - point.y;
 			
-			projected_triangle.points[k] = point;						
+			
+			
+			vec2_t point = { projected_triangle_point.x, projected_triangle_point.y };
+			point.x *= g_window_width / 2;
+			point.y *= g_window_height / 2;
+			
+			point.y *= -1;
+						
+			
+			point.x += g_window_width /2;
+			point.y += g_window_height /2;
+			
+			projected_triangle.points[k] = point;
+			
 		}
 		
 		projected_triangle.avg_depth = ((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3;
 		
-		// TODO Mesh, make the different mesh faces of a color. I think this will be in the texture itself, so it is fine. Maybe for debug
-		// pruposes I can set it like this, to a specific color.
-		
-		
-		// Do a light pass here to determine the color for the projected triangle.
+		////////
+		//// FLAT LIGHT PASS
 		
 		projected_triangle.color = 0xFFFFFFFF;
 		projected_triangle.color = light_flat_pass(global_light, normal, projected_triangle.color);
@@ -177,13 +178,12 @@ mesh_render(mesh_t *_mesh)
 		triangle_t *triangle = 0;
 		LIST_FOREACH(triangle_t, triangle, mesh_triangles_list)
 		{		
-			if(render_settings_check_flag(flag_display_filled_triangles) || render_settings_check_flag(flag_display_filled_triangles_wire))
-			{
-				draw_filled_triangle(triangle, triangle->color);
-			}
+			
+			draw_filled_triangle(triangle, triangle->color);
+			
 			
 			bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
-			draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
+			//draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
 		}
 	}
 			
