@@ -121,7 +121,7 @@ mesh_render(mesh_t *_mesh)
 		
 		// Check the Face Culling from the camera
 		//TODO: this second check makes not much sense.
-		if(!can_render_face(a, normal, camera_position) && render_settings_check_flag(flag_back_face_culling))
+		if(!can_render_face(a, normal, camera_position))
 		{
 			continue;
 		}	
@@ -149,11 +149,10 @@ mesh_render(mesh_t *_mesh)
 			point.x *= g_window_width / 2;
 			point.y *= g_window_height / 2;
 			
-			point.y *= -1;
-						
+			point.y *= -1;						
 			
-			point.x += g_window_width /2;
-			point.y += g_window_height /2;
+			//point.x += g_window_width /2;
+			//point.y += g_window_height /2;
 			
 			projected_triangle.points[k] = point;
 			

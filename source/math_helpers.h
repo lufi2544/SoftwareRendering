@@ -159,8 +159,10 @@ global_f mat4_t
 mat4_make_perspective(f32 _fov, f32 _aspect, f32 _znear, f32 _zfar)
 {
 	mat4_t m = {{{ 0 }}};
-	m.m[0][0] = _aspect * (1 / tan(_fov / 2)); 
-	m.m[1][1] = 1 / tan(_fov / 2); // flipping here the y coord as in screen space we are growing downwards
+	f32 f = 1.0f / tan(_fov / 2.0f);
+	
+	m.m[0][0] = f / _aspect;
+	m.m[1][1] = f; // flipping here the y coord as in screen space we are growing downwards
 	m.m[2][2] = _zfar / (_zfar - _znear);
 	m.m[2][3] = (-_zfar * _znear) / (_zfar - _znear);
 	
