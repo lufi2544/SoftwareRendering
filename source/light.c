@@ -45,6 +45,11 @@ global_f color_t
 light_flat_pass(light_t _light_point, vec3_t _normal, color_t _triangle_color)
 {
 	// Gradiant for more lit or less
+	
+	/* If normal and the light direction point to the same direction (dot > 0) that means that they are not facing to each other, 
+	 so in this case, we would apply 0 to the color channel( inside the function ), but we pass -1, and if we are pointing in opposites
+	 directions, they would be facing to each other, so we would be adding light to it and the max value to the color channel.
+*/
 	f32 dot = -vec3_dot(_normal, _light_point.direction);		
 	return light_apply_intensity(_triangle_color, dot);
 }

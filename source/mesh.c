@@ -7,6 +7,7 @@
 internal_f bool
 can_render_face(vec3_t _a, vec3_t _face_normal, vec3_t _camera_position)
 {	
+	
 	bool result = false;			
 	//////
 	/// See if they are pointing to different directions.		
@@ -17,7 +18,7 @@ can_render_face(vec3_t _a, vec3_t _face_normal, vec3_t _camera_position)
 	vec3_t camera_to_face_n = vec3_normalize(camera_to_face);
 	f32 dot = vec3_dot(_face_normal, camera_to_face_n);
 	
-	result = dot > 0;
+	result = dot < 0;
 	
 	return result;
 }
@@ -135,6 +136,11 @@ mesh_render(mesh_t *_mesh)
 			
 			vec4_t projected_triangle_point = mat4_mul_vec4_project(projection_matrix, transformed_verteces[k]);
 			
+			if(projected_triangle_point.z <= 0.1)
+			{
+				continue;
+			} 
+			
 									
 			// The draw_filled_triangle function assumes a Y-up coordinate system,
 			// where Y increases from bottom to top (i.e., (0,0) is at the bottom-left).
@@ -151,8 +157,8 @@ mesh_render(mesh_t *_mesh)
 			
 			point.y *= -1;						
 			
-			//point.x += g_window_width /2;
-			//point.y += g_window_height /2;
+			point.x += g_window_width /2;
+			point.y += g_window_height /2;
 			
 			projected_triangle.points[k] = point;
 			
@@ -182,7 +188,7 @@ mesh_render(mesh_t *_mesh)
 			
 			
 			bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
-			//draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
+			draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
 		}
 	}
 			
