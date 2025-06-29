@@ -48,7 +48,7 @@ mesh_render(mesh_t *_mesh)
 {				
 	SCRATCH();
 		
-	vec3_t camera_position = { 0, 0, 0 };
+	vec3_t camera_position = { 0, 0, -5 };
 	g_camera.position = camera_position;
         	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
@@ -154,9 +154,7 @@ mesh_render(mesh_t *_mesh)
 			vec2_t point = { projected_triangle_point.x, projected_triangle_point.y };
 			point.x *= g_window_width / 2;
 			point.y *= g_window_height / 2;
-			
-			point.y *= -1;						
-			
+						
 			point.x += g_window_width /2;
 			point.y += g_window_height /2;
 			
@@ -164,7 +162,7 @@ mesh_render(mesh_t *_mesh)
 			
 		}
 		
-		projected_triangle.avg_depth = ((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3;
+		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
 		
 		////////
 		//// FLAT LIGHT PASS
@@ -188,7 +186,7 @@ mesh_render(mesh_t *_mesh)
 			
 			
 			bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
-			draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
+			//draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
 		}
 	}
 			

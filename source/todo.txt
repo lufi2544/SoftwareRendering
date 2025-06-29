@@ -4,3 +4,9 @@ RENDERING
 
 - Move from static arrays to dynamic arrays.
 - Study better the CreateTexture functions and the relation between the color_buffer and the color_buffer_texture.
+
+
+
+// BACKLOG:
+
+- For some reason the monkey mesh is loaded with the rotation inversed, looking to the oppossite side of the camera.

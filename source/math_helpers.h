@@ -131,7 +131,7 @@ mat4_make_rotation_matrix_y(f32 angle)
 		{
 			{cos(angle), 0, sin(angle), 0},
 			{0, 1, 0, 0},
-			{-sin(angle), 0, cos(angle), 0},
+			{sin(angle), 0, -cos(angle), 0},
 			{0, 0, 0, 1}
 		}
 	};
@@ -155,6 +155,8 @@ mat4_make_rotation_matrix_z(f32 angle)
 	return result;
 }
 
+// Perspective Matrix, changing from world to screen space
+// TODO: The view matrix is still not implemented.
 global_f mat4_t
 mat4_make_perspective(f32 _fov, f32 _aspect, f32 _znear, f32 _zfar)
 {
@@ -162,14 +164,14 @@ mat4_make_perspective(f32 _fov, f32 _aspect, f32 _znear, f32 _zfar)
 	f32 f = 1.0f / tan(_fov / 2.0f);
 	
 	m.m[0][0] = f / _aspect;
-	m.m[1][1] = f; // flipping here the y coord as in screen space we are growing downwards
+	m.m[1][1] = -f;
 	m.m[2][2] = _zfar / (_zfar - _znear);
 	m.m[2][3] = (-_zfar * _znear) / (_zfar - _znear);
 	
-	// Storing the original Z value in the W value of the Matrix.
-	// Saving the original value becaue this is going to be saved and used in texturing, etc.
-	m.m[3][2] = 1.0f;		
-		
+	//Storing the original Z value in the W value of the Matrix.
+	//Saving the original value becaue this is going to be saved and used in texturing, etc.
+	m.m[3][2] = 1.0f;
+	
 	return m;
 }
 
