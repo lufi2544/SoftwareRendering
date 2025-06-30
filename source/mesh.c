@@ -117,7 +117,10 @@ mesh_render(mesh_t *_mesh)
 		vec3_t ab = vec3_subtract(b, a);
 		vec3_t ac = vec3_subtract(c, a);
 		
-		vec3_t normal = vec3_cross(ab, ac);
+		// If we are in a left handed coord system like this, we need to know that ab x ac would point towards the inside of the screen
+		// so, in that case, the triagles would be facing the opposite side of the screen, in a +Z direction, but in this case as we want them to be facing 
+		// the screen, then we would need to have ac x ab, which will be negative and the tringle would be facing the camera.
+		vec3_t normal = vec3_cross(ac, ab);
 		normal = vec3_normalize(normal);
 		
 		// Check the Face Culling from the camera
@@ -162,7 +165,7 @@ mesh_render(mesh_t *_mesh)
 			
 		}
 		
-		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
+		projected_triangle.avg_depth = -(((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
 		
 		////////
 		//// FLAT LIGHT PASS
