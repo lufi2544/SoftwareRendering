@@ -8,6 +8,7 @@ enum importer_token_type
 	token_error,
 	token_number,
 	token_vertex_comp,
+	token_vertex_texture_comp,
 	token_face_comp,
 	token_null,
 	
@@ -65,6 +66,15 @@ is_digit(buffer_t _source, u64 _at)
 	return result;
 }
 
+
+
+
+////////////////////
+//In this case for the importer I have decided to add a node for each elemenet of the imported data.
+// e. g: vertex_coord(x, y, z) -> x, y and z are different elements.
+//
+// So when retrieving the num of each component like the verteces, we would have to divided by 2.
+///////////////////
 internal_f importer_element_t*
 import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 {	
@@ -86,6 +96,10 @@ import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 		
 		u8 val = ((u8*)source.data)[at++];
 		
+		////////////
+		// IMPORTANT - At is currently in the next byte and Val is the prev, we check for val.ks
+		////////////
+		
 		// we move the parsing pointer until we reach something significant and save the buffer.
 		switch(val)
 		{					
@@ -93,41 +107,100 @@ import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 			{
 				// potential vertex and other data			
 				u64 start = at;
-				if((is_in_bounds(source, at)) && (BUFFER_DATA(source, u8, at) == ' '))
-				{
-					// advancing to the number
-					start = ++at;
-					
-					// parse until next vertex components
-					while(is_in_bounds(source, at) && BUFFER_DATA(source, u8, at) != 'v')
-					{						
-						u8 val = BUFFER_DATA(source, u8, at);
-						// end of a number
-						if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
+				if((is_in_bounds(source, at)))
+				{	
+					u8 next = BUFFER_DATA(source, u8, at);
+					if(next == ' ')
+					{
+						// advancing to the number
+						start = ++at;
+						// parse until next vertex components
+						while(is_in_bounds(source, at))
 						{
-							importer_element_t *vertex_element = push_struct(_temp_arena, importer_element_t);
-							vertex_element->type = token_vertex_comp;
-							vertex_element->start = start;
-							vertex_element->size = at - start;	
-							
-							if(!first_element)
-							{
-								first_element = vertex_element;
+							u8 val = BUFFER_DATA(source, u8, at);
+							bool bOut = val == '\n';
+							// end of a number
+							if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
+							{								
+								importer_element_t *vertex_element = push_struct(_temp_arena, importer_element_t);
+								vertex_element->type = token_vertex_comp;
+								vertex_element->start = start;
+								vertex_element->size = at - start;	
+								
+								if(!first_element)
+								{
+									first_element = vertex_element;
+								}
+								
+								if(element_ptr)
+								{
+									element_ptr->next_sibling = vertex_element;
+								}
+								
+								element_ptr = vertex_element;
+								
+								
+								start = ++at;
+								
+								if(bOut)
+								{
+									break;
+								}
+								
 							}
-							
-							if(element_ptr)
+							else
 							{
-								element_ptr->next_sibling = vertex_element;
+								at++;							
 							}
-							
-							element_ptr = vertex_element;
-							start = ++at;
 						}
-						else
+					}
+					else if(next == 't')
+					{
+						// Vertex texture coordinate
+						
+						// advance to the current number
+						at += 2;
+						start = at;
+						u8 val = BUFFER_DATA(source, u8, at);
+						while(is_in_bounds(source, at))
 						{
-							at++;							
-						}						
-					}																																												
+							u8 val = BUFFER_DATA(source, u8, at);
+							bool bOut = val == '\n';
+							
+							// end of a number
+							
+							if(val == ' ' || val == '\n' || val == '\r' || val == '\t')
+							{
+								importer_element_t *vt_element = push_struct(_temp_arena, importer_element_t);
+								vt_element->type = token_vertex_texture_comp;
+								vt_element->start = start;
+								vt_element->size = at - start;	
+								
+								if(!first_element)
+								{
+									first_element = vt_element;
+								}
+								
+								if(element_ptr)
+								{
+									element_ptr->next_sibling = vt_element;
+								}
+								
+								element_ptr = vt_element;
+								start = ++at;
+								if(bOut)
+								{
+									break;
+								}
+							}
+							else
+							{
+								at++;							
+							}
+						}
+						
+					}
+					
 				}
 				
 			}break;
@@ -141,49 +214,67 @@ import_mesh(arena_t *_temp_arena, const mesh_importer_t *_importer)
 				{				
 					start = ++at;
 					
-					while(is_in_bounds(source, at) && BUFFER_DATA(source, u8, at) != 'f')
+					int face_comp_count = 0;
+					
+					while (is_in_bounds(source, at))
 					{
-						if(counter == 1430)
-						{
-							int a = 0;
-						}
 						u8 val = BUFFER_DATA(source, u8, at);
-						// end of a number
-						if ((val == ' ') || (val == '\n') || (val == '\r') || (val == '\t'))							
+						
+						bool bOut = val == '\n';
+						
+						if ((val == ' ') || (val == '\n') || (val == '\r') || (val == '\t'))
 						{
-							importer_element_t *face_element = push_struct(_temp_arena, importer_element_t);
-							face_element->next_sibling = 0;
-							face_element->index = counter++;
-							face_element->type = token_face_comp;
-							face_element->start = start;
-							face_element->size = at - start;	
-							
-							if(!first_element)
+							if (at > start) 
 							{
-								first_element = face_element;
+								importer_element_t *face_element = push_struct(_temp_arena, importer_element_t);
+								face_element->next_sibling = 0;
+								face_element->index = counter++;
+								face_element->type = token_face_comp;
+								face_element->start = start;
+								face_element->size = at - start;
+								
+								if (!first_element) first_element = face_element;
+								if (element_ptr) element_ptr->next_sibling = face_element;
+								element_ptr = face_element;
+								
+								face_comp_count++;
+																
 							}
 							
-							if(element_ptr)
-							{
-								element_ptr->next_sibling = face_element;
-							}
+							start = ++at;
 							
-							element_ptr = face_element;
-							start = ++at;							
-						}						
+							if(bOut)
+							{
+								break;
+							}
+						}
 						else
 						{
-							at++;							
-						}						
-					}	
+							at++;
+						}
+					}
+					
+					if (face_comp_count != 3)
+					{
+						printf("⚠️ Face had %d components instead of 3!\n", face_comp_count);
+					}
+					
 					
 					
 				}break;
-				
-				default:
-				{
-				}break;
+							
 			}
+			
+			default:
+			{
+				// Skip the rest of the line for any unhandled prefix (like 'vn', 's', etc.)
+				while (is_in_bounds(source, at) && BUFFER_DATA(source, u8, at) != '\n')
+				{
+					++at;
+				}
+				++at; // Skip the newline character
+				
+			} break;
 		}
 	}
 	
@@ -286,7 +377,7 @@ convert_to_vertex(importer_element_t *first_vertex_component, buffer_t buffer)
 	vec3_t result;
 	result.x = 0;
 	result.y = 0;
-	result.z = 0;	
+	result.z = 0;
 		
 	buffer_t x_buff;
 	x_buff.data = BUFFER(buffer, u8) + first_vertex_component->start;
@@ -310,6 +401,24 @@ convert_to_vertex(importer_element_t *first_vertex_component, buffer_t buffer)
 	result.z = (f32)z;
 	
 	return result;
+}
+
+internal_f void 
+convert_to_texture_coordinate(buffer_t buffer, importer_element_t *element, f32 *u, f32 *v)
+{
+	*u = 0;
+	*v = 0;
+	
+	buffer_t u_buff;
+	u_buff.data = BUFFER(buffer, u8) + element->start;
+	u_buff.size = element->size;
+		
+	buffer_t v_buff;
+	v_buff.data = BUFFER(buffer, u8) + element->next_sibling->start;
+	v_buff.size = element->next_sibling->size;	
+	
+	*u = convert_to_f64(u_buff);
+	*v = convert_to_f64(v_buff);	
 }
 
 internal_f face_t
@@ -354,6 +463,7 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 	mesh_t result;
 	result.face_num = 0;
 	result.vertex_num = 0;
+	result.uv_coords_num = 0;
 	result.rotation.x = 0;
 	result.rotation.y = 0;
 	result.rotation.z = 0;
@@ -386,6 +496,7 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 		
 		// convert to while and advace 3;
 		// note:(juanes.rayo): add the same thing for the faces.
+		// TODO: Optimization here, don't iterate through the faces twice, add the num while creating the components of the list.
 		for(importer_element_t *it = element; it; it = it->next_sibling)
 		{
 		
@@ -398,21 +509,29 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 			{
 				result.vertex_num++;
 			}
+			else if(it->type == token_vertex_texture_comp)
+			{
+				result.uv_coords_num++;
+			}
 		}
 		
 		result.vertex_num /= 3;
 		result.face_num /= 3;
+		result.uv_coords_num /= 2;
 		printf("iterated ver: %i \n", result.vertex_num);
 		printf("iterated face: %i \n", result.face_num);		
+		printf("iterated uv_corods: %i \n", result.uv_coords_num);		
 		
 		result.verteces = push_array(&engine_memory->permanent, result.vertex_num, vec3_t);
 		result.faces = push_array(&engine_memory->permanent, result.face_num, face_t);
+		result.uv_coords = push_array(&engine_memory->permanent, result.uv_coords_num, texture_uv_t);
 		
 		//(juanes.rayo) NOTE: can we figure this out runtime? or is better to store it too? as we have already the verteces and the faces, we could figure this out runtime.
 		//result.triangles = PushArray(&engine_memory->permanent, count_face, triangle_t);
 		
 		u32 current_vertex = 0;
 		u32 current_face = 0;				
+		u32 current_uv = 0;
 		
 		f64 temp_vertex_sign = 1.0f;
 		
@@ -436,6 +555,19 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 				
 				it = it->next_sibling->next_sibling->next_sibling;
 			}
+			else if (it->type == token_vertex_texture_comp)
+			{
+				f32 u = 0;
+				f32 v = 0;
+				convert_to_texture_coordinate(importer.source, it, &u, &v);
+				
+				texture_uv_t uv;
+				uv.u = u;
+				uv.v = v;				
+				result.uv_coords[current_uv++] = uv;
+				it = it->next_sibling->next_sibling;
+				
+			}
 		}
 		
 		// Checking quantity equality between the parsed faces and vertex num and the ones pushed to the mesh_t.
@@ -443,7 +575,8 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 		//printf("parsed: %i result %i \n", current_face, result.face_num );
 		
 		assert(current_face == result.face_num);
-		assert(current_vertex == result.vertex_num);				
+		assert(current_vertex == result.vertex_num);	
+		assert(current_uv == result.uv_coords_num);
 	}
 	
 	

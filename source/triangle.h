@@ -12,6 +12,9 @@ typedef struct
 	s32 b;
 	s32 c;
 	
+	f32 u;
+	f32 v;
+	
 } face_t;
 
 
