@@ -18,7 +18,7 @@ can_render_face(vec3_t _a, vec3_t _face_normal, vec3_t _camera_position)
 	vec3_t camera_to_face_n = vec3_normalize(camera_to_face);
 	f32 dot = vec3_dot(_face_normal, camera_to_face_n);
 	
-	result = dot < 0;
+	result = (dot < 0);
 	
 	return result;
 }
@@ -39,7 +39,6 @@ compare_triangle(const void *_a, const void *_b)
 		return 0;
 	}
 	
-	// a_avg >= b_avg
 	return 1;
 }
 
@@ -132,7 +131,7 @@ mesh_render(mesh_t *_mesh)
 		
 		
 		// Project the verteces to screen space and create a triangle
-		triangle_t projected_triangle;		
+		triangle_t projected_triangle;
 		for(u32 k = 0; k < 3; ++k)			
 		{						
 			//OPTIMIZE:  we can obtain the avg_depth here.
@@ -166,6 +165,14 @@ mesh_render(mesh_t *_mesh)
 		}
 		
 		projected_triangle.avg_depth = -(((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
+		projected_triangle.texture_coords[0].u = mesh_face.a_uv.u;
+			projected_triangle.texture_coords[0].u = mesh_face.a_uv.v;
+			
+		projected_triangle.texture_coords[1].u = mesh_face.b_uv.u;
+		projected_triangle.texture_coords[1].v = mesh_face.b_uv.v;
+			
+		projected_triangle.texture_coords[2].u = mesh_face.c_uv.u;
+		projected_triangle.texture_coords[2].v = mesh_face.c_uv.v;
 		
 		////////
 		//// FLAT LIGHT PASS

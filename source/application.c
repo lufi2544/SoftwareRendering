@@ -14,9 +14,9 @@ app_init(memory_t *engine_memory)
 	// for now let's pass the permanent memory	
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
-	mesh_t mesh = create_mesh_from_file(engine_memory, "data/lol.obj");
+	mesh_t mesh = create_mesh_from_file(engine_memory, "data/cubito_0.obj");
 	
-	vec3_t position = {0, 0, 5};
+	vec3_t position = {0, 0, 10};
 	mesh.translation = position;
 	vec3_t scale = {1, 1, 1};
 	mesh.scale = scale;

@@ -166,6 +166,13 @@ fill_flat_triangle_bottom(triangle_t *_triangle, u32 _color)
 	
 }
 
+
+internal_f void
+draw_textured_triangle(triangle_t *_triangle, texture_t _texture)
+{
+	
+}
+
 internal_f void
 draw_filled_triangle(triangle_t *_triangle, u32 _color)
 {

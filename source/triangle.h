@@ -12,8 +12,9 @@ typedef struct
 	s32 b;
 	s32 c;
 	
-	f32 u;
-	f32 v;
+	texture_uv_t a_uv;
+	texture_uv_t b_uv;
+	texture_uv_t c_uv;
 	
 } face_t;
 
@@ -24,6 +25,7 @@ typedef struct
 	vec2_t points[3];
 	color_t color;
 	f32 avg_depth;	
+	texture_uv_t texture_coords[3];
 	
 } triangle_t;
 

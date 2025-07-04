@@ -2,9 +2,9 @@
 
 ////////////////// Global defines for the Renderer ///////////////
 
+#include "texture.h"
 #include "triangle.h"
 #include "light_defines.h"
-#include "texture.h"
 #include "mesh.h"
 
 global SDL_Renderer* renderer;
