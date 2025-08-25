@@ -41,6 +41,12 @@ typedef struct
 
 /////// VECTOR ///////
 
+internal_f vec3_t vec3_subtract(vec3_t a, vec3_t b);
+internal_f vec3_t vec3_cross(vec3_t a, vec3_t b);
+internal_f f32 vec3_dot(vec3_t a, vec3_t b);
+internal_f vec3_t vec3_normalize(vec3_t v);
+
+
 ///// MATRIX //////
 
 global_f mat4_t 
@@ -131,7 +137,7 @@ mat4_make_rotation_matrix_y(f32 angle)
 		{
 			{cos(angle), 0, sin(angle), 0},
 			{0, 1, 0, 0},
-			{sin(angle), 0, -cos(angle), 0},
+			{-sin(angle), 0, cos(angle), 0},
 			{0, 0, 0, 1}
 		}
 	};
@@ -164,7 +170,7 @@ mat4_make_perspective(f32 _fov, f32 _aspect, f32 _znear, f32 _zfar)
 	f32 f = 1.0f / tan(_fov / 2.0f);
 	
 	m.m[0][0] = f / _aspect;
-	m.m[1][1] = -f;
+	m.m[1][1] = f;
 	m.m[2][2] = _zfar / (_zfar - _znear);
 	m.m[2][3] = (-_zfar * _znear) / (_zfar - _znear);
 	
@@ -203,6 +209,24 @@ mat4_mul_vec4_project(mat4_t _mat_proj, vec4_t _v)
 	
 	// this is now in a kind of image space per say, from 0 to 1.
 	return result;
+}
+
+global_f mat4_t 
+mat4_make_view_matrix(vec3_t _eye, vec3_t _target, vec3_t _up)
+{
+	vec3_t f = vec3_normalize(vec3_subtract(_eye, _target));
+	vec3_t r = vec3_normalize(vec3_cross(_up, f));
+	vec3_t u = vec3_cross(f, r);
+	
+	mat4_t m = {{
+			{r.x, r.y, r.z, -vec3_dot(r, _eye)},
+			{u.x, u.y, u.z, -vec3_dot(u, _eye)},
+			{f.x, f.y, f.z, -vec3_dot(f, _eye)},
+			{ 0, 0, 0, 1 }
+		}};
+	
+	
+	return m;
 }
 
 global_f vec4_t

@@ -1,6 +1,4 @@
 
-
-
 ////// MESH //////
 
 // TODO pass the entity position here. When we have world space.
@@ -48,15 +46,17 @@ mesh_render(mesh_t *_mesh)
 {				
 	SCRATCH();
 		
-	vec3_t camera_position = { 0, 0, -5 };
-	g_camera.position = camera_position;
+	vec3_t camera_position = g_camera.position;
+
+	vec3_t camera_target = {camera_position.x, camera_position.y, camera_position.z + 1.0f};
+	vec3_t camera_up = {0, 1, 0};
+	mat4_t view_matrix = mat4_make_view_matrix(camera_position, camera_target, camera_up);
         	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
 	//vec3_t position = _mesh->location;
 	
 	
 	list_t mesh_triangles_list = LIST(temp_arena);
-	
 	for(u32 i = 0; i < _mesh->face_num; ++i)
 	{
 		face_t mesh_face = _mesh->faces[i];
@@ -70,7 +70,7 @@ mesh_render(mesh_t *_mesh)
 		vec3_t face_verteces[3];
 		face_verteces[0] = _mesh->verteces[mesh_face.a];
 		face_verteces[1] = _mesh->verteces[mesh_face.b];
-		face_verteces[2] = _mesh->verteces[mesh_face.c];				
+		face_verteces[2] = _mesh->verteces[mesh_face.c];
 		
 		// Check the face verteces and apply space matreces
 		vec4_t transformed_verteces[3];
@@ -103,7 +103,11 @@ mesh_render(mesh_t *_mesh)
 			
 			
 			// Translation Matrix
-			transformed_vertex = mat4_mul_vec4(world_matrix, transformed_vertex);							
+			transformed_vertex = mat4_mul_vec4(world_matrix, transformed_vertex);
+			transformed_vertex = mat4_mul_vec4(view_matrix, transformed_vertex);
+			
+			
+			// TODO: I think we can do the face culling here, since we are doing it later on and I think there is no advantage.
 			
 			transformed_verteces[j] = transformed_vertex;
 		}
@@ -114,28 +118,28 @@ mesh_render(mesh_t *_mesh)
 		vec3_t b = vec3_from_vec4(transformed_verteces[1]);
 		vec3_t c = vec3_from_vec4(transformed_verteces[2]);
 		
+		
+		// build normal with opposite winding
 		vec3_t ab = vec3_subtract(b, a);
 		vec3_t ac = vec3_subtract(c, a);
+		vec3_t normal = vec3_normalize(vec3_cross(ac, ab));
 		
-		vec3_t normal = vec3_cross(ab, ac);
-		normal = vec3_normalize(normal);
+		// in left-handed view space, camera looks down +Z
+		if (vec3_dot(normal, (vec3_t){0,0,1}) >= 0) {
+			continue; // backface cull
+		}
 		
-		// Check the Face Culling from the camera
-		//TODO: this second check makes not much sense.
-		if(!can_render_face(a, normal, camera_position))
-		{
-			continue;
-		}	
 		
 		
 		// Project the verteces to screen space and create a triangle
 		triangle_t projected_triangle;		
 		for(u32 k = 0; k < 3; ++k)			
 		{						
-			//OPTIMIZE:  we can obtain the avg_depth here.
-			
+			//OPTIMIZE:  we can obtain the avg_depth here.			
+
 			vec4_t projected_triangle_point = mat4_mul_vec4_project(projection_matrix, transformed_verteces[k]);
 			
+			// WHAT?
 			if(projected_triangle_point.z <= 0.1)
 			{
 				continue;
@@ -152,14 +156,13 @@ mesh_render(mesh_t *_mesh)
 			
 			
 			vec2_t point = { projected_triangle_point.x, projected_triangle_point.y };
-			point.x *= g_window_width / 2;
-			point.y *= g_window_height / 2;
+			point.x *= g_window_width /2;
+			point.y *= g_window_height /2;
 						
 			point.x += g_window_width /2;
 			point.y += g_window_height /2;
 			
-			projected_triangle.points[k] = point;
-			
+			projected_triangle.points[k] = point;			
 		}
 		
 		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
@@ -182,9 +185,7 @@ mesh_render(mesh_t *_mesh)
 		LIST_FOREACH(triangle_t, triangle, mesh_triangles_list)
 		{		
 			
-			draw_filled_triangle(triangle, triangle->color);
-			
-			
+			draw_filled_triangle(triangle, triangle->color);						
 			bool bDrawDots = (!render_settings_check_flag(flag_display_wireframe_only) || (render_settings_check_flag(flag_display_wireframe_entirely)));		
 			//draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
 		}

@@ -33,7 +33,7 @@ light_apply_intensity(color_t _original_color, f32 _percentage)
 	u32 g = ((_original_color >> 8)  & 0xFF) * _percentage;
 	u32 b = ((_original_color >> 0)  & 0xFF) * _percentage;	
 	
-	color_t new_color = a | (r << 16) | (g << 8) | (b);	
+	color_t new_color = a | (r << 16) | (g << 8) | (b);
 	return new_color;
 }
 
