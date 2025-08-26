@@ -87,3 +87,9 @@ app_end(memory_t *engine_memory)
 {
 	
 }
+
+internal_f void
+app_input()
+{
+	
+}

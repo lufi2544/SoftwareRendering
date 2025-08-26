@@ -8,3 +8,4 @@ typedef struct
 } camera_t;
 
 global camera_t g_camera;
+global bool g_camera_moving = true;

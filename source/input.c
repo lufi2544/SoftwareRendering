@@ -1,6 +1,8 @@
 
 ////////////////// INPUT ////////////////
 
+
+// TODO Make an input system for the application layer
 internal_f void process_input()
 {
     SDL_Event event;
@@ -21,6 +23,24 @@ internal_f void process_input()
             {
                 is_running = false;
             }
+			else if(key == SDLK_UP)
+			{
+
+				g_camera.position.y += 0.1;
+				
+			}
+			else if(key == SDLK_DOWN)
+			{
+				g_camera.position.y -= 0.1;
+			}
+			else if(key == SDLK_RIGHT)
+			{
+				g_camera.position.x += 0.1;
+			}
+			else if(key == SDLK_LEFT)
+			{
+				g_camera.position.x -= 0.1;
+			}
 			else if(key == SDLK_1)
 			{
 				render_settings_set_flag(flag_display_wireframe_only, false);
