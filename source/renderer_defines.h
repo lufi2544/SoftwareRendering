@@ -2,6 +2,7 @@
 
 ////////////////// Global defines for the Renderer ///////////////
 
+#include "texture.h"
 #include "triangle.h"
 #include "light_defines.h"
 #include "mesh.h"

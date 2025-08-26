@@ -218,13 +218,13 @@ mat4_make_view_matrix(vec3_t _eye, vec3_t _target, vec3_t _up)
 	vec3_t r = vec3_normalize(vec3_cross(_up, f));
 	vec3_t u = vec3_cross(f, r);
 	
-	mat4_t m = {{
+	mat4_t m = 
+	{{
 			{r.x, r.y, r.z, -vec3_dot(r, _eye)},
 			{u.x, u.y, u.z, -vec3_dot(u, _eye)},
 			{f.x, f.y, f.z, -vec3_dot(f, _eye)},
 			{ 0, 0, 0, 1 }
-		}};
-	
+	}};
 	
 	return m;
 }

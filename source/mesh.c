@@ -1,4 +1,3 @@
-
 ////// MESH //////
 
 // TODO pass the entity position here. When we have world space.
@@ -45,13 +44,13 @@ global_f void
 mesh_render(mesh_t *_mesh)
 {				
 	SCRATCH();
-		
+	
 	vec3_t camera_position = g_camera.position;
-
+	
 	vec3_t camera_target = {camera_position.x, camera_position.y, camera_position.z + 1.0f};
 	vec3_t camera_up = {0, 1, 0};
 	mat4_t view_matrix = mat4_make_view_matrix(camera_position, camera_target, camera_up);
-        	
+	
 	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
 	//vec3_t position = _mesh->location;
 	
@@ -136,7 +135,7 @@ mesh_render(mesh_t *_mesh)
 		for(u32 k = 0; k < 3; ++k)			
 		{						
 			//OPTIMIZE:  we can obtain the avg_depth here.			
-
+			
 			vec4_t projected_triangle_point = mat4_mul_vec4_project(projection_matrix, transformed_verteces[k]);
 			
 			// WHAT?
@@ -145,20 +144,20 @@ mesh_render(mesh_t *_mesh)
 				continue;
 			} 
 			
-									
+			
 			// The draw_filled_triangle function assumes a Y-up coordinate system,
 			// where Y increases from bottom to top (i.e., (0,0) is at the bottom-left).
 			// Since our screen space uses a Y-down system (Y increases from top to bottom),
 			// we need to flip the Y axis during projection so triangles are correctly
 			// ordered from top to bottom for rasterization.			
-//			point.y = g_window_height - point.y;
+			//			point.y = g_window_height - point.y;
 			
 			
 			
 			vec2_t point = { projected_triangle_point.x, projected_triangle_point.y };
 			point.x *= g_window_width /2;
 			point.y *= g_window_height /2;
-						
+			
 			point.x += g_window_width /2;
 			point.y += g_window_height /2;
 			
@@ -190,6 +189,9 @@ mesh_render(mesh_t *_mesh)
 			//draw_linear_triangle(triangle, COLOR_RED, bDrawDots);
 		}
 	}
-			
+	
 	SCRATCH_END();
 }
+
+
+
