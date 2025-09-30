@@ -1,4 +1,6 @@
 
+// This is the main file for including the platform code for the application.
+
 ///// H FILES /////
 #include "framework_includes.h"
 

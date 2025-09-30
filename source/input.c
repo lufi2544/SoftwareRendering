@@ -41,6 +41,14 @@ internal_f void process_input()
 			{
 				g_camera.position.x -= 0.1;
 			}
+			else if(key == 'e')
+			{
+				g_camera.position.z += 0.1;
+			}
+			else if(key == 'd')
+			{
+				g_camera.position.z -= 0.1;
+			}
 			else if(key == SDLK_1)
 			{
 				render_settings_set_flag(flag_display_wireframe_only, false);

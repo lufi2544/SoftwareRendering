@@ -23,6 +23,5 @@
 
 // App framework
 #include "input.c"
-#include "application.c"
 #include "renderer.c"
 #include "engine.c"

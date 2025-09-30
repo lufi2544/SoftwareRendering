@@ -9,7 +9,6 @@ set BIN_DIR=bin
 set LIB_DIR=../lib
 set CFLAGS=/std:c17 /Zi
 set LDFLAGS=/link /LIBPATH:%LIB_DIR% SDL2main.lib SDL2.lib
-set SRC_FILES=main.c
 if not exist %BIN_DIR% mkdir %BIN_DIR%
 
 cd %BIN_DIR%
@@ -21,6 +20,7 @@ call "../setup_cl_x64.bat"
 
 :: Compile with MSVC
 :: Using Fe: in stead of OUT, since we are using unity build.
-cl /Fe:SoftwareRendering %CFLAGS% -I%SRC_DIR% -I%MAYORANA% %SRC_DIR%\%SRC_FILES% %LDFLAGS% /SUBSYSTEM:CONSOLE /nologo
+cl /Fe:SoftwareRendering %CFLAGS% -I%SRC_DIR% -I%MAYORANA% %SRC_DIR%\win32_rendering_app.c %LDFLAGS% /SUBSYSTEM:CONSOLE /nologo
+
 
 

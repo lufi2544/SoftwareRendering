@@ -1,9 +1,7 @@
 
 //// MAIN APPLICATION PIPELINE ////
 
-
-internal_f void 
-app_init(memory_t *engine_memory)
+APP_INIT(AppInitStub)
 {		
 	// Init the meshes
 	g_meshes = push_array(&engine_memory->permanent, APP_MESH_NUM, mesh_t);
@@ -37,7 +35,7 @@ app_init(memory_t *engine_memory)
 	render_2->translation.z = 30;
 	
 	
-	const f32 fov_coeff = 45; // Adjust to your liking
+	const f32 fov_coeff = 45;
 	const f32 fov = fov_coeff * (PI / 180);
 	const f32 aspect = (f32)g_window_width / (f32)g_window_height;
 	const f32 znear = 0.1f;
@@ -52,8 +50,7 @@ app_init(memory_t *engine_memory)
 	
 }
 
-internal_f void 
-app_update(memory_t *engine_memory)
+APP_UPDATE(AppUpdateStub)
 {
 	mesh_t* cube = &g_meshes[0];
 	cube->rotation.y += 0.01;
@@ -68,8 +65,7 @@ app_update(memory_t *engine_memory)
 	
 }
 
-internal_f void 
-app_render(memory_t *engine_memory)
+APP_RENDER(AppRenderStub)
 {		
 	// We have mapped the pixels on the screen on the Texture, changing the pixels on the screen will make the texture to change.
 	

@@ -1,12 +1,30 @@
 
 
-#include "memoryapi.h"
+#include <memoryapi.h>
+#include <libloaderapi.h>
 
 
 /////////////////// ENGINE ///////////////////
 /**
 * This file contains all the core engine functions for init, update and end.
 */
+
+internal_f win32_app_code
+win32_load_app_code(void)
+{
+	win32_app_code result;
+	result.app_init_function = AppRenderStub;
+	result.app_update_function = AppUpdateStub;
+	result.app_end_function = AppEndStub;
+	
+	HMODULE app_code_dll = LoadLibraryA("rendering_app.dll");
+	if(app_code_dll)
+	{
+		result.app_init_function = (app_init*)GetProcAddress(app_code_dll, "AppInit");
+	}
+	
+	return result;
+}
 
 internal_f void
 engine_memory_init();
@@ -17,12 +35,14 @@ engine_init()
     if(!create_window())
     {
         return false;
-    }
+    }	
 	
 	mayorana_init();
+	
+	g_app_code = win32_load_app_code();
 		
 	display_setup(&g_memory);	
-	app_init(&g_memory);
+	g_app_code.app_init_function(&g_memory);
     
     return true;
 }
@@ -70,7 +90,7 @@ engine_run()
         render();
     }    
 	
-	app_end(&g_memory);
+	g_app_code.app_end_function(&g_memory);
     engine_end();
         
     return 0;
@@ -79,7 +99,7 @@ engine_run()
 internal_f void
 update()
 {        
-	app_update(&g_memory);	
+	g_app_code.app_update_function(&g_memory);	
 }
 
 
