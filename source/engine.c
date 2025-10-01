@@ -13,14 +13,70 @@ internal_f win32_app_code
 win32_load_app_code(void)
 {
 	win32_app_code result;
-	result.app_init_function = AppRenderStub;
-	result.app_update_function = AppUpdateStub;
-	result.app_end_function = AppEndStub;
+	result.app_init = AppInitStub;
+	result.app_update = AppUpdateStub;
+	result.app_render = AppRenderStub;
+	result.app_input = AppInputStub;
+	result.app_end = AppEndStub;
 	
-	HMODULE app_code_dll = LoadLibraryA("rendering_app.dll");
+	HMODULE app_code_dll = LoadLibraryA("app.dll");
 	if(app_code_dll)
 	{
-		result.app_init_function = (app_init*)GetProcAddress(app_code_dll, "AppInit");
+		result.app_init = (app_init*)GetProcAddress(app_code_dll, "AppInit");
+		if(result.app_init)
+		{
+			printf("AppInit function found ...\n");
+		}
+		
+		result.app_end = (app_end*)GetProcAddress(app_code_dll, "AppEnd");
+		if(result.app_init)
+		{
+			printf("AppEnd function found ...\n");
+		}
+		
+		result.app_update = (app_update*)GetProcAddress(app_code_dll, "AppUpdate");
+		if(result.app_update)
+		{
+			printf("AppUpdate function found ... \n");
+		}
+		
+		result.app_input = (app_input*)GetProcAddress(app_code_dll, "AppInput");
+		if(result.app_input)
+		{
+			printf("AppInput function found ... \n");
+		}
+		
+		result.app_render = (app_render*)GetProcAddress(app_code_dll, "AppRender");
+		if(result.app_input)
+		{
+			printf("AppRender function found ... \n");
+		}
+		
+		
+		if(!result.app_init)
+		{
+			printf("Error: AppInitfunction not found ... \n");
+		}
+		
+		if(!result.app_end)
+		{
+			printf("Error: AppEnd function not found ... \n");			
+		}
+		
+		if(!result.app_update)
+		{			
+			printf("Error: AppUpdate function not found ... \n");
+		}
+		
+		if(!result.app_render)
+		{
+			printf("Error: AppRender function not found ... \n");
+		}
+		
+		if(!result.app_input)
+		{
+			printf("Error: AppInput function not found ... \n");			
+		}				
 	}
 	
 	return result;
@@ -42,7 +98,7 @@ engine_init()
 	g_app_code = win32_load_app_code();
 		
 	display_setup(&g_memory);	
-	g_app_code.app_init_function(&g_memory);
+	g_app_code.app_init(&g_memory);
     
     return true;
 }
@@ -90,7 +146,7 @@ engine_run()
         render();
     }    
 	
-	g_app_code.app_end_function(&g_memory);
+	g_app_code.app_end(&g_memory);
     engine_end();
         
     return 0;
@@ -99,7 +155,7 @@ engine_run()
 internal_f void
 update()
 {        
-	g_app_code.app_update_function(&g_memory);	
+	g_app_code.app_update(&g_memory);	
 }
 
 

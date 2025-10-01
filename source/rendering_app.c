@@ -1,3 +1,9 @@
 
-#include "application_defines.h"
+
+// ------- APP LAYER -------
+// This code is going to be compiled separately as a DLL, so we can load the code dynamically.
+#include "base_includes.h"
+#include "framework_includes.h"
+
+
 #include "application.c"

@@ -13,7 +13,7 @@ render(void)
     SDL_RenderClear(renderer);   
     map_texture_to_pixels_buffer();    
         
-	g_app_code.app_render_function(&g_memory);
+	g_app_code.app_render(&g_memory);
     
     SDL_RenderPresent(renderer);
 }

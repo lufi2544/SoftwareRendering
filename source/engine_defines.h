@@ -3,14 +3,15 @@
 ////////////////// Global  for the Engine ///////////////
 
 
-global bool is_running = true;
+bool is_running = true;
 
 typedef struct
 {
-	app_init* app_init_function;
-	app_update* app_update_function;
-	app_render* app_render_function;
-	app_end* app_end_function;
+	app_init* app_init;
+	app_update* app_update;
+	app_render* app_render;
+	app_input* app_input;
+	app_end* app_end;
 	
 } win32_app_code;
 

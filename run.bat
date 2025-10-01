@@ -1,3 +1,3 @@
 @echo off
 cd bin
- SoftwareRendering
+win32_app

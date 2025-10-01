@@ -1,4 +1,9 @@
 
+
+- Decouple the memory fro the win32 application, so we pass the info to the dll and then we just use it to update the sutff inside the 
+dll itself.
+
+
 RENDERING
 
 

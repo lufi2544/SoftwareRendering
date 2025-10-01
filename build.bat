@@ -20,7 +20,6 @@ call "../setup_cl_x64.bat"
 
 :: Compile with MSVC
 :: Using Fe: in stead of OUT, since we are using unity build.
-cl /Fe:SoftwareRendering %CFLAGS% -I%SRC_DIR% -I%MAYORANA% %SRC_DIR%\win32_rendering_app.c %LDFLAGS% /SUBSYSTEM:CONSOLE /nologo
 
-
-
+cl /Fe:app %CFLAGS% -LD -I%SRC_DIR% -I%MAYORANA% %SRC_DIR%\rendering_app.c %LDFLAGS% /EXPORT:AppInit /EXPORT:AppEnd /EXPORT:AppRender /EXPORT:AppUpdate /EXPORT:AppInput /MAP /nologo
+cl /Fe:win32_app %CFLAGS% -I%SRC_DIR% -I%MAYORANA% %SRC_DIR%\win32_rendering_app.c %LDFLAGS% /SUBSYSTEM:CONSOLE /nologo
