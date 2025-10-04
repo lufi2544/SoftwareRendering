@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/juane/Desktop/Ishak/Programming/SoftwareRendering/**)",
+      "Bash(build.bat)",
+      "Bash(cmd.exe:*)",
+      "Bash(powershell:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

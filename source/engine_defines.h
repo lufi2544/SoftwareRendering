@@ -2,9 +2,6 @@
 
 ////////////////// Global  for the Engine ///////////////
 
-
-bool is_running = true;
-
 typedef struct
 {
 	app_init* app_init;

@@ -1,7 +1,7 @@
 
 //////////////////// DISPLAY //////////////////
 
-internal_f bool create_window(void)
+internal_f bool create_window(engine_shared_data_t *shared_data)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
@@ -13,16 +13,17 @@ internal_f bool create_window(void)
     SDL_DisplayMode display_mode;    
     SDL_GetCurrentDisplayMode(0, &display_mode);
     
-    g_window_width= display_mode.w;
-    g_window_height = display_mode.h;
+    shared_data->window_width= display_mode.w;
+    shared_data->window_height = display_mode.h;
+	
     
     window = SDL_CreateWindow(
                               
                               NULL,
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
-                              g_window_width,
-                              g_window_height,
+                              shared_data->window_width,
+                              shared_data->window_height,
                               SDL_WINDOW_BORDERLESS
                               );
     
@@ -46,9 +47,9 @@ internal_f bool create_window(void)
     return true;
 }
 
-internal_f void display_setup(memory_t *engine_memory)
+internal_f void display_setup(memory_t *engine_memory, engine_shared_data_t *shared_data)
 {       
-    color_buffer = push_array(&engine_memory->permanent, (g_window_width* g_window_height), u32);
+    color_buffer = push_array(&engine_memory->permanent, (shared_data->window_width* shared_data->window_height), u32);
     if(!color_buffer)
     {
         fprintf(stderr, "Error allocating the color_buffer.");
@@ -59,21 +60,21 @@ internal_f void display_setup(memory_t *engine_memory)
                                              renderer,
                                              SDL_PIXELFORMAT_ARGB8888,
                                              SDL_TEXTUREACCESS_STREAMING,
-                                             g_window_width,
-                                             g_window_height
+                                             shared_data->window_width,
+                                             shared_data->window_height
                                              );
     
        
 }
 
 // Maps the SDL_texture to the pixels buffer and pass the Texture to the renderer.
-internal_f void map_texture_to_pixels_buffer(void)
+internal_f void map_texture_to_pixels_buffer(engine_shared_data_t* engine_data)
 {
     SDL_UpdateTexture(
                       color_buffer_texture,
                       NULL,
                       color_buffer,
-                      (int)(g_window_width* sizeof(u32))
+                      (int)(engine_data->window_width * sizeof(u32))
                       );
     
     
@@ -84,16 +85,28 @@ internal_f void map_texture_to_pixels_buffer(void)
 
 ///////////////////// HELPER ///////////////////// 
 
-internal_f void draw_grid(u16 square_size, u32 color)
+internal_f void draw_grid(u16 square_size, u32 color, engine_shared_data_t *engine_data)
 {
-    for(u16 height_index = 0; height_index < g_window_height; height_index++)
+    for(u16 height_index = 0; height_index < engine_data->window_height; height_index++)
     {
-        for(u16 width_index = 0; width_index < g_window_width; width_index++)
+        for(u16 width_index = 0; width_index < engine_data->window_width; width_index++)
         {
             if(height_index % square_size == 0 || width_index % square_size == 0)
             {
-                color_buffer[width_index + (height_index * g_window_width)] = color;
+                color_buffer[width_index + (height_index * engine_data->window_width)] = color;
             }
+        }
+    }
+}
+
+
+internal_f void clear_color_buffer(u32 color, engine_shared_data_t *engine_data)
+{
+    for(u16 height_index = 0; height_index < engine_data->window_height; height_index++)
+    {
+        for(u16 width_index = 0; width_index < engine_data->window_width; width_index++)
+        {
+            color_buffer[width_index + (height_index * engine_data->window_width)] = color;
         }
     }
 }

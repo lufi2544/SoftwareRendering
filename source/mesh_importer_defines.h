@@ -485,7 +485,7 @@ convert_to_face(mesh_t *_mesh, importer_element_t *first_face_element, buffer_t 
 // I would like to change this to struct of arrays, so we can have id DOD and better for cache locality
 // in this case, maybe allocting everything in the temp memory and then passing it to the permanent memory?..
 internal_f mesh_t
-create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
+create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_shared_data_t *engine_data)
 {
 	mesh_t result;
 	result.face_num = 0;
@@ -611,5 +611,6 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name)
 	SCRATCH_END();
 	
 	
+	engine_data->meshes_num++;
 	return result;
 }

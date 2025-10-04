@@ -15,13 +15,9 @@
 #include "light.c"
 #include "mesh.c"
 #include "mesh_importer.c"
-
-// Other
-#include "entities_temp.c"
-
+#include "renderer.c"
 
 
 // App framework
 #include "input.c"
-#include "renderer.c"
 #include "engine.c"

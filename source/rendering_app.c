@@ -5,5 +5,5 @@
 #include "base_includes.h"
 #include "framework_includes.h"
 
-
+// Include framework implementation files needed by the app
 #include "application.c"

@@ -6,19 +6,6 @@
 
 typedef u32 color_t;
 
-typedef struct
-{
-	s32 a;
-	s32 b;
-	s32 c;
-	
-	texture_uv_t a_uv;
-	texture_uv_t b_uv;
-	texture_uv_t c_uv;
-	
-} face_t;
-
-
 /** Stored the 3 points in screen space to form a triangle.  */
 typedef struct 
 {	

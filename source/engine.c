@@ -1,13 +1,13 @@
-
-
 #include <memoryapi.h>
 #include <libloaderapi.h>
-
 
 /////////////////// ENGINE ///////////////////
 /**
 * This file contains all the core engine functions for init, update and end.
 */
+
+global engine_shared_data_t g_engine_shared_data;
+global mat4_t g_projection_matrix;
 
 internal_f win32_app_code
 win32_load_app_code(void)
@@ -85,20 +85,44 @@ win32_load_app_code(void)
 internal_f void
 engine_memory_init();
 
+
+internal_f void
+initialize_engine_data()
+{
+	// Initialize 		
+	g_engine_shared_data.b_is_engine_running = true;
+	
+	// render_settings
+	g_engine_shared_data.settings = push_struct(&g_memory.permanent, render_settings);
+	g_engine_shared_data.settings->fov = 45.0f * (PI / 180.0f);
+	g_engine_shared_data.settings->aspect = g_engine_shared_data.window_width / g_engine_shared_data.window_height;
+	g_engine_shared_data.settings->znear = 0.1f;
+	g_engine_shared_data.settings->zfar = 200.0f;
+	g_engine_shared_data.settings->flags = 0;
+	
+	vec3_t light_dir = {0, 0, 1};
+	global_light.direction = light_dir;
+	
+	vec3_t pos = {12, 0, -10};
+	g_engine_shared_data.camera.position = pos;
+}
+
 internal_f bool
 engine_init()
 {
-    if(!create_window())
+    if(!create_window(&g_engine_shared_data))
     {
         return false;
     }	
 	
+	// ---- MAIN ENGINE INIT ----
 	mayorana_init();
-	
 	g_app_code = win32_load_app_code();
-		
-	display_setup(&g_memory);	
-	g_app_code.app_init(&g_memory);
+	initialize_engine_data();
+	// ---- ----		
+	display_setup(&g_memory, &g_engine_shared_data);	
+	g_app_code.app_init(&g_memory, &g_engine_shared_data);
+	g_projection_matrix = mat4_make_perspective(g_engine_shared_data.settings->fov, g_engine_shared_data.settings->aspect, g_engine_shared_data.settings->znear, g_engine_shared_data.settings->zfar);
     
     return true;
 }
@@ -137,16 +161,17 @@ engine_run()
         return 1;
     }
     
-    while(is_running)
+    while(g_engine_shared_data.b_is_engine_running)
     {
-        process_input();
+        process_input(&g_engine_shared_data);
         fix_delta_time();
         
         update();
-        render();
+        render(&g_projection_matrix, &g_memory, &g_engine_shared_data);
+		
     }    
 	
-	g_app_code.app_end(&g_memory);
+	g_app_code.app_end(&g_memory, &g_engine_shared_data);
     engine_end();
         
     return 0;
@@ -155,9 +180,8 @@ engine_run()
 internal_f void
 update()
 {        
-	g_app_code.app_update(&g_memory);	
+	g_app_code.app_update(&g_memory, &g_engine_shared_data);	
 }
-
 
 internal_f void
 engine_end(void)
