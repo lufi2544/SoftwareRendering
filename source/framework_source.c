@@ -15,9 +15,9 @@
 #include "light.c"
 #include "mesh.c"
 #include "mesh_importer.c"
+
+// TODO fix this .h in here
+#include "engine_defines.h"
 #include "renderer.c"
-
-
-// App framework
 #include "input.c"
 #include "engine.c"

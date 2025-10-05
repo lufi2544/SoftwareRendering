@@ -18,7 +18,6 @@ render(mat4_t *projection_matrix, memory_t *engine_memory, engine_shared_data_t 
 	
 	for(u32 i = 0; i < data->meshes_num; ++i)
 	{
-		printf("Mesh %i: faces=%i, verts=%i\n", i, data->meshes[i].face_num, data->meshes[i].vertex_num);
 		mesh_render(engine_memory, &data->meshes[i], &data->camera, projection_matrix, data);
 	}
     

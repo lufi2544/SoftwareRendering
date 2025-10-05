@@ -1,13 +1,11 @@
 
 //// Software Rendering Engine ////
 
+- Take a look at what more stuff can refactored and make better in the engiene.
 
 TODO: 
 - Create a cube struct for defining the state of init and the different triangles.
 - Solid understanding of the index array and faces, etc.
 
-
-- print the buffers to string.
-- continue mesh import.
 
 

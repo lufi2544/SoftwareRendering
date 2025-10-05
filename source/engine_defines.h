@@ -9,7 +9,9 @@ typedef struct
 	app_render* app_render;
 	app_input* app_input;
 	app_end* app_end;
-	
+
+	HMODULE handle;
+
 } win32_app_code;
 
 win32_app_code g_app_code;

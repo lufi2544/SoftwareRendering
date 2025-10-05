@@ -24,7 +24,10 @@ APP_INIT(AppInit)
 	
 	mesh_t mesh_2 = create_mesh_from_file(engine_memory, "data/lol.obj", shared_data);
 	
-	vec3_t position = {0, 0, 10};
+	int f = 50;
+	printf("LOLETE %i", f);
+	
+	vec3_t position = {0, 0, f};
 	mesh.translation = position;
 	
 	vec3_t scale = {1, 1, 1};
@@ -36,13 +39,18 @@ APP_INIT(AppInit)
 
 	render_2->translation.x = 5;
 	render_2->translation.y = 5;
-	render_2->translation.z = 30;		
+	render_2->translation.z = 10;
 }
 
+
+// TODO I think the light color and every thing that the user can twick should be exposed to the app layer, so the engine can 
+// process it, but the app can modify it.
 APP_UPDATE(AppUpdate)
 {
 	mesh_t* cube = &shared_data->meshes[0];
 	cube->rotation.y += 0.01;
+	cube->rotation.x += 0.01;
+	cube->rotation.z += 0.01;
 		
 	
 	//cube->translation.x += 0.01;

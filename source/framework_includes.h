@@ -15,4 +15,3 @@
 // Data that is going to be shared for external apps
 
 #include "application_defines.h"
-#include "engine_defines.h"
