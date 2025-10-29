@@ -9,3 +9,6 @@ TODO:
 
 
 
+
+// TEXTURE MAPPING UV
+- save the texture ref in the mesh itself.

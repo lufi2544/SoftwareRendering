@@ -219,8 +219,8 @@ engine_run()
 		
 		if(++counter >= refresh)
 		{
-			update_app_code();
-			counter = 0;
+			//update_app_code();
+			//counter = 0;
 		}
     }    
 	

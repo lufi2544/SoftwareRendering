@@ -501,13 +501,13 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_sh
 	if (_file_name == 0)
 	{
 		return result;
-	}	
+	}
 	
 	S_SCRATCH(engine_memory);
 	
 	buffer_t buffer = read_file(temp_arena, _file_name);
 	if (buffer.size > 0)
-	{						
+	{
 		printf("Importing mesh %s \n", _file_name);
 		mesh_importer_t importer;
 		importer.source = buffer;

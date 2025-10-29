@@ -22,11 +22,7 @@ APP_INIT(AppInit)
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
 	mesh_t mesh = create_mesh_from_file(engine_memory, "data/lol.obj", shared_data);
 	
-	mesh_t mesh_2 = create_mesh_from_file(engine_memory, "data/lol.obj", shared_data);
-	
-	int f = 50;
-	printf("LOLETE %i", f);
-	
+	int f = 25;
 	vec3_t position = {0, 0, f};
 	mesh.translation = position;
 	
@@ -34,12 +30,21 @@ APP_INIT(AppInit)
 	mesh.scale = scale;
 	
 	*rendered_mesh = mesh;
+	
+	/*
+	mesh_t mesh_2 = create_mesh_from_file(engine_memory, "data/lol.obj", shared_data);
+	
+	printf("LOLETE %i", f);
+	
+	
+	
 
 	*render_2 = mesh_2;
 
 	render_2->translation.x = 5;
 	render_2->translation.y = 5;
 	render_2->translation.z = 10;
+*/
 }
 
 
@@ -47,17 +52,14 @@ APP_INIT(AppInit)
 // process it, but the app can modify it.
 APP_UPDATE(AppUpdate)
 {
-	mesh_t* cube = &shared_data->meshes[0];
+	
+ 	mesh_t* cube = &shared_data->meshes[0];
 	cube->rotation.y += 0.01;
 	cube->rotation.x += 0.01;
 	cube->rotation.z += 0.01;
+
 		
 	
-	//cube->translation.x += 0.01;
-	//cube->translation.y += 0.01;
-	
-	mesh_t* other = &shared_data->meshes[1];
-	other->rotation.x += 0.01;
 	
 	
 }

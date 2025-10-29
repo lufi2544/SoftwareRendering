@@ -2,9 +2,6 @@
 
 //////////////// TRIANGLE RELATED STUFF ///////////////
 
-/** Defining face. Stores the vertex indexes.  */
-
-typedef u32 color_t;
 
 /** Stored the 3 points in screen space to form a triangle.  */
 typedef struct 
@@ -15,7 +12,6 @@ typedef struct
 	texture_uv_t texture_coords[3];
 	
 } triangle_t;
-
 
 
 internal_f void 

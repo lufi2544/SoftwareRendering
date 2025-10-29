@@ -10,7 +10,6 @@ typedef struct
 	f32 v;
 } texture_uv_t;
 
-
 typedef struct
 {
 	s32 a;
@@ -27,15 +26,16 @@ typedef struct
 {
 	vec3_t *verteces;
 	face_t *faces;
+	texture_uv_t *uv_coords;
+	
 	u32 vertex_num;
 	u32 face_num;
+	u32 uv_coords_num;
 	
-	texture_uv_t *uv_coords;
 	vec3_t rotation;
 	vec3_t scale;
 	vec3_t location;
 	vec3_t translation; // TODO see if this is needed...
-	u32 uv_coords_num;
 	
 } mesh_t;
 
@@ -65,13 +65,16 @@ typedef struct
 
 typedef struct
 {
-	/* runtime engine meshes*/
+	// -- MESH --
 	mesh_t *meshes;
 	u32 meshes_num;
 	
-	/* whether the engineis running*/
+	
+	// -- FLAGS --
 	bool b_is_engine_running;
-		
+	
+	
+	// -- RENDER --
 	/* render settings */
 	render_settings *settings;
 	camera_t camera;
@@ -79,6 +82,5 @@ typedef struct
 	/* window stuff */
 	u16 window_width;
 	u16 window_height;
-	
-	
+				
 } engine_shared_data_t;
