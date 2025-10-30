@@ -182,7 +182,11 @@ draw_texel(s32 _x, s32 _y, vec2_t _a, vec2_t _b, vec2_t _c, texture_uv_t _uv_a, 
 }
 
 
-static int plank =50;
+static int plank =100;
+static int plank_1 = 500;
+
+
+#define MAX_TEXTURED_TRIANGLE_SLOPE 30
 
 /*
  * We render the top triangle here, from a.y to b.y, with having in mind that the points are sorted by y.
@@ -202,21 +206,18 @@ fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 	f32 inv_slope_1 = 0;
 	f32 inv_slope_2 = 0;
 
-	
-	
-	if ((b.y - a.y != 0) && (b.y - a.y > 1.5))
+	// Calculate inverse slopes (dx/dy) for left and right edges
+	// Only check for division by zero
+	if (b.y - a.y != 0)
 	{
-		inv_slope_1 = (b.x - a.x) / (b.y - a.y);
+		inv_slope_1 = (f32)(b.x - a.x) / (f32)(b.y - a.y);
+		f32_clamp(&inv_slope_1, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
-	
-	if ((c.y - a.y != 0) && (c.y - a.y > 1.5)) 
+
+	if (c.y - a.y != 0)
 	{
-		inv_slope_2 = (c.x - a.x) / (c.y - a.y);
-	}
-	
-	if(inv_slope_2 > plank || inv_slope_1 > plank)
-	{		
-		printf("LOL GRANGE  \n");		
+		inv_slope_2 = (f32)(c.x - a.x) / (f32)(c.y - a.y);
+		f32_clamp(&inv_slope_2, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
 	
 	if (b.y - a.y != 0)
@@ -257,19 +258,18 @@ fill_triangle_bottom_textured(triangle_t *_triangle, texture_t * _texture, engin
 	f32 inv_slope_1 = 0;
 	f32 inv_slope_2 = 0;
 
-	if ((c.y - b.y != 0) && (c.y -b.y > 1.5)) 
+	// Calculate inverse slopes (dx/dy) for left and right edges
+	// Only check for division by zero
+	if (c.y - b.y != 0)
 	{
-		inv_slope_1 = (b.x - c.x) / (b.y - c.y);
+		inv_slope_1 = (f32)(b.x - c.x) / (f32)(b.y - c.y);
+		f32_clamp(&inv_slope_1, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
-	
-	if ((c.y - a.y != 0) && (c.y - a.y > 1.5)) 
+
+	if (c.y - a.y != 0)
 	{
-		inv_slope_2 = (a.x - c.x) / (a.y - c.y);
-	}
-	
-	if(inv_slope_2 > plank || inv_slope_1 > plank)
-	{		
-		printf("LOL GRANGE  \n");		
+		inv_slope_2 = (f32)(a.x - c.x) / (f32)(a.y - c.y);
+		f32_clamp(&inv_slope_2, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
 
 	if (c.y - b.y != 0)
@@ -357,8 +357,15 @@ flat_top_triangle_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 	f32 inv_slope_1 = 0;
 	f32 inv_slope_2 = 0;
 
-	if(y2 - y1 != 0) inv_slope_1 = ((f32)(x2 - x1) / (f32)(y2 - y1));
-	if(y2 - y0 != 0) inv_slope_2 = ((f32)(x2 - x0) / (f32)(y2 - y0));
+	if(y2 - y1 != 0)
+	{
+		inv_slope_1 = ((f32)(x2 - x1) / (f32)(y2 - y1));
+	}
+	
+	if(y2 - y0 != 0)
+	{
+		inv_slope_2 = ((f32)(x2 - x0) / (f32)(y2 - y0));
+	}
 	
 	
 	if(y2 - y1 != 0)

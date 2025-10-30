@@ -454,3 +454,17 @@ vec2_cross(vec2_t u, vec2_t v)
 }
 
 
+
+global_f f32_clamp(f32 *_value, f32 _min, f32 _max)
+{
+	f32 val = *_value; 
+	if(val < _min)
+	{
+		*_value = _min;
+	}
+	else if(val > _max)
+	{
+		*_value = _max;
+	}
+}
+

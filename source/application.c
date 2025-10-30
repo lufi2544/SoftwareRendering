@@ -20,10 +20,13 @@ APP_INIT(AppInit)
 	// for now let's pass the permanent memory	
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
-	mesh_t mesh = create_mesh_from_file(engine_memory, "data/lol.obj", shared_data);
+	mesh_t mesh = create_mesh_from_file(engine_memory, "data/cube.obj", shared_data);
 	
-	int f = 25;
-	vec3_t position = {0, 0, f};
+	int f = 5;
+	int x = 12;
+	int y = 2;
+		
+	vec3_t position = {x, y, f};
 	mesh.translation = position;
 	
 	vec3_t scale = {1, 1, 1};
@@ -54,14 +57,13 @@ APP_UPDATE(AppUpdate)
 {
 	
  	mesh_t* cube = &shared_data->meshes[0];
-	cube->rotation.y += 0.01;
 	cube->rotation.x += 0.01;
+	//cube->rotation.y += 0.01;
+	
+	/*
 	cube->rotation.z += 0.01;
-
-		
-	
-	
-	
+*/
+			
 }
 
 APP_RENDER(AppRender)

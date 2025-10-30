@@ -200,9 +200,12 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 		vec3_t ab = vec3_subtract(b, a);
 		vec3_t ac = vec3_subtract(c, a);
 		vec3_t normal = vec3_normalize(vec3_cross(ac, ab));
-		
+
 		// in left-handed view space, camera looks down +Z
-		if (vec3_dot(normal, (vec3_t){0,0,1}) >= 0) {
+		// In view space, camera is at origin (0, 0, 0)
+		vec3_t camera_position_view_space = {0, 0, 0};
+		if (can_render_face(a, normal, camera_position_view_space))
+		{
 			continue; // backface cull
 		}
 		
@@ -253,7 +256,7 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 		//// FLAT LIGHT PASS
 		
 		projected_triangle.color = COLOR_WHITE;
-		projected_triangle.color = light_flat_pass(global_light, normal, projected_triangle.color);
+//		projected_triangle.color = light_flat_pass(global_light, normal, projected_triangle.color);
 		
 		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}
