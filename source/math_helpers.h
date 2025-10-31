@@ -401,7 +401,7 @@ vec3_normalize(vec3_t v)
 }
 
 
-////// VEC2 //////
+////// V2 //////
 
 internal_f void
 vec2_print(vec2_t *vec)
@@ -468,3 +468,11 @@ global_f f32_clamp(f32 *_value, f32 _min, f32 _max)
 	}
 }
 
+vec2_t vec2_from_vec4(vec4_t v)
+{
+	vec2_t result;
+	result.x = v.x;
+	result.y = v.y;
+	
+	return result;
+}

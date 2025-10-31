@@ -6,10 +6,10 @@
 /** Stored the 3 points in screen space to form a triangle.  */
 typedef struct 
 {	
-	vec2_t points[3];
+	vec4_t points[3];
+	texture_uv_t texture_coords[3];
 	color_t color;
 	f32 avg_depth;	
-	texture_uv_t texture_coords[3];
 	
 } triangle_t;
 

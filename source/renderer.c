@@ -153,17 +153,25 @@ internal_f vec3_t
 barycentric_weights(vec2_t _a, vec2_t _b, vec2_t _c, vec2_t _p);
 
 internal_f void
-draw_texel(s32 _x, s32 _y, vec2_t _a, vec2_t _b, vec2_t _c, texture_uv_t _uv_a, texture_uv_t _uv_b, texture_uv_t _uv_c, texture_t *_texture, engine_shared_data_t *engine_shared_data)
+draw_texel(s32 _x, s32 _y, vec4_t _a, vec4_t _b, vec4_t _c, texture_uv_t _uv_a, texture_uv_t _uv_b, texture_uv_t _uv_c, texture_t *_texture, engine_shared_data_t *engine_shared_data)
 {
 	vec2_t p = {_x, _y};
-	vec3_t weights = barycentric_weights(_a, _b, _c, p);
+	vec3_t weights = barycentric_weights(vec2_from_vec4(_a), vec2_from_vec4(_b), vec2_from_vec4(_c), p);
 	
 	f32 alpha = weights.x;
 	f32 beta = weights.y;
 	f32 gamma = weights.z;
 	
-	f32 interpolated_u = (_uv_a.u * alpha) + (_uv_b.u * beta) + (_uv_c.u * gamma);
-	f32 interpolated_v = (_uv_a.v * alpha) + (_uv_b.v * beta) + (_uv_c.v * gamma);
+	f32 interpolated_u;
+	f32 interpolated_v;
+	f32 interpolated_reciprocal_w;
+	
+	interpolated_u = ((_uv_a.u / _a.w) * alpha) + ((_uv_b.u / _b.w) * beta) + ((_uv_c.u / _c.w) * gamma);
+	interpolated_v = ((_uv_a.v / _a.w) * alpha) + ((_uv_b.v / _b.w) * beta) + ((_uv_c.v / _c.w) * gamma);
+	interpolated_reciprocal_w = ((1 / _a.w) * alpha) + ((1 / _b.w) * beta) + ((1 / _c.w) * gamma);
+	
+	interpolated_u /= interpolated_reciprocal_w;
+	interpolated_v /= interpolated_reciprocal_w;
 
 	// Convert normalized UV coordinates (0.0-1.0) to texture pixel coordinates
 	s32 tex_x = (s32)(interpolated_u * _texture->w);
@@ -195,9 +203,9 @@ internal_f void
 fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_shared_data_t *engine_shared_data)
 {
 	// Render the upper part of the triangle (flat-bottom): from y0 to y1
-	vec2_t a = _triangle->points[0];  // y0 (top)
-	vec2_t b = _triangle->points[1];  // y1 (middle)
-	vec2_t c = _triangle->points[2];  // y2 (bottom)
+	vec4_t a = _triangle->points[0];  // y0 (top)
+	vec4_t b = _triangle->points[1];  // y1 (middle)
+	vec4_t c = _triangle->points[2];  // y2 (bottom)
 
 	texture_uv_t a_uv = _triangle->texture_coords[0];
 	texture_uv_t b_uv = _triangle->texture_coords[1];
@@ -245,11 +253,11 @@ fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 We render the bottom triangle, so from c.y to the b.y. 
 */
 internal_f void
-fill_triangle_bottom_textured(triangle_t *_triangle, texture_t * _texture, engine_shared_data_t *engine_shared_data)
+fill_triangle_bottom_textured(triangle_t *_triangle, texture_t *_texture, engine_shared_data_t *engine_shared_data)
 {
-	vec2_t a = _triangle->points[0];  // y0 (top)
-	vec2_t b = _triangle->points[1];  // y1 (middle)
-	vec2_t c = _triangle->points[2];  // y2 (bottom)
+	vec4_t a = _triangle->points[0];  // y0 (top)
+	vec4_t b = _triangle->points[1];  // y1 (middle)
+	vec4_t c = _triangle->points[2];  // y2 (bottom)
 
 	texture_uv_t a_uv = _triangle->texture_coords[0];
 	texture_uv_t b_uv = _triangle->texture_coords[1];
@@ -296,9 +304,9 @@ internal_f void
 fill_flat_triangle_top(triangle_t *_triangle, u32 _color, engine_shared_data_t *engine_data)
 {
 	// NOTE:(ishak) We have to  calculate the inv slope here so Delta X / Delta Y.
-	vec2_t a = _triangle->points[0];
-	vec2_t b = _triangle->points[1];
-	vec2_t c = _triangle->points[2];		
+	vec4_t a = _triangle->points[0];
+	vec4_t b = _triangle->points[1];
+	vec4_t c = _triangle->points[2];		
 	
 	s32 x0 = a.x;
 	s32 y0 = a.y;
@@ -333,9 +341,9 @@ flat_top_triangle_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 	
 	// Ordered already verteces a.y > b.y > c.y
 	// NOTE:(ishak) We have to  calculate the inv slope here so Delta X / Delta Y.
-	vec2_t a = _triangle->points[0];
-	vec2_t b = _triangle->points[1];
-	vec2_t c = _triangle->points[2];
+	vec4_t a = _triangle->points[0];
+	vec4_t b = _triangle->points[1];
+	vec4_t c = _triangle->points[2];
 	
 	//the bottom is b here.
 	
@@ -393,9 +401,9 @@ internal_f void
 fill_flat_triangle_bottom(triangle_t *_triangle, u32 _color, engine_shared_data_t *engine_data)
 {
 	// NOTE:(ishak) We have to  calculate the inv slope here so Delta X / Delta Y.
-	vec2_t a = _triangle->points[0];
-	vec2_t b = _triangle->points[1];
-	vec2_t c = _triangle->points[2];
+	vec4_t a = _triangle->points[0];
+	vec4_t b = _triangle->points[1];
+	vec4_t c = _triangle->points[2];
 	
 	//the bottom is b here.
 	
@@ -454,9 +462,9 @@ barycentric_weights(vec2_t _a, vec2_t _b, vec2_t _c, vec2_t _p)
 void 
 draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared_data_t *engine_shared_data)
 {
-	vec2_t a = _triangle->points[0];
-	vec2_t b = _triangle->points[1];
-	vec2_t c = _triangle->points[2];
+	vec4_t a = _triangle->points[0];
+	vec4_t b = _triangle->points[1];
+	vec4_t c = _triangle->points[2];
 	
 	
 	// Sort the triangle verteces by y.
@@ -464,8 +472,10 @@ draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared
 	// sort y 
 	if (a.y > b.y)
 	{
-		f32_swap_values(&a.y, &b.y);
 		f32_swap_values(&a.x, &b.x);
+		f32_swap_values(&a.y, &b.y);
+		f32_swap_values(&a.z, &b.z);
+		f32_swap_values(&a.w, &b.w);
 		
 		// swap uvs
 		f32_swap_values(&_triangle->texture_coords[0].u, &_triangle->texture_coords[1].u);
@@ -474,8 +484,10 @@ draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared
 	
 	if (b.y > c.y)	
 	{
-		f32_swap_values(&b.y, &c.y);
 		f32_swap_values(&b.x, &c.x);
+		f32_swap_values(&b.y, &c.y);
+		f32_swap_values(&b.z, &c.z);
+		f32_swap_values(&b.w, &c.w);
 		
 		f32_swap_values(&_triangle->texture_coords[1].u, &_triangle->texture_coords[2].u);
 		f32_swap_values(&_triangle->texture_coords[1].v, &_triangle->texture_coords[2].v);
@@ -483,8 +495,10 @@ draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared
 	
 	if (a.y > b.y)
 	{
-		f32_swap_values(&a.y, &b.y);
 		f32_swap_values(&a.x, &b.x);
+		f32_swap_values(&a.y, &b.y);
+		f32_swap_values(&a.z, &b.z);
+		f32_swap_values(&a.w, &b.w);
 
 		f32_swap_values(&_triangle->texture_coords[0].u, &_triangle->texture_coords[1].u);
 		f32_swap_values(&_triangle->texture_coords[0].v, &_triangle->texture_coords[1].v);
@@ -507,27 +521,33 @@ void
 draw_filled_triangle(triangle_t *_triangle, u32 _color, engine_shared_data_t *engine_data)
 {
 	// sort the verteces of the triangle
-	vec2_t a = _triangle->points[0];
-	vec2_t b = _triangle->points[1];
-	vec2_t c = _triangle->points[2];
+	vec4_t a = _triangle->points[0];
+	vec4_t b = _triangle->points[1];
+	vec4_t c = _triangle->points[2];
 	
 	// sort y 
 	if (a.y > b.y)
 	{
-		f32_swap_values(&a.y, &b.y);
 		f32_swap_values(&a.x, &b.x);
+		f32_swap_values(&a.y, &b.y);
+		f32_swap_values(&a.z, &b.z);
+		f32_swap_values(&a.w, &b.w);
 	}
 	
 	if (b.y > c.y)	
 	{
-		f32_swap_values(&b.y, &c.y);
 		f32_swap_values(&b.x, &c.x);
+		f32_swap_values(&b.y, &c.y);
+		f32_swap_values(&b.z, &c.z);
+		f32_swap_values(&b.w, &c.w);
 	}
 	
 	if (a.y > b.y)	
 	{
-		f32_swap_values(&a.y, &b.y);
 		f32_swap_values(&a.x, &b.x);
+		f32_swap_values(&a.y, &b.y);
+		f32_swap_values(&a.z, &b.z);
+		f32_swap_values(&a.w, &b.w);
 	}
 	
 	triangle_t top_triangle;
@@ -553,7 +573,7 @@ draw_filled_triangle(triangle_t *_triangle, u32 _color, engine_shared_data_t *en
 		
 		f32 my = b.y;
 		
-		vec2_t m = { mx, my };
+		vec4_t m = { mx, my, 0, 0 };
 		
 		top_triangle.points[0] = a;
 		top_triangle.points[1] = b;

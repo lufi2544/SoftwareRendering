@@ -235,7 +235,7 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 			
 			
 			
-			vec2_t point = { projected_triangle_point.x, projected_triangle_point.y };
+			vec4_t point = { projected_triangle_point.x, projected_triangle_point.y, projected_triangle_point.z, projected_triangle_point.w };
 			point.x *= _shared_data->window_width /2;
 			point.y *= _shared_data->window_height /2;
 			

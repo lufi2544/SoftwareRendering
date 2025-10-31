@@ -12,3 +12,4 @@ TODO:
 
 // TEXTURE MAPPING UV
 - save the texture ref in the mesh itself.
+- fix the artifacts caused by the slope calculation, so the x_start and x_end results in a very large number in the textured triangle function.
