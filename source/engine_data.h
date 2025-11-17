@@ -31,6 +31,7 @@ typedef struct
 	u32 vertex_num;
 	u32 face_num;
 	u32 uv_coords_num;
+	u32 texture_id;
 	
 	vec3_t rotation;
 	vec3_t scale;

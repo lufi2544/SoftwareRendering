@@ -3,6 +3,7 @@
 ////////////////// Global defines for the Renderer ///////////////
 
 #include "texture.h"
+#include "texture_manager.h"
 #include "triangle.h"
 #include "light_defines.h"
 
