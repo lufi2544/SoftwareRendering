@@ -153,7 +153,11 @@ engine_init()
 	g_memory_cache.permanent = g_memory.permanent.used;
 
 	win32_load_app_code(&g_app_code);
-
+	
+	// ---- RENDER INIT ----
+	
+	renderer_init(&g_engine_shared_data);
+	
 
 	// App layer init
 	g_app_code.app_init(&g_memory, &g_engine_shared_data);	

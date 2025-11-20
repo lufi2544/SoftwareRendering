@@ -22,11 +22,24 @@ typedef struct
 	
 } face_t;
 
+
+typedef u32 color_t;
+
+// We use the  UV coordinate method for mapping the texture to the faces.
+typedef struct
+{
+	color_t *buffer;
+	s32 w;
+	s32 h;	
+} texture_t;
+
+
 typedef struct
 {
 	vec3_t *verteces;
 	face_t *faces;
 	texture_uv_t *uv_coords;
+	texture_t *texture;
 	
 	u32 vertex_num;
 	u32 face_num;
@@ -52,6 +65,17 @@ typedef struct
 	f32 zfar;
 	
 } render_settings;
+
+
+/**
+* Texture Manager that holds the memory for the different engine loaded textures.
+*/
+
+typedef struct
+{	
+	hash_map_t texture_map;
+	
+} texture_manager_t;
 
 
 // CAMERA DATA
@@ -83,5 +107,10 @@ typedef struct
 	/* window stuff */
 	u16 window_width;
 	u16 window_height;
+	
+	// TODO Add the manager here 
+	texture_manager_t texture_manager;
+	
+	memory_t *memory;
 				
 } engine_shared_data_t;

@@ -488,6 +488,7 @@ internal_f mesh_t
 create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_shared_data_t *engine_data)
 {
 	mesh_t result;
+	result.texture = 0;
 	result.face_num = 0;
 	result.vertex_num = 0;
 	result.uv_coords_num = 0;
@@ -614,3 +615,18 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_sh
 	engine_data->meshes_num++;
 	return result;
 }
+
+
+global_f bool
+mesh_add_texture(memory_t *engine_memory, engine_shared_data_t *shared_data, mesh_t *_mesh, string_t _texture_name)
+{
+	texture_t *found_texture = texture_manager_get_texture(&shared_data->texture_manager, _texture_name);	
+	if (found_texture != 0)
+	{
+		_mesh->texture = found_texture;
+		return true;
+	}
+	
+	return false;
+}
+

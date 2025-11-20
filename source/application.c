@@ -6,6 +6,8 @@
 
 APP_INIT(AppInit)
 {
+	S_SCRATCH(engine_memory);
+	
 	// Init the meshes
 	shared_data->meshes = push_array(&engine_memory->permanent, APP_MESH_NUM, mesh_t);
 	shared_data->meshes_num = 0;
@@ -16,11 +18,23 @@ APP_INIT(AppInit)
 	// Create one cube
 	mesh_t* rendered_mesh = &shared_data->meshes[0];
 	mesh_t* render_2 = &shared_data->meshes[1];
+		
+	
+	// Import the textures
+	
+	texture_t texture;
+	texture.buffer = (color_t*)REDBRICK_TEXTURE;
+	texture.w = 64;
+	texture.h = 64;
+	
+	string_t bricks_texture_name = STRING_V(temp_arena, "bricks");
+	texture_manager_add_texture(&shared_data->texture_manager, bricks_texture_name, texture);
 	
 	// for now let's pass the permanent memory	
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
 	mesh_t mesh = create_mesh_from_file(engine_memory, "data/cube.obj", shared_data);
+	mesh_add_texture(engine_memory, shared_data, &mesh, bricks_texture_name);
 	
 	int f = 5;
 	int x = 12;
@@ -48,6 +62,8 @@ APP_INIT(AppInit)
 	render_2->translation.y = 5;
 	render_2->translation.z = 10;
 */
+	
+	SCRATCH_END();	
 }
 
 
@@ -55,7 +71,6 @@ APP_INIT(AppInit)
 // process it, but the app can modify it.
 APP_UPDATE(AppUpdate)
 {
-	
  	mesh_t* cube = &shared_data->meshes[0];
 	cube->rotation.x += 0.01;
 	//cube->rotation.y += 0.01;
@@ -63,7 +78,7 @@ APP_UPDATE(AppUpdate)
 	/*
 	cube->rotation.z += 0.01;
 */
-			
+	
 }
 
 APP_RENDER(AppRender)

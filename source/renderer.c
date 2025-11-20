@@ -5,14 +5,20 @@
 
 #define GRID_DEFAULT_COLOR 0xA0A0A0
 
+global_f void 
+renderer_init(engine_shared_data_t *shared_data)
+{
+	texture_manager_init(&g_memory.permanent, &shared_data->texture_manager);
+	
+}
+
 // TODO figure out where to put the projection matrix.
 internal_f void
 render(mat4_t *projection_matrix, memory_t *engine_memory, engine_shared_data_t *data)
 {
     
     SDL_RenderClear(renderer);   
-    map_texture_to_pixels_buffer(data);    
-	
+    map_texture_to_pixels_buffer(data);    	
 	        
 	clear_color_buffer(COLOR_BLACK, data);
 	g_app_code.app_render(engine_memory, data);
