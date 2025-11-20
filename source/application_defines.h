@@ -3,21 +3,21 @@
 
 #define APP_MESH_NUM 10
 
-#define APP_INIT(name) void name(memory_t *engine_memory, engine_shared_data_t* shared_data)
+#define APP_INIT(name) void name(engine_shared_data_t* shared_data)
 typedef APP_INIT(app_init);
 APP_INIT(AppInitStub)
 {
 	
 }
 
-#define APP_UPDATE(name) void name(memory_t *engine_memory, engine_shared_data_t* shared_data)
+#define APP_UPDATE(name) void name(engine_shared_data_t* shared_data)
 typedef APP_UPDATE(app_update);
 APP_UPDATE(AppUpdateStub)
 {
 	
 }
 
-#define APP_RENDER(name) void name(memory_t *engine_memory, engine_shared_data_t* shared_data)
+#define APP_RENDER(name) void name(engine_shared_data_t* shared_data)
 typedef APP_RENDER(app_render);
 APP_RENDER(AppRenderStub)
 {
@@ -31,7 +31,7 @@ APP_INPUT(AppInputStub)
 	
 }
 
-#define APP_END(name) void name(memory_t *engine_memory, engine_shared_data_t* shared_data)
+#define APP_END(name) void name(engine_shared_data_t* shared_data)
 typedef APP_END(app_end);
 APP_END(AppEndStub)
 {

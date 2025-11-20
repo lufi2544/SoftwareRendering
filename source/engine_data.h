@@ -90,6 +90,9 @@ typedef struct
 
 typedef struct
 {
+	/** Memory shared among the win32 layer and the app. */
+	memory_t *memory;
+	
 	// -- MESH --
 	mesh_t *meshes;
 	u32 meshes_num;
@@ -111,6 +114,5 @@ typedef struct
 	// TODO Add the manager here 
 	texture_manager_t texture_manager;
 	
-	memory_t *memory;
 				
 } engine_shared_data_t;

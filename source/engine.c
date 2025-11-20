@@ -42,7 +42,6 @@ win32_load_app_code(win32_app_code *_app_code)
 	win32_app_code result;
 	
 	CopyFile("app.dll", "app_temp.dll", FALSE);
-	printf("OUUUUUUUUUUU: copying file\n ");
 	result.handle = LoadLibraryA("app_temp.dll");
 	
 	if(result.handle)
@@ -133,6 +132,7 @@ initialize_engine_data()
 	g_engine_shared_data.camera.position = pos;
 	g_engine_shared_data.meshes = 0;
 	g_engine_shared_data.meshes_num = 0;
+	g_engine_shared_data.memory = &g_memory;
 }
 
 internal_f bool
@@ -148,7 +148,7 @@ engine_init()
 	initialize_engine_data();
 	display_setup(&g_memory, &g_engine_shared_data);
 	
-	// Memory cache dump for later hot relaod the app dll
+	// Memory cache dump on initialization, for later usage during hot relaod the app dll
 	g_memory_cache.transient = g_memory.transient.used;
 	g_memory_cache.permanent = g_memory.permanent.used;
 
@@ -160,7 +160,7 @@ engine_init()
 	
 
 	// App layer init
-	g_app_code.app_init(&g_memory, &g_engine_shared_data);	
+	g_app_code.app_init(&g_engine_shared_data);	
 	
 	// Perspective matrixe for the engine, this is fine for now, but if we add more cameras, we would need to create a perspective matrix for each, so they would have to be separated.
 	g_projection_matrix = mat4_make_perspective(g_engine_shared_data.settings->fov, g_engine_shared_data.settings->aspect, g_engine_shared_data.settings->znear, g_engine_shared_data.settings->zfar);
@@ -198,7 +198,7 @@ internal_f void update_app_code()
 	printf("updating the code \n");
 	win32_unload_app_code(&g_app_code);
 	win32_load_app_code(&g_app_code);
-	g_app_code.app_init(&g_memory, &g_engine_shared_data);
+	g_app_code.app_init(&g_engine_shared_data);
 }
 
 internal_f s32
@@ -219,7 +219,7 @@ engine_run()
         fix_delta_time();
         
         update();
-        render(&g_projection_matrix, &g_memory, &g_engine_shared_data);
+        render(&g_projection_matrix, &g_engine_shared_data);
 		
 		if(++counter >= refresh)
 		{
@@ -228,7 +228,7 @@ engine_run()
 		}
     }    
 	
-	g_app_code.app_end(&g_memory, &g_engine_shared_data);
+	g_app_code.app_end(&g_engine_shared_data);
     engine_end();
         
     return 0;
@@ -237,14 +237,14 @@ engine_run()
 internal_f void
 update()
 {        
-	g_app_code.app_update(&g_memory, &g_engine_shared_data);	
+	g_app_code.app_update(&g_engine_shared_data);	
 }
 
 internal_f void
 engine_end(void)
 {
 	
-	g_app_code.app_end(&g_memory, &g_engine_shared_data);
+	g_app_code.app_end(&g_engine_shared_data);
 	
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);

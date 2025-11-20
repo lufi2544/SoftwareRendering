@@ -6,10 +6,10 @@
 
 APP_INIT(AppInit)
 {
-	S_SCRATCH(engine_memory);
+	S_SCRATCH(shared_data->memory);
 	
 	// Init the meshes
-	shared_data->meshes = push_array(&engine_memory->permanent, APP_MESH_NUM, mesh_t);
+	shared_data->meshes = push_array(&shared_data->memory->permanent, APP_MESH_NUM, mesh_t);
 	shared_data->meshes_num = 0;
 	
 	
@@ -33,8 +33,8 @@ APP_INIT(AppInit)
 	// for now let's pass the permanent memory	
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
-	mesh_t mesh = create_mesh_from_file(engine_memory, "data/cube.obj", shared_data);
-	mesh_add_texture(engine_memory, shared_data, &mesh, bricks_texture_name);
+	mesh_t mesh = create_mesh_from_file("data/cube.obj", shared_data);
+	mesh_add_texture(shared_data, &mesh, bricks_texture_name);
 	
 	int f = 5;
 	int x = 12;

@@ -14,18 +14,18 @@ renderer_init(engine_shared_data_t *shared_data)
 
 // TODO figure out where to put the projection matrix.
 internal_f void
-render(mat4_t *projection_matrix, memory_t *engine_memory, engine_shared_data_t *data)
+render(mat4_t *projection_matrix, engine_shared_data_t *data)
 {
     
     SDL_RenderClear(renderer);   
     map_texture_to_pixels_buffer(data);    	
 	        
 	clear_color_buffer(COLOR_BLACK, data);
-	g_app_code.app_render(engine_memory, data);
+	g_app_code.app_render(data);
 	
 	for(u32 i = 0; i < data->meshes_num; ++i)
 	{
-		mesh_render(engine_memory, &data->meshes[i], &data->camera, projection_matrix, data);
+		mesh_render(data->memory, &data->meshes[i], &data->camera, projection_matrix, data);
 	}
     
     SDL_RenderPresent(renderer);

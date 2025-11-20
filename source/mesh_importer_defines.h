@@ -485,7 +485,7 @@ convert_to_face(mesh_t *_mesh, importer_element_t *first_face_element, buffer_t 
 // I would like to change this to struct of arrays, so we can have id DOD and better for cache locality
 // in this case, maybe allocting everything in the temp memory and then passing it to the permanent memory?..
 internal_f mesh_t
-create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_shared_data_t *engine_data)
+create_mesh_from_file(const char *_file_name, engine_shared_data_t *engine_data)
 {
 	mesh_t result;
 	result.texture = 0;
@@ -504,7 +504,7 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_sh
 		return result;
 	}
 	
-	S_SCRATCH(engine_memory);
+	S_SCRATCH(engine_data->memory);
 	
 	buffer_t buffer = read_file(temp_arena, _file_name);
 	if (buffer.size > 0)
@@ -550,9 +550,9 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_sh
 		printf("iterated face: %i \n", result.face_num);		
 		printf("iterated uv_corods: %i \n", result.uv_coords_num);		
 		
-		result.verteces = push_array(&engine_memory->permanent, result.vertex_num, vec3_t);
-		result.faces = push_array(&engine_memory->permanent, result.face_num, face_t);
-		result.uv_coords = push_array(&engine_memory->permanent, result.uv_coords_num, texture_uv_t);
+		result.verteces = push_array(&engine_data->memory->permanent, result.vertex_num, vec3_t);
+		result.faces = push_array(&engine_data->memory->permanent, result.face_num, face_t);
+		result.uv_coords = push_array(&engine_data->memory->permanent, result.uv_coords_num, texture_uv_t);
 		
 		//(juanes.rayo) NOTE: can we figure this out runtime? or is better to store it too? as we have already the verteces and the faces, we could figure this out runtime.
 		//result.triangles = PushArray(&engine_memory->permanent, count_face, triangle_t);
@@ -618,7 +618,7 @@ create_mesh_from_file(memory_t *engine_memory, const char *_file_name, engine_sh
 
 
 global_f bool
-mesh_add_texture(memory_t *engine_memory, engine_shared_data_t *shared_data, mesh_t *_mesh, string_t _texture_name)
+mesh_add_texture(engine_shared_data_t *shared_data, mesh_t *_mesh, string_t _texture_name)
 {
 	texture_t *found_texture = texture_manager_get_texture(&shared_data->texture_manager, _texture_name);	
 	if (found_texture != 0)
