@@ -25,8 +25,9 @@ texture_manager_get_texture(texture_manager_t *_manager, string_t texture_name)
 {
 	if(texture_name.size > 0)
 	{				
-		texture_t *found_data = 0;
-		HASH_MAP_STR_FIND(_manager->texture_map, texture_t, texture_name.buffer.data, found_data);
+	//	HASH_MAP_STR_FIND(_manager->texture_map, texture_t, texture_name.buffer.data, found_data);
+		
+		void* found_data = hash_map_find(&_manager->texture_map, texture_name.buffer.data, cstr_len(texture_name.buffer.data) + 1);
 		return found_data;
 	}
 	

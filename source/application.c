@@ -3,6 +3,9 @@
 
 // TODO Application globals
 
+/**
+* NOTE: We are using the ARGB8888 pixel format for this project, so the pixels have 32 bits of information.
+*/
 
 APP_INIT(AppInit)
 {
@@ -17,18 +20,32 @@ APP_INIT(AppInit)
 	
 	// Create one cube
 	mesh_t* rendered_mesh = &shared_data->meshes[0];
-	mesh_t* render_2 = &shared_data->meshes[1];
+	mesh_t* render_2 = &shared_data->meshes[1];		
+	
+	
+	/*   
+    TEXTURES IMPORT
+
+	TODO: I would allocate the memory here for the different textures from the png files.
+		 either we :
+			 - reserve all the textures for the used textures in the game
+			 - having that at runtime and reseting that at will.
+
+// Allocate the textures in a permanent memory space.
+	
+	 */		
+	upng_t* texture_png = upng_new_from_file(temp_arena, "data/wall.png");
+	string_t bricks_texture_name = STRING_V(temp_arena, "wall");
+	if (texture_png != 0)
+	{
+		texture_t texture;
+		texture.buffer = (color_t*)texture_png->buffer;
+		texture.w = texture_png->width;
+		texture.h = texture_png->height;
 		
-	
-	// Import the textures
-	
-	texture_t texture;
-	texture.buffer = (color_t*)REDBRICK_TEXTURE;
-	texture.w = 64;
-	texture.h = 64;
-	
-	string_t bricks_texture_name = STRING_V(temp_arena, "bricks");
-	texture_manager_add_texture(&shared_data->texture_manager, bricks_texture_name, texture);
+		
+		texture_manager_add_texture(&shared_data->texture_manager, bricks_texture_name, texture);
+	}
 	
 	// for now let's pass the permanent memory	
 	

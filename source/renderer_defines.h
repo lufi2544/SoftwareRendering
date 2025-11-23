@@ -4,8 +4,10 @@
 
 #include "texture.h"
 #include "texture_manager.h"
+#include "upng.h"
 #include "triangle.h"
 #include "light_defines.h"
+
 
 global SDL_Renderer* renderer;
 global SDL_Texture* color_buffer_texture;
