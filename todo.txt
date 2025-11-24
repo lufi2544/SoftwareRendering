@@ -10,6 +10,11 @@ POST IMPLEMENTATION:
       exceed the memory, then we just complain.
        <-> Preallocating memory for textures, at runtime load the textures in here, if textures too big, then complain.
 
+
+ - Create a more reliable method for creating the objects and importing textures, maybe with the level serialization.
+
+
+
 TODO: 
 - Create a cube struct for defining the state of init and the different triangles.
 - Solid understanding of the index array and faces, etc.

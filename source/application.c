@@ -33,7 +33,7 @@ APP_INIT(AppInit)
 
     Allocate the textures in a permanent memory space.	
 	 */
-	upng_t* texture_png = upng_new_from_file(temp_arena, "data/f117.png");
+	upng_t* texture_png = upng_new_from_file(temp_arena, "data/f22.png");
 	string_t bricks_texture_name = STRING_V(temp_arena, "f22");
 	if (texture_png != 0)
 	{
@@ -47,10 +47,24 @@ APP_INIT(AppInit)
 		texture_manager_add_texture(&shared_data->texture_manager, bricks_texture_name, texture);
 	}
 	
+	upng_t* texture_png_2 = upng_new_from_file(temp_arena, "data/f117.png");
+	string_t f117_name = STRING_V(temp_arena, "f117");
+	if (texture_png_2 != 0)
+	{
+		upng_decode(shared_data, texture_png_2);
+		texture_t texture;
+		texture.buffer = (color_t*)texture_png_2->buffer;
+		texture.w = texture_png->width;
+		texture.h = texture_png->height;
+		
+		
+		texture_manager_add_texture(&shared_data->texture_manager, f117_name, texture);
+	}
+	
 	// for now let's pass the permanent memory
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
-	mesh_t mesh = create_mesh_from_file("data/f117.obj", shared_data);
+	mesh_t mesh = create_mesh_from_file("data/f22.obj", shared_data);
 	mesh_add_texture(shared_data, &mesh, bricks_texture_name);
 	
 	int f = 5;
@@ -64,6 +78,20 @@ APP_INIT(AppInit)
 	mesh.scale = scale;
 	
 	*rendered_mesh = mesh;
+	
+	
+	
+	mesh_t mesh_ = create_mesh_from_file("data/f117.obj", shared_data);
+	mesh_add_texture(shared_data, &mesh_, f117_name);
+	
+	
+	vec3_t position_ = {x + 3, y + 3, f + 10};
+	mesh_.translation = position_;
+	
+	vec3_t scale_ = {1, 1, 1};
+	mesh_.scale = scale_;
+	
+	*render_2 = mesh_;
 	
 	/*
 	mesh_t mesh_2 = create_mesh_from_file(engine_memory, "data/lol.obj", shared_data);
@@ -90,7 +118,8 @@ APP_UPDATE(AppUpdate)
 {
  	mesh_t* cube = &shared_data->meshes[0];
 	cube->rotation.x += 0.01;
-	//cube->rotation.y += 0.01;
+ 	mesh_t* cube_ = &shared_data->meshes[1];
+	cube_->rotation.x += 0.01;
 	
 	/*
 	cube->rotation.z += 0.01;
