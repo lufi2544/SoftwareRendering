@@ -42,7 +42,7 @@ internal_f bool create_window(engine_shared_data_t *shared_data)
         return false;
     }
     
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     
     return true;
 }
@@ -58,7 +58,7 @@ internal_f void display_setup(memory_t *engine_memory, engine_shared_data_t *sha
     
     color_buffer_texture = SDL_CreateTexture(
                                              renderer,
-                                             SDL_PIXELFORMAT_ARGB8888,
+                                             SDL_PIXELFORMAT_RGBA32,
                                              SDL_TEXTUREACCESS_STREAMING,
                                              shared_data->window_width,
                                              shared_data->window_height

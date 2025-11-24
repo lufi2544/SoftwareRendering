@@ -3,6 +3,13 @@
 
 - Take a look at what more stuff can refactored and make better in the engiene.
 
+
+POST IMPLEMENTATION:
+ - Texture importing from png -> for this I would like to allocate the memory contiguously for all the possible textures in the app, so we avoid runtime fragmentation or cache misses
+   -> figure out the best way here, since we could have 10k images, but not memory for all would be needed to be allocated... Maybe just reserving some memory for this, and if the textures, 
+      exceed the memory, then we just complain.
+       <-> Preallocating memory for textures, at runtime load the textures in here, if textures too big, then complain.
+
 TODO: 
 - Create a cube struct for defining the state of init and the different triangles.
 - Solid understanding of the index array and faces, etc.

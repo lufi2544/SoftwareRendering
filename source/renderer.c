@@ -200,7 +200,7 @@ static int plank =100;
 static int plank_1 = 500;
 
 
-#define MAX_TEXTURED_TRIANGLE_SLOPE 30
+#define MAX_TEXTURED_TRIANGLE_SLOPE 50
 
 /*
  * We render the top triangle here, from a.y to b.y, with having in mind that the points are sorted by y.
@@ -509,6 +509,13 @@ draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared
 		f32_swap_values(&_triangle->texture_coords[0].u, &_triangle->texture_coords[1].u);
 		f32_swap_values(&_triangle->texture_coords[0].v, &_triangle->texture_coords[1].v);
 	}
+	
+	
+	// Flip the V componenet to account for the inverted UV-coords (V grows downwards)
+	
+	_triangle->texture_coords[0].v = 1 -  _triangle->texture_coords[0].v;
+	_triangle->texture_coords[1].v = 1 -  _triangle->texture_coords[1].v;
+	_triangle->texture_coords[2].v = 1 -  _triangle->texture_coords[2].v;
 
 
 	// Update triangle with sorted vertices - keep original for barycentric interpolation

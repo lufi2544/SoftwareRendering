@@ -183,7 +183,7 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 		//// FLAT LIGHT PASS
 		
 		projected_triangle.color = COLOR_WHITE;
-		projected_triangle.color = light_flat_pass(global_light, normal, projected_triangle.color);
+		//projected_triangle.color = light_flat_pass(global_light, normal, projected_triangle.color);
 		
 		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}

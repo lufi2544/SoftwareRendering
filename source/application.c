@@ -33,8 +33,8 @@ APP_INIT(AppInit)
 
     Allocate the textures in a permanent memory space.	
 	 */
-	upng_t* texture_png = upng_new_from_file(temp_arena, "data/wall.png");
-	string_t bricks_texture_name = STRING_V(temp_arena, "wall");
+	upng_t* texture_png = upng_new_from_file(temp_arena, "data/f117.png");
+	string_t bricks_texture_name = STRING_V(temp_arena, "f22");
 	if (texture_png != 0)
 	{
 		upng_decode(shared_data, texture_png);
@@ -50,7 +50,7 @@ APP_INIT(AppInit)
 	// for now let's pass the permanent memory
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
-	mesh_t mesh = create_mesh_from_file("data/cube.obj", shared_data);
+	mesh_t mesh = create_mesh_from_file("data/f117.obj", shared_data);
 	mesh_add_texture(shared_data, &mesh, bricks_texture_name);
 	
 	int f = 5;
