@@ -102,10 +102,9 @@ typedef struct upng_t {
 
 upng_t*		upng_new_from_bytes	(arena_t *arena, const unsigned char* buffer, unsigned long size);
 upng_t*		upng_new_from_file	(arena_t *arena, const char* path);
-void		upng_free			(upng_t* upng);
 
 upng_error	upng_header			(upng_t* upng);
-upng_error	upng_decode			(arena_t *arena, upng_t* upng);
+upng_error	upng_decode			(engine_shared_data_t *shared_data, upng_t* upng);
 
 upng_error	upng_get_error		(const upng_t* upng);
 unsigned	upng_get_error_line	(const upng_t* upng);
@@ -938,11 +937,7 @@ static upng_format determine_format(upng_t* upng) {
 }
 
 static void upng_free_source(upng_t* upng)
-{
-	if (upng->source.owning != 0) {
-		free((void*)upng->source.buffer);
-	}
-	
+{		
 	upng->source.buffer = NULL;
 	upng->source.size = 0;
 	upng->source.owning = 0;
@@ -1017,8 +1012,10 @@ upng_error upng_header(upng_t* upng)
 }
 
 /*read a PNG, the result will be in the same color type as the PNG (hence "generic")*/
-upng_error upng_decode(arena_t *_arena, upng_t* upng)
+upng_error upng_decode(engine_shared_data_t *shared_data, upng_t* upng)
 {
+	S_SCRATCH(shared_data->memory);
+	
 	const unsigned char *chunk;
 	unsigned char* compressed;
 	unsigned char* inflated;
@@ -1044,7 +1041,7 @@ upng_error upng_decode(arena_t *_arena, upng_t* upng)
 	
 	/* release old result, if any */
 	if (upng->buffer != 0) {
-		free(upng->buffer);
+		//free(upng->buffer);
 		upng->buffer = 0;
 		upng->size = 0;
 	}
@@ -1094,7 +1091,7 @@ upng_error upng_decode(arena_t *_arena, upng_t* upng)
 	}
 	
 	/* allocate enough space for the (compressed and filtered) image data */
-	compressed = (unsigned char*)push_size(_arena, compressed_size);
+	compressed = (u8*)push_size(temp_arena, compressed_size);
 	if (compressed == NULL) {
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
@@ -1123,9 +1120,9 @@ upng_error upng_decode(arena_t *_arena, upng_t* upng)
 	
 	/* allocate space to store inflated (but still filtered) data */
 	inflated_size = ((upng->width * (upng->height * upng_get_bpp(upng) + 7)) / 8) + upng->height;
-	inflated = (unsigned char*)push_size(_arena, inflated_size);
+	inflated = (u8*)push_size(temp_arena, inflated_size);
 	if (inflated == NULL) {
-		free(compressed);
+		//free(compressed);
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
 	}
@@ -1133,19 +1130,16 @@ upng_error upng_decode(arena_t *_arena, upng_t* upng)
 	/* decompress image data */
 	error = uz_inflate(upng, inflated, inflated_size, compressed, compressed_size);
 	if (error != UPNG_EOK) {
-		free(compressed);
-		free(inflated);
+		//free(compressed);
+		//free(inflated);
 		return upng->error;
 	}
-	
-	/* free the compressed compressed data */
-	free(compressed);
-	
+		
 	/* allocate final image buffer */
 	upng->size = (upng->height * upng->width * upng_get_bpp(upng) + 7) / 8;
-	upng->buffer = (u8*)push_size(_arena, upng->size);
+	upng->buffer = (u8*)push_size(&shared_data->memory->permanent, upng->size);
 	if (upng->buffer == NULL) {
-		free(inflated);
+		//free(inflated);
 		upng->size = 0;
 		SET_ERROR(upng, UPNG_ENOMEM);
 		return upng->error;
@@ -1153,10 +1147,9 @@ upng_error upng_decode(arena_t *_arena, upng_t* upng)
 	
 	/* unfilter scanlines */
 	post_process_scanlines(upng, upng->buffer, inflated, upng);
-	free(inflated);
 	
 	if (upng->error != UPNG_EOK) {
-		free(upng->buffer);
+		//free(upng->buffer);
 		upng->buffer = NULL;
 		upng->size = 0;
 	} else {
@@ -1167,6 +1160,8 @@ upng_error upng_decode(arena_t *_arena, upng_t* upng)
 	upng_free_source(upng);
 	
 	return upng->error;
+	
+	SCRATCH_END();
 }
 
 static upng_t* upng_new(arena_t *_arena)
@@ -1258,19 +1253,21 @@ upng_new_from_file(arena_t *_arena, const char *filename)
 	return upng;
 }
 
+/*
 void upng_free(upng_t* upng)
 {
-	/* deallocate image buffer */
+	/* deallocate image buffer 
 	if (upng->buffer != NULL) {
 		free(upng->buffer);
 	}
 	
-	/* deallocate source buffer, if necessary */
+	/* deallocate source buffer, if necessary 
 	upng_free_source(upng);
 	
-	/* deallocate struct itself */
+	/* deallocate struct itself 
 	free(upng);
 }
+*/
 
 upng_error upng_get_error(const upng_t* upng)
 {

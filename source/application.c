@@ -31,13 +31,13 @@ APP_INIT(AppInit)
 			 - reserve all the textures for the used textures in the game
 			 - having that at runtime and reseting that at will.
 
-// Allocate the textures in a permanent memory space.
-	
-	 */		
+    Allocate the textures in a permanent memory space.	
+	 */
 	upng_t* texture_png = upng_new_from_file(temp_arena, "data/wall.png");
 	string_t bricks_texture_name = STRING_V(temp_arena, "wall");
 	if (texture_png != 0)
 	{
+		upng_decode(shared_data, texture_png);
 		texture_t texture;
 		texture.buffer = (color_t*)texture_png->buffer;
 		texture.w = texture_png->width;
@@ -47,7 +47,7 @@ APP_INIT(AppInit)
 		texture_manager_add_texture(&shared_data->texture_manager, bricks_texture_name, texture);
 	}
 	
-	// for now let's pass the permanent memory	
+	// for now let's pass the permanent memory
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
 	mesh_t mesh = create_mesh_from_file("data/cube.obj", shared_data);
