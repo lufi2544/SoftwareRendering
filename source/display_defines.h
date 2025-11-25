@@ -6,3 +6,4 @@
 
 global SDL_Window* window;
 global u32* color_buffer;
+global f32* z_buffer;

@@ -14,18 +14,19 @@ renderer_init(engine_shared_data_t *shared_data)
 
 // TODO figure out where to put the projection matrix.
 internal_f void
-render(mat4_t *projection_matrix, engine_shared_data_t *data)
+render(mat4_t *projection_matrix, engine_shared_data_t *engine_data)
 {
     
     SDL_RenderClear(renderer);   
-    map_texture_to_pixels_buffer(data);    	
+    map_texture_to_pixels_buffer(engine_data);    	
 	        
-	clear_color_buffer(COLOR_BLACK, data);
-	g_app_code.app_render(data);
+	clear_color_buffer(COLOR_BLACK, engine_data);
+	clear_z_buffer(engine_data);
+	g_app_code.app_render(engine_data);
 	
-	for(u32 i = 0; i < data->meshes_num; ++i)
+	for(u32 i = 0; i < engine_data->meshes_num; ++i)
 	{
-		mesh_render(data->memory, &data->meshes[i], &data->camera, projection_matrix, data);
+		mesh_render(engine_data->memory, &engine_data->meshes[i], &engine_data->camera, projection_matrix, engine_data);
 	}
     
     SDL_RenderPresent(renderer);
@@ -188,11 +189,15 @@ draw_texel(s32 _x, s32 _y, vec4_t _a, vec4_t _b, vec4_t _c, texture_uv_t _uv_a, 
 	if(tex_x >= _texture->w) tex_x = _texture->w - 1;
 	if(tex_y < 0) tex_y = 0;
 	if(tex_y >= _texture->h) tex_y = _texture->h - 1;
-
-	u32 texture_color = get_color_from_texture(_texture, tex_x, tex_y);	
+	
+	if(interpolated_reciprocal_w < z_buffer[(engine_shared_data->window_width * _y) + _x])
+	{				
+		u32 texture_color = get_color_from_texture(_texture, tex_x, tex_y);	
 		
-	vec2_t position ={ _x, _y};		
-	draw_pixel(position, texture_color, engine_shared_data);		
+		vec2_t position ={ _x, _y};		
+		draw_pixel(position, texture_color, engine_shared_data);
+		z_buffer[(engine_shared_data->window_width * _y) + _x] = interpolated_reciprocal_w;
+	}
 }
 
 
@@ -200,7 +205,22 @@ static int plank =100;
 static int plank_1 = 500;
 
 
-#define MAX_TEXTURED_TRIANGLE_SLOPE 50
+#define MAX_TEXTURED_TRIANGLE_SLOPE 10000
+
+
+internal_f f32 safe_inv_slope(float dx, float dy)
+{
+    const float EPS = 1.0f; // Minimum meaningful vertical delta
+	
+    if (fabsf(dy) < EPS) {
+        // Edge is almost horizontal → extremely thin triangle in Y
+        // Return 0 so we don't explode the slope
+        return 0.0f;
+    }
+	
+	
+    return dx / (dy);
+}
 
 /*
  * We render the top triangle here, from a.y to b.y, with having in mind that the points are sorted by y.
@@ -224,15 +244,17 @@ fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 	// Only check for division by zero
 	if (b.y - a.y != 0)
 	{
-		inv_slope_1 = (f32)(b.x - a.x) / (f32)(b.y - a.y);
+		inv_slope_1 = safe_inv_slope((b.x - a.x) , ((b.y - a.y)));
+									 
 		f32_clamp(&inv_slope_1, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
 
 	if (c.y - a.y != 0)
 	{
-		inv_slope_2 = (f32)(c.x - a.x) / (f32)(c.y - a.y);
+		inv_slope_2 = safe_inv_slope((c.x - a.x), (c.y - a.y));
 		f32_clamp(&inv_slope_2, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
+	
 	
 	if (b.y - a.y != 0)
 	{
@@ -276,15 +298,16 @@ fill_triangle_bottom_textured(triangle_t *_triangle, texture_t *_texture, engine
 	// Only check for division by zero
 	if (c.y - b.y != 0)
 	{
-		inv_slope_1 = (f32)(b.x - c.x) / (f32)(b.y - c.y);
+		inv_slope_1 = safe_inv_slope((b.x - c.x), (b.y - c.y));
 		f32_clamp(&inv_slope_1, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
 
 	if (c.y - a.y != 0)
 	{
-		inv_slope_2 = (f32)(a.x - c.x) / (f32)(a.y - c.y);
+		inv_slope_2 = safe_inv_slope((a.x - c.x), (a.y - c.y));
 		f32_clamp(&inv_slope_2, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
+	
 
 	if (c.y - b.y != 0)
 	{
@@ -465,7 +488,7 @@ barycentric_weights(vec2_t _a, vec2_t _b, vec2_t _c, vec2_t _p)
 	return result;
 }
 
-void 
+global_f void 
 draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared_data_t *engine_shared_data)
 {
 	vec4_t a = _triangle->points[0];

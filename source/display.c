@@ -48,13 +48,11 @@ internal_f bool create_window(engine_shared_data_t *shared_data)
 }
 
 internal_f void display_setup(memory_t *engine_memory, engine_shared_data_t *shared_data)
-{       
-    color_buffer = push_array(&engine_memory->permanent, (shared_data->window_width* shared_data->window_height), u32);
-    if(!color_buffer)
-    {
-        fprintf(stderr, "Error allocating the color_buffer.");
-        return;
-    }        
+{          
+	color_buffer = push_array(&engine_memory->permanent, (shared_data->window_width* shared_data->window_height), u32);
+	
+	z_buffer = push_array(&engine_memory->permanent, (shared_data->window_width*
+ shared_data->window_height), f32);
     
     color_buffer_texture = SDL_CreateTexture(
                                              renderer,
@@ -100,7 +98,8 @@ internal_f void draw_grid(u16 square_size, u32 color, engine_shared_data_t *engi
 }
 
 
-internal_f void clear_color_buffer(u32 color, engine_shared_data_t *engine_data)
+internal_f void
+clear_color_buffer(u32 color, engine_shared_data_t *engine_data)
 {
     for(u16 height_index = 0; height_index < engine_data->window_height; height_index++)
     {
@@ -109,4 +108,16 @@ internal_f void clear_color_buffer(u32 color, engine_shared_data_t *engine_data)
             color_buffer[width_index + (height_index * engine_data->window_width)] = color;
         }
     }
+}
+
+internal_f void
+clear_z_buffer(engine_shared_data_t *engine_data)
+{
+	for(u16 height_idx = 0; height_idx < engine_data->window_height; height_idx++)
+	{
+		for(u16 width_idx = 0; width_idx < engine_data->window_width; width_idx++)
+		{
+			z_buffer[(height_idx * engine_data->window_width) + width_idx] = 1.0f;
+		}
+	}
 }
