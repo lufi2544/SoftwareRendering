@@ -33,29 +33,28 @@ APP_INIT(AppInit)
 
     Allocate the textures in a permanent memory space.	
 	 */
-	upng_t* texture_png = upng_new_from_file(temp_arena, "data/f22.png");
-	string_t bricks_texture_name = STRING_V(temp_arena, "f22");
-	if (texture_png != 0)
+	upng_t* drone_png = upng_new_from_file(temp_arena, "data/drone.png");
+	string_t name_drone_texture = STRING_V(temp_arena, "drone");
+	if (drone_png != 0)
 	{
-		upng_decode(shared_data, texture_png);
+		upng_decode(shared_data, drone_png);
 		texture_t texture;
-		texture.buffer = (color_t*)texture_png->buffer;
-		texture.w = texture_png->width;
-		texture.h = texture_png->height;
+		texture.buffer = (color_t*)drone_png->buffer;
+		texture.w = drone_png->width;
+		texture.h = drone_png->height;		
 		
-		
-		texture_manager_add_texture(&shared_data->texture_manager, bricks_texture_name, texture);
+		texture_manager_add_texture(&shared_data->texture_manager, name_drone_texture, texture);
 	}
 	
-	upng_t* texture_png_2 = upng_new_from_file(temp_arena, "data/f117.png");
+	upng_t* f117_png = upng_new_from_file(temp_arena, "data/f117.png");
 	string_t f117_name = STRING_V(temp_arena, "f117");
-	if (texture_png_2 != 0)
+	if (f117_png != 0)
 	{
-		upng_decode(shared_data, texture_png_2);
+		upng_decode(shared_data, f117_png);
 		texture_t texture;
-		texture.buffer = (color_t*)texture_png_2->buffer;
-		texture.w = texture_png->width;
-		texture.h = texture_png->height;
+		texture.buffer = (color_t*)f117_png->buffer;
+		texture.w = f117_png->width;
+		texture.h = f117_png->height;
 		
 		
 		texture_manager_add_texture(&shared_data->texture_manager, f117_name, texture);
@@ -64,13 +63,13 @@ APP_INIT(AppInit)
 	// for now let's pass the permanent memory
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
-	mesh_t mesh = create_mesh_from_file("data/f22.obj", shared_data);
-	//mesh_add_texture(shared_data, &mesh, bricks_texture_name);
+	mesh_t mesh = create_mesh_from_file("data/drone.obj", shared_data);
+	mesh_add_texture(shared_data, &mesh, name_drone_texture);
 	
-	int f = 5;
 	int x = 12;
 	int y = 2;
-		
+	int f = 5;
+	
 	vec3_t position = {x, y, f};
 	mesh.translation = position;
 	
@@ -78,20 +77,19 @@ APP_INIT(AppInit)
 	mesh.scale = scale;
 	
 	*rendered_mesh = mesh;
-	
-	
-	
+			
 	mesh_t mesh_ = create_mesh_from_file("data/f117.obj", shared_data);
 	mesh_add_texture(shared_data, &mesh_, f117_name);
 	
 	
-	vec3_t position_ = {x + 3, y + 3, f + 10};
+	vec3_t position_ = {x + 3, y + 3, f + 3};
 	mesh_.translation = position_;
 	
 	vec3_t scale_ = {1, 1, 1};
 	mesh_.scale = scale_;
 	
 	*render_2 = mesh_;
+	
 	
 	/*
 	mesh_t mesh_2 = create_mesh_from_file(engine_memory, "data/lol.obj", shared_data);
@@ -117,9 +115,9 @@ APP_INIT(AppInit)
 APP_UPDATE(AppUpdate)
 {
  	mesh_t* cube = &shared_data->meshes[0];
-	cube->rotation.x += 0.01;
+	cube->rotation.y += 0.01;
  	mesh_t* cube_ = &shared_data->meshes[1];
-	cube_->rotation.x += 0.01;
+	cube_->rotation.y += 0.01;
 	
 	/*
 	cube->rotation.z += 0.01;

@@ -120,7 +120,7 @@ initialize_engine_data()
 	// render_settings
 	g_engine_shared_data.settings = push_struct(&g_memory.permanent, render_settings);
 	g_engine_shared_data.settings->fov = 45.0f * (PI / 180.0f);
-	g_engine_shared_data.settings->aspect = g_engine_shared_data.window_width / g_engine_shared_data.window_height;
+	g_engine_shared_data.settings->aspect = (f32)g_engine_shared_data.window_width / (f32)g_engine_shared_data.window_height;
 	g_engine_shared_data.settings->znear = 0.1f;
 	g_engine_shared_data.settings->zfar = 200.0f;
 	g_engine_shared_data.settings->flags = 0;
