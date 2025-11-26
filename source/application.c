@@ -65,7 +65,7 @@ APP_INIT(AppInit)
 	
 	// TODO: Adding defalt parameters for mesh creation, maybe passing a transform? 
 	mesh_t mesh = create_mesh_from_file("data/f22.obj", shared_data);
-	mesh_add_texture(shared_data, &mesh, bricks_texture_name);
+	//mesh_add_texture(shared_data, &mesh, bricks_texture_name);
 	
 	int f = 5;
 	int x = 12;
