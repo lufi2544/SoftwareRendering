@@ -281,20 +281,6 @@ fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 	vec4_t b = _triangle->points[1];  // y1 (middle)
 	vec4_t c = _triangle->points[2];  // y2 (bottom)
 	
-	
-	a.x = (s32)a.x;
-	a.y = (s32)a.y;
-	a.z = (s32)a.z;
-	
-	
-	b.x = (s32)b.x;
-	b.y = (s32)b.y;
-	b.z = (s32)b.z;
-	
-	c.x = (s32)c.x;
-	c.y = (s32)c.y;
-	c.z = (s32)c.z;
-
 	texture_uv_t a_uv = _triangle->texture_coords[0];
 	texture_uv_t b_uv = _triangle->texture_coords[1];
 	texture_uv_t c_uv = _triangle->texture_coords[2];
@@ -349,19 +335,6 @@ fill_triangle_bottom_textured(triangle_t *_triangle, texture_t *_texture, engine
 	vec4_t a = _triangle->points[0];  // y0 (top)
 	vec4_t b = _triangle->points[1];  // y1 (middle)
 	vec4_t c = _triangle->points[2];  // y2 (bottom)
-	
-	a.x = (s32)a.x;
-	a.y = (s32)a.y;
-	a.z = (s32)a.z;
-	
-	
-	b.x = (s32)b.x;
-	b.y = (s32)b.y;
-	b.z = (s32)b.z;
-	
-	c.x = (s32)c.x;
-	c.y = (s32)c.y;
-	c.z = (s32)c.z;
 
 	texture_uv_t a_uv = _triangle->texture_coords[0];
 	texture_uv_t b_uv = _triangle->texture_coords[1];

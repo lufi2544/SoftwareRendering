@@ -164,13 +164,22 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 			
 			
 			vec4_t point = { projected_triangle_point.x, projected_triangle_point.y, projected_triangle_point.z, projected_triangle_point.w };
+			
+			// Scale in to the view
 			point.x *= _shared_data->window_width /2;
 			point.y *= _shared_data->window_height /2;
 			
+			// Translate the projected points to the middle of the screen
 			point.x += _shared_data->window_width /2;
 			point.y += _shared_data->window_height /2;
 			
 			projected_triangle.points[k] = point;
+			
+			
+			projected_triangle.points[k].x = (s32)projected_triangle.points[k].x;
+			projected_triangle.points[k].y = (s32)projected_triangle.points[k].y;
+			projected_triangle.points[k].z = (s32)projected_triangle.points[k].z;
+
 		}
 		
 //		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
