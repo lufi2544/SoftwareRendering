@@ -173,7 +173,7 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 			projected_triangle.points[k] = point;
 		}
 		
-		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
+//		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
 		
 		///// Triangles UVs Creation
 		projected_triangle.texture_coords[0] = mesh_face.a_uv;
@@ -189,8 +189,11 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 		LIST_ADD(temp_arena, mesh_triangles_list, projected_triangle, triangle_t);
 	}
 	
+	/*
+    NOTE: This was implemented to simulate a z buffer by ordering the avg depth of the triangles
 	// Sort by avg_depth -> kind of a Z buffer.
-	merge_sort(&mesh_triangles_list.head, &compare_triangle);
+    //	merge_sort(&mesh_triangles_list.head, &compare_triangle);
+    */
 	{
 		triangle_t *triangle = 0;
 		LIST_FOREACH(triangle_t, triangle, mesh_triangles_list)
