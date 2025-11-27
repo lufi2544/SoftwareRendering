@@ -115,47 +115,6 @@ draw_line(s32 x0, s32 y0, s32 x1, s32 y1, u32 _color, engine_shared_data_t *engi
 	}	
 }
 
-
-internal_f void
-draw_line_z_buffer(s32 x0, s32 y0, f32 w0, s32 x1, s32 y1, f32 w1, u32 _color, engine_shared_data_t *engine_data)
-{
-	// using the DDA algorithm for now, which has in count the rise of the line to draw the pixels
-	// for the line
-	
-	const s32 delta_x = (x1 - x0);
-	const s32 delta_y = (y1 - y0);
-	const s32 delta_x_abs = abs(delta_x);
-	const s32 delta_y_abs = abs(delta_y);
-	
-	// If the x increment is greater than the y increment, then the x is incrementing by 1 and the Y by a smaller amount,
-	// if the y is greater, then is the other way around, so we have to have that in mind to calculate the side lenght
-	const s32 side_lenght = delta_x_abs >= delta_y_abs ? delta_x_abs : delta_y_abs;
-	
-	f32 x_inc = delta_x / (f32)side_lenght;
-	f32 y_inc = delta_y / (f32)side_lenght;
-	
-	f32 current_x = x0;
-	f32 current_y = y0;
-	
-	f32 delta_w = w1 - w0;
-	f32 w_factor = round(delta_w /side_lenght);
-	f32 w_idx = w0;	
-	for(s32 i = 0; i <= side_lenght; ++i)
-	{
-		w_idx += w_factor;
-		u32 idx_to_check = (engine_data->window_height * current_y) + current_x;
-		f32 f = (z_buffer[idx_to_check]);
-		if(w_idx < f)
-		{						
-			vec2_t position = { round(current_x), round(current_y) };
-			draw_pixel(position, _color, engine_data);
-			z_buffer[idx_to_check] = w_idx;
-		}
-		current_x += x_inc;
-		current_y += y_inc;
-	}
-}
-
 internal_f void 
 draw_linear_triangle(triangle_t *_triangle, u32 _color, bool bDrawDots, engine_shared_data_t *engine_data)
 {
@@ -219,6 +178,12 @@ barycentric_weights(vec2_t _a, vec2_t _b, vec2_t _c, vec2_t _p)
 internal_f void
 draw_pixel_color(color_t _color, s32 _x, s32 _y, vec4_t _a, vec4_t _b, vec4_t _c, engine_shared_data_t *engine_shared_data)
 {
+	
+	if(_x <0 || _x >= engine_shared_data->window_width || _y < 0 ||_y >= engine_shared_data->window_height)
+	{
+		return;
+	}
+	
 	vec2_t p = {_x, _y};
 	vec3_t weights = barycentric_weights(vec2_from_vec4(_a), vec2_from_vec4(_b), vec2_from_vec4(_c), p);
 	
@@ -241,6 +206,12 @@ draw_pixel_color(color_t _color, s32 _x, s32 _y, vec4_t _a, vec4_t _b, vec4_t _c
 internal_f void
 draw_texel(s32 _x, s32 _y, vec4_t _a, vec4_t _b, vec4_t _c, texture_uv_t _uv_a, texture_uv_t _uv_b, texture_uv_t _uv_c, texture_t *_texture, engine_shared_data_t *engine_shared_data)
 {
+	
+	if(_x < 0 || _x >= engine_shared_data->window_width || _y < 0 ||_y >= engine_shared_data->window_height)
+	{
+		return;
+	}
+	
 	vec2_t p = {_x, _y};
 	vec3_t weights = barycentric_weights(vec2_from_vec4(_a), vec2_from_vec4(_b), vec2_from_vec4(_c), p);
 	
