@@ -10,7 +10,7 @@ APP_INIT(AppInitStub)
 	
 }
 
-#define APP_UPDATE(name) void name(engine_shared_data_t* shared_data)
+#define APP_UPDATE(name) void name(engine_shared_data_t* shared_data, f32 dt)
 typedef APP_UPDATE(app_update);
 APP_UPDATE(AppUpdateStub)
 {
@@ -24,7 +24,7 @@ APP_RENDER(AppRenderStub)
 	
 }
 
-#define APP_INPUT(name) void name(engine_shared_data_t* shared_data)
+#define APP_INPUT(name) void name(engine_shared_data_t* shared_data, f32 dt)
 typedef APP_INPUT(app_input);
 APP_INPUT(AppInputStub)
 {

@@ -115,9 +115,9 @@ APP_INIT(AppInit)
 APP_UPDATE(AppUpdate)
 {
  	mesh_t* cube = &shared_data->meshes[0];
-	cube->rotation.y += 0.01;
+	cube->rotation.y += (0.5 * dt);
  	mesh_t* cube_ = &shared_data->meshes[1];
-	cube_->rotation.y += 0.01;
+	cube_->rotation.y += (0.5 * dt);
 	
 	/*
 	cube->rotation.z += 0.01;

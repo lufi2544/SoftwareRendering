@@ -211,19 +211,20 @@ mat4_mul_vec4_project(mat4_t _mat_proj, vec4_t _v)
 	return result;
 }
 
+// Camera view matrix- converts any vertex to camera coordinate system
 global_f mat4_t 
 mat4_make_view_matrix(vec3_t _eye, vec3_t _target, vec3_t _up)
 {
 	vec3_t f = vec3_normalize(vec3_subtract(_eye, _target));
 	vec3_t r = vec3_normalize(vec3_cross(_up, f));
-	vec3_t u = vec3_cross(f, r);
+	vec3_t u = vec3_cross(f, r); // is this needed?
 	
 	mat4_t m = 
 	{{
 			{r.x, r.y, r.z, -vec3_dot(r, _eye)},
 			{u.x, u.y, u.z, -vec3_dot(u, _eye)},
 			{f.x, f.y, f.z, -vec3_dot(f, _eye)},
-			{ 0, 0, 0, 1 }
+			{ 0, 0, 0, 1 } 
 	}};
 	
 	return m;

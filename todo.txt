@@ -1,7 +1,8 @@
 
 //// Software Rendering Engine ////
 
-- Take a look at what more stuff can refactored and make better in the engiene.
+<-> Take a look at why do we need to multiply the projected points in the screen by the screen half size and add it later on.
+
 
 
 POST IMPLEMENTATION:

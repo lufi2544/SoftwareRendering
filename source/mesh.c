@@ -86,6 +86,15 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 		
 		for(s32 j = 0; j < 3; ++j)
 		{
+			
+			// Space = Coordinate System
+			// 
+			// Vertex from local modle coordinate system to view coordinate system.
+			// Local Model Space ----- (World Mtrix - Scale - Rotate - Translate) -----> World Space
+			// World space ------ ( view matrix ) ------> Camera Space
+			// Camera space ------ ( projection matrix ) ------> Clip Space
+			//
+			
 			// Apply the scale, rotation and translation matrices here for the mesh
 			vec4_t transformed_vertex = vec4_from_vec3(face_verteces[j]);
 			
@@ -107,11 +116,9 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 			
 			// Translation Matrix
 			transformed_vertex = mat4_mul_vec4(world_matrix, transformed_vertex);
+			
+			// View Matrix(camera space)
 			transformed_vertex = mat4_mul_vec4(view_matrix, transformed_vertex);
-			
-			
-			// TODO: I think we can do the face culling here, since we are doing it later on and I think there is no advantage.
-			
 			transformed_verteces[j] = transformed_vertex;
 		}
 		

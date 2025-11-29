@@ -9,6 +9,7 @@
 global engine_shared_data_t g_engine_shared_data;
 global mat4_t g_projection_matrix;
 global u32 used_memory_when_app_init = 0;
+global f32 g_delta_time = 0.0f;
 
 typedef struct 
 {
@@ -187,11 +188,13 @@ fix_delta_time()
     }    
     
     // If the machine is slower, then we will have to make a multi update, to catch-up
-    
+    	
+	g_delta_time = (SDL_GetTicks() - previous_frame_time) / 1000.0f;
+	
     previous_frame_time = SDL_GetTicks();    
 }
 
-internal_f void update();
+internal_f void update(f32 dt);
 
 internal_f void update_app_code()
 {
@@ -215,10 +218,10 @@ engine_run()
 	
     while(g_engine_shared_data.b_is_engine_running)
     {
-        process_input(&g_engine_shared_data);
+        process_input(&g_engine_shared_data, g_delta_time);
         fix_delta_time();
         
-        update();
+        update(g_delta_time);
         render(&g_projection_matrix, &g_engine_shared_data);
 		
 		if(++counter >= refresh)
@@ -235,9 +238,9 @@ engine_run()
 }
 
 internal_f void
-update()
+update(f32 dt)
 {        
-	g_app_code.app_update(&g_engine_shared_data);	
+	g_app_code.app_update(&g_engine_shared_data, dt);	
 }
 
 internal_f void
