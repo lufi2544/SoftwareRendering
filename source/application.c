@@ -114,14 +114,10 @@ APP_INIT(AppInit)
 // process it, but the app can modify it.
 APP_UPDATE(AppUpdate)
 {
- 	mesh_t* cube = &shared_data->meshes[0];
+	mesh_t* cube = &shared_data->meshes[0];
 	cube->rotation.y += (0.5 * dt);
- 	mesh_t* cube_ = &shared_data->meshes[1];
+	mesh_t* cube_ = &shared_data->meshes[1];
 	cube_->rotation.y += (0.5 * dt);
-	
-	/*
-	cube->rotation.z += 0.01;
-*/
 	
 }
 
@@ -135,6 +131,9 @@ APP_INPUT(AppInput)
 {
 	SDL_Event event;
     SDL_PollEvent(&event);
+	
+	local f32 camera_movement_coef = 5;
+	local f32 camera_rotation_coef = 0.5;
     
     switch(event.type)
     {
@@ -143,40 +142,82 @@ APP_INPUT(AppInput)
 			shared_data->b_is_engine_running = false;
         }
         break;
+		
+		
+		case SDL_KEYUP:
+		{
+			SDL_Keycode key = event.key.keysym.sym;
+			input_set_flag(&shared_data->input_keyboard_flags, (u8)key, false);
+		}
+		break;
         
         case SDL_KEYDOWN:
         {
 			SDL_Keycode key = event.key.keysym.sym;
+			
+			input_set_flag(&shared_data->input_keyboard_flags, (u8)key, true);
+			
             if(key == SDLK_ESCAPE)
             {
 				shared_data->b_is_engine_running = false;
             }
 			else if(key == SDLK_UP)
 			{
-				
-				shared_data->camera.position.y += 0.1;
+				shared_data->camera.position.y += camera_movement_coef * dt;
 				
 			}
 			else if(key == SDLK_DOWN)
 			{
-				shared_data->camera.position.y -= 0.1;
+				shared_data->camera.position.y -= camera_movement_coef * dt;
 			}
 			else if(key == SDLK_RIGHT)
 			{
-				shared_data->camera.position.x += 0.1;
+				shared_data->camera.position.x += camera_movement_coef * dt;
 			}
 			else if(key == SDLK_LEFT)
 			{
-				shared_data->camera.position.x -= 0.1;
+				shared_data->camera.position.x -= camera_movement_coef * dt;
 			}
 			else if(key == 'e')
 			{
-				shared_data->camera.position.z += 0.1;
+				if(input_check_flag(shared_data->input_mouse_flags, SDL_BUTTON_LEFT))
+				{					
+					
+					shared_data->camera.pitch -= camera_rotation_coef * dt;
+				}
+				else
+				{					
+					shared_data->camera.position.z += camera_movement_coef * dt;					
+				}
 			}
 			else if(key == 'd')
 			{
-				shared_data->camera.position.z -= 0.1;
+				if(input_check_flag(shared_data->input_mouse_flags, SDL_BUTTON_LEFT))
+				{
+					shared_data->camera.pitch += camera_rotation_coef * dt;					
+				}
+				else
+				{
+					shared_data->camera.position.z -= camera_movement_coef * dt;
+				}
 			}
+			else if(key == 's')
+			{
+				if(input_check_flag(shared_data->input_mouse_flags, SDL_BUTTON_LEFT))
+				{					
+					shared_data->camera.yaw -= camera_rotation_coef * dt;
+				}
+				
+			}
+			else if(key == 'f')
+			{
+				if(input_check_flag(shared_data->input_mouse_flags, SDL_BUTTON_LEFT))
+				{
+					shared_data->camera.yaw += camera_rotation_coef * dt;
+				}
+				
+			}
+			
 			/*
 			else if(key == SDLK_1)
 			{
@@ -213,6 +254,21 @@ APP_INPUT(AppInput)
 				bool bValue = !render_settings_check_flag(shared_data->settings, flag_back_face_culling);
 				render_settings_set_flag(shared_data->settings, flag_back_face_culling, bValue);
 			}*/
+			
+		}
+		break;
+		
+		case SDL_MOUSEBUTTONDOWN:
+		{			
+			u8 button = event.button.button;
+			input_set_flag(&shared_data->input_mouse_flags, button, true);
+		}		
+		break;
+		
+		case SDL_MOUSEBUTTONUP:
+		{
+			u8 button = event.button.button;
+			input_set_flag(&shared_data->input_mouse_flags, button, false);
 			
 		}
 		break;

@@ -83,9 +83,43 @@ typedef struct
 typedef struct 
 {
     vec3_t position;
+    vec3_t direction;	
     vec3_t rotation;
+	vec3_t forward_velocity;
+	f32 yaw;
+	f32 pitch;
+	f32 roll;
     f32 fov_angle;
 } camera_t;
+
+
+
+// INPUT
+
+internal_f void
+input_set_flag(u8 *_input_flags, u8 _flag, bool _state)
+{
+	u16 flags = *_input_flags;
+	u16 mask = (1 << _flag);
+	if(_state)
+	{
+		flags |= mask;
+	}
+	else
+	{
+		flags &= (~mask);
+	}
+	
+	*_input_flags = flags;
+}
+
+
+internal_f bool
+input_check_flag(u8 input_flags, u8 _flag)
+{
+	u16 mask = 1 << _flag;	
+	return input_flags && mask;
+}
 
 
 typedef struct
@@ -96,11 +130,13 @@ typedef struct
 	// -- MESH --
 	mesh_t *meshes;
 	u32 meshes_num;
-	
-	
-	// -- FLAGS --
+		
+	// -- ENGINE FLAGS --
 	bool b_is_engine_running;
 	
+	// ---- INPUT ----
+	u8 input_keyboard_flags;
+	u8 input_mouse_flags;
 	
 	// -- RENDER --
 	/* render settings */
@@ -111,7 +147,6 @@ typedef struct
 	u16 window_width;
 	u16 window_height;
 	
-	// TODO Add the manager here 
 	texture_manager_t texture_manager;
 	
 				

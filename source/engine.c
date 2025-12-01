@@ -130,10 +130,24 @@ initialize_engine_data()
 	global_light.direction = light_dir;
 	
 	vec3_t pos = {12, 0, -10};
+	vec3_t null = {0, 0, 0}; 
 	g_engine_shared_data.camera.position = pos;
+	g_engine_shared_data.camera.pitch = 0;
+	g_engine_shared_data.camera.yaw = 0;
+	g_engine_shared_data.camera.roll = 0;
+	g_engine_shared_data.camera.direction = null;
+	g_engine_shared_data.camera.rotation = null;
+	
+	
 	g_engine_shared_data.meshes = 0;
 	g_engine_shared_data.meshes_num = 0;
 	g_engine_shared_data.memory = &g_memory;
+	
+	
+	
+	// input
+	g_engine_shared_data.input_keyboard_flags = 0;
+	g_engine_shared_data.input_mouse_flags = 0;
 }
 
 internal_f bool

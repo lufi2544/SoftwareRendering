@@ -47,17 +47,35 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 {				
 	S_SCRATCH(engine_memory);
 	
+	
+	// CAMERA
 	vec3_t camera_position = _camera->position;
 	
-	vec3_t camera_target = {camera_position.x, camera_position.y, camera_position.z + 1.0f};
-	vec3_t camera_up = {0, 1, 0};
+	vec3_t camera_direction = {0, 0, 1};
+	vec3_t world_up = {0, 1, 0};
+	
+	// yaw
+	mat4_t camera_yaw_matrix = mat4_make_rotation_matrix_y(_camera->yaw);	
+	camera_direction = vec3_from_vec4(mat4_mul_vec4(camera_yaw_matrix, vec4_from_vec3(camera_direction)));
+	
+	// pitch 
+	mat4_t camera_pitch_matrix = mat4_make_rotation_matrix_x(_camera->pitch);
+	camera_direction = vec3_from_vec4(mat4_mul_vec4(camera_pitch_matrix, vec4_from_vec3(camera_direction)));
+	
+	
+	// roll
+	mat4_t camera_roll_matrix = mat4_make_rotation_matrix_z(_camera->roll);
+	camera_direction = vec3_from_vec4(mat4_mul_vec4(camera_roll_matrix, vec4_from_vec3(camera_direction)));		
+	_camera->direction = vec3_normalize(camera_direction);
+	
+	vec3_t camera_target = vec3_add(_camera->position, _camera->direction);
+	
+	vec3_t camera_up = vec3_from_vec4(mat4_mul_vec4(mat4_mul_mat4(camera_roll_matrix, mat4_mul_mat4(camera_pitch_matrix, camera_yaw_matrix)), vec4_from_vec3(world_up)));
+	
+	vec3_normalize(camera_up);
+	
 	mat4_t view_matrix = mat4_make_view_matrix(camera_position, camera_target, camera_up);
-	
-	//TODO: (juanes.rayo): adding this to the an entity value, so we render the entity and take the position
-	//vec3_t position = _mesh->location;
-	
-	
-	
+		
 	
 	list_t mesh_triangles_list = LIST(temp_arena);
 	for(u32 i = 0; i < _mesh->face_num; ++i)
