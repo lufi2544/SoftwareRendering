@@ -1134,7 +1134,7 @@ upng_error upng_decode(engine_shared_data_t *shared_data, upng_t* upng)
 		//free(inflated);
 		return upng->error;
 	}
-		
+    
 	/* allocate final image buffer */
 	upng->size = (upng->height * upng->width * upng_get_bpp(upng) + 7) / 8;
 	upng->buffer = (u8*)push_size(&shared_data->memory->permanent, upng->size);

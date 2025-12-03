@@ -23,12 +23,12 @@ typedef enum
 	flag_display_filled_triangles = 2,
 	flag_display_filled_triangles_wire = 3,
 	flag_back_face_culling = 4,
-
+    
 } enum_render_settings_flags ;
 
 // Forward declarations
 bool render_settings_check_flag(render_settings *_render_settings, enum_render_settings_flags flag);
-void render_settings_set_flag(render_settings *_render_settings, enum_render_settings_flags flag, bool bValue);
+internal_f void render_settings_set_flag(render_settings *_render_settings, enum_render_settings_flags flag, bool bValue);
 void draw_filled_triangle(triangle_t *_triangle, u32 _color, engine_shared_data_t *engine_data);
 
 internal_f void 

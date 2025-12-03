@@ -108,7 +108,7 @@ mat4_make_translation_matrix(f32 tx, f32 ty, f32 tz)
 			{0, 0, 0, 1}
 		}
 	};
-					
+    
 	return result;
 }
 
@@ -225,7 +225,7 @@ mat4_make_view_matrix(vec3_t _eye, vec3_t _target, vec3_t _up)
 			{u.x, u.y, u.z, -vec3_dot(u, _eye)},
 			{f.x, f.y, f.z, -vec3_dot(f, _eye)},
 			{ 0, 0, 0, 1 } 
-	}};
+        }};
 	
 	return m;
 }
@@ -456,7 +456,7 @@ vec2_cross(vec2_t u, vec2_t v)
 
 
 
-global_f f32_clamp(f32 *_value, f32 _min, f32 _max)
+global_f f32 f32_clamp(f32 *_value, f32 _min, f32 _max)
 {
 	f32 val = *_value; 
 	if(val < _min)

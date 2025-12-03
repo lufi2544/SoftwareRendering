@@ -20,4 +20,5 @@
 #include "engine_defines.h"
 #include "renderer.c"
 #include "input.c"
+#include "platform_dynamic_loading.c"
 #include "engine.c"

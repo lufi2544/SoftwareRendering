@@ -1,5 +1,3 @@
-#include <memoryapi.h>
-#include <libloaderapi.h>
 
 /////////////////// ENGINE ///////////////////
 /**
@@ -11,103 +9,8 @@ global mat4_t g_projection_matrix;
 global u32 used_memory_when_app_init = 0;
 global f32 g_delta_time = 0.0f;
 
-typedef struct 
-{
-	u32 permanent;
-	u32 transient;
-} memory_cache_t;
-
-global memory_cache_t g_memory_cache;
-
 
 // ---- WIN32 LAYER FOR APP DLL ----
-internal_f void
-win32_unload_app_code(win32_app_code *_app_code)
-{
-	if(_app_code->handle)
-	{
-		printf("REMOVING: freeing library \n");
-		FreeLibrary(_app_code->handle);
-		_app_code->handle = 0;
-	}
-
-	g_memory.permanent.used = g_memory_cache.permanent;
-	g_memory.transient.used = g_memory_cache.transient;
-}
-
-// TODO: Reset the pointer here for the used memory by the engine
-internal_f void
-win32_load_app_code(win32_app_code *_app_code)
-{
-	
-	win32_app_code result;
-	
-	CopyFile("app.dll", "app_temp.dll", FALSE);
-	result.handle = LoadLibraryA("app_temp.dll");
-	
-	if(result.handle)
-	{
-		result.app_init = (app_init*)GetProcAddress(result.handle, "AppInit");
-		if(result.app_init)
-		{
-			printf("AppInit function found ...\n");
-		}
-
-		result.app_end = (app_end*)GetProcAddress(result.handle, "AppEnd");
-		if(result.app_init)
-		{
-			printf("AppEnd function found ...\n");
-		}
-
-		result.app_update = (app_update*)GetProcAddress(result.handle, "AppUpdate");
-		if(result.app_update)
-		{
-			printf("AppUpdate function found ... \n");
-		}
-
-		result.app_input = (app_input*)GetProcAddress(result.handle, "AppInput");
-		if(result.app_input)
-		{
-			printf("AppInput function found ... \n");
-		}
-
-		result.app_render = (app_render*)GetProcAddress(result.handle, "AppRender");
-		if(result.app_input)
-		{
-			printf("AppRender function found ... \n");
-		}
-
-
-		if(!result.app_init)
-		{
-			printf("Error: AppInitfunction not found ... \n");
-		}
-
-		if(!result.app_end)
-		{
-			printf("Error: AppEnd function not found ... \n");
-		}
-
-		if(!result.app_update)
-		{
-			printf("Error: AppUpdate function not found ... \n");
-		}
-
-		if(!result.app_render)
-		{
-			printf("Error: AppRender function not found ... \n");
-		}
-
-		if(!result.app_input)
-		{
-			printf("Error: AppInput function not found ... \n");
-		}
-	}
-
-
-	*_app_code = result;
-}
-// ----  ----
 
 internal_f void
 engine_memory_init();
@@ -166,14 +69,14 @@ engine_init()
 	// Memory cache dump on initialization, for later usage during hot relaod the app dll
 	g_memory_cache.transient = g_memory.transient.used;
 	g_memory_cache.permanent = g_memory.permanent.used;
-
-	win32_load_app_code(&g_app_code);
+    
+	load_app_code(&g_app_code);
 	
 	// ---- RENDER INIT ----
 	
 	renderer_init(&g_engine_shared_data);
 	
-
+    
 	// App layer init
 	g_app_code.app_init(&g_engine_shared_data);	
 	
@@ -202,7 +105,7 @@ fix_delta_time()
     }    
     
     // If the machine is slower, then we will have to make a multi update, to catch-up
-    	
+    
 	g_delta_time = (SDL_GetTicks() - previous_frame_time) / 1000.0f;
 	
     previous_frame_time = SDL_GetTicks();    
@@ -213,8 +116,8 @@ internal_f void update(f32 dt);
 internal_f void update_app_code()
 {
 	printf("updating the code \n");
-	win32_unload_app_code(&g_app_code);
-	win32_load_app_code(&g_app_code);
+	unload_app_code(&g_app_code);
+	load_app_code(&g_app_code);
 	g_app_code.app_init(&g_engine_shared_data);
 }
 
@@ -247,7 +150,7 @@ engine_run()
 	
 	g_app_code.app_end(&g_engine_shared_data);
     engine_end();
-        
+    
     return 0;
 }
 

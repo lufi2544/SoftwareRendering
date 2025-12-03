@@ -1,8 +1,8 @@
 /* date = October 1st 2025 10:47 am */
 
-#if _WIN32
+
 #include "sys/stat.h"
-#endif // _WIN32
+
 
 internal_f buffer_t
 read_file(arena_t *_arena, const char *_file_name)
@@ -24,11 +24,11 @@ read_file(arena_t *_arena, const char *_file_name)
 	}
 	
 #if _WIN32
-	struct _stat64 stat;
-	s32 stat_result = _stat64(_file_name, &stat);
+	struct _stat64 _stat;
+	s32 stat_result = _stat64(_file_name, &_stat);
 #else
-	struct stat Stat;
-	s32 stat_result = stat(_file_name, &stat);
+	struct stat _stat;
+	s32 stat_result = stat(_file_name, &_stat);
 #endif        
 	
 	if(stat_result != 0)
@@ -36,7 +36,19 @@ read_file(arena_t *_arena, const char *_file_name)
 		return result;
 	}	
 	
-	result = create_buffer(_arena, sizeof(u8) * stat.st_size); // reduntand but well..		
+    s32 file_size = 0;
+    
+#ifdef _APPLE
+    file_size = _stat.st_size;
+#endif 
+    
+#ifdef _WINDOWS
+    file_size = _stat.size;
+#endif
+    
+	result = create_buffer(_arena, sizeof(u8) * file_size); // reduntand but well..
+    
+    
 	u64 read_elements = fread(result.data, sizeof(u8), result.size, file);
 	if(read_elements == 0)
 	{
