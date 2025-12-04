@@ -456,7 +456,7 @@ vec2_cross(vec2_t u, vec2_t v)
 
 
 
-global_f f32 f32_clamp(f32 *_value, f32 _min, f32 _max)
+global_f void f32_clamp(f32 *_value, f32 _min, f32 _max)
 {
 	f32 val = *_value; 
 	if(val < _min)
