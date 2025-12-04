@@ -23,13 +23,17 @@ read_file(arena_t *_arena, const char *_file_name)
 		return result;
 	}
 	
-#if _WIN32
+#ifdef _WINDOWS
 	struct _stat64 _stat;
 	s32 stat_result = _stat64(_file_name, &_stat);
-#else
+	
+#endif // _WINDOWS
+	
+	
+#ifdef _APPLE
 	struct stat _stat;
 	s32 stat_result = stat(_file_name, &_stat);
-#endif        
+#endif // _APPLE
 	
 	if(stat_result != 0)
 	{
@@ -43,7 +47,7 @@ read_file(arena_t *_arena, const char *_file_name)
 #endif 
     
 #ifdef _WINDOWS
-    file_size = _stat.size;
+    file_size = _stat.st_size;
 #endif
     
 	result = create_buffer(_arena, sizeof(u8) * file_size); // reduntand but well..

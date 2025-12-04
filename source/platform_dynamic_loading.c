@@ -29,10 +29,14 @@ unload_app_code(dynamic_app_code *code)
 {
     
 #ifdef _APPLE
+	
     apple_unload_app_code(code);
-#endif // _APPLE
+	
+#endif // _APPLE	
     
 #ifdef _WINDOWS
+	
     win32_unload_app_code(code);
+	
 #endif //_WINDOWS
 }

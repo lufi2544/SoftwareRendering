@@ -3,7 +3,7 @@
 #include <libloaderapi.h>
 
 internal_f void
-win32_unload_app_code(win32_app_code *_app_code)
+win32_unload_app_code(dynamic_app_code *_app_code)
 {
 	if(_app_code->handle)
 	{
@@ -18,10 +18,10 @@ win32_unload_app_code(win32_app_code *_app_code)
 
 // TODO: Reset the pointer here for the used memory by the engine
 internal_f void
-win32_load_app_code(win32_app_code *_app_code)
+win32_load_app_code(dynamic_app_code *_app_code)
 {
 	
-	win32_app_code result;
+	dynamic_app_code result;
 	
 	CopyFile("app.dll", "app_temp.dll", FALSE);
 	result.handle = LoadLibraryA("app_temp.dll");
