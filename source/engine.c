@@ -16,6 +16,9 @@ internal_f void
 engine_memory_init();
 
 internal_f void
+engine_camera_init();
+
+internal_f void
 initialize_engine_data()
 {
 	// Initialize 		
@@ -29,20 +32,13 @@ initialize_engine_data()
 	g_engine_shared_data.settings->zfar = 200.0f;
 	g_engine_shared_data.settings->flags = 0;
 	
+    engine_camera_init();
+    
+    // Light
 	vec3_t light_dir = {0, 0, 1};
 	global_light.direction = light_dir;
 	
-	vec3_t pos = {12, 0, -10};
-	vec3_t null = {0, 0, 0}; 
-	g_engine_shared_data.camera.position = pos;
-	g_engine_shared_data.camera.pitch = 0;
-	g_engine_shared_data.camera.yaw = 0;
-	g_engine_shared_data.camera.roll = 0;
-	g_engine_shared_data.camera.direction = null;
-	g_engine_shared_data.camera.rotation = null;
-	
-	
-	g_engine_shared_data.meshes = 0;
+    g_engine_shared_data.meshes = 0;
 	g_engine_shared_data.meshes_num = 0;
 	g_engine_shared_data.memory = &g_memory;
 	
@@ -51,6 +47,83 @@ initialize_engine_data()
 	// input
 	g_engine_shared_data.input_keyboard_flags = 0;
 	g_engine_shared_data.input_mouse_flags = 0;
+}
+
+
+intenal_f void
+engine_camera_init()
+{
+    
+    // CAMERA
+	vec3_t pos = {12, 0, -10};
+	vec3_t null = {0, 0, 0}; 
+	g_engine_shared_data.camera.position = pos;
+	g_engine_shared_data.camera.pitch = 0;
+	g_engine_shared_data.camera.yaw = 0;
+	g_engine_shared_data.camera.roll = 0;
+	g_engine_shared_data.camera.direction = null;
+	g_engine_shared_data.camera.rotation = null;
+	g_engine_shared_data.camera.rotation = null;
+    
+    vec3_t znear_position = {pos.x, pos.y, pos.z + g_engine_shared_data.render_settings.znear};
+    vec3_t zfar_position = {pos.x, pos.y, pos.z + g_engine_shared_data.render_settings.zfar};
+    
+    // Camera view fustrum set up.
+    // TODO separate this in to anohter function.
+	g_engine_shared_data.camera.fustrum_planes[plane_top].point = pos;
+	g_engine_shared_data.camera.fustrum_planes[plane_bottom].point = pos;
+	g_engine_shared_data.camera.fustrum_planes[plane_right].point = pos;
+	g_engine_shared_data.camera.fustrum_planes[plane_left].point = pos;
+	g_engine_shared_data.camera.fustrum_planes[plane_far].point = zfar_position;
+	g_engine_shared_data.camera.fustrum_planes[plane_near].point = znear_position;
+    
+    f32 fov_halfs = g_engine_shared_data.render_settings.fov / 2;
+    
+    // Camera view fustrum normals set up
+    // right plane
+    vec3_t left_plane_normal;
+    
+    left_plane_normal.x = cos(fov_halfs);
+    left_plane_normal.y = 0;
+    left_plane_normal.z = sin(fov_halfs);
+    
+    
+    vec3_t right_plane_normal;
+    right_plane_normal.x = -cos(fov_halfs); 
+    right_plane_normal.y = 0;
+    right_plane_normal.z = sin(fov_halfs);
+    
+    vec3_t top_plane_normal;
+    top_plane_normal.x = 0;
+    top_plane_normal.y = -cos(fov_halfs);
+    top_plane_normal.z = sin(fov_halfs);
+    
+    vec3_t bottom_plane_normal;
+    bottom_plane_normal.x = 0;
+    bottom_plane_normal.y = cos(fov_halfs);
+    bottom_plane_normal.z = sin(fov_halfs);
+    
+    vec3_t near_plane_normal;
+    near_plane_normal.x = 0;
+    near_plane_normal.y = 0;
+    near_plane_normal.z = 1;
+    
+    vec3_t far_plane_normal;
+    far_plane_normal.x = 0;
+    far_plane_normal.y = 0;
+    far_plane_normal.z = -1;
+    
+    
+    g_engine_shared_data.camera.fustrum_planes[plane_top].normal = top_plane_normal;
+	g_engine_shared_data.camera.fustrum_planes[plane_bottom].normal = bottom_plane_normal;
+	g_engine_shared_data.camera.fustrum_planes[plane_right].normal = right_plane_normal;
+	g_engine_shared_data.camera.fustrum_planes[plane_left].normal = left_plane_normal;
+	g_engine_shared_data.camera.fustrum_planes[plane_far].normal = far_plane_normal;
+	g_engine_shared_data.camera.fustrum_planes[plane_near].normal = near_plane_normal;
+    
+    
+    
+    
 }
 
 internal_f bool

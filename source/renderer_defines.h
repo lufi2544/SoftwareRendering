@@ -33,3 +33,6 @@ void draw_filled_triangle(triangle_t *_triangle, u32 _color, engine_shared_data_
 
 internal_f void 
 draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared_data_t *engine_shared_data);
+
+
+

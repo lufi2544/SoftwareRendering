@@ -477,3 +477,14 @@ vec2_t vec2_from_vec4(vec4_t v)
 	
 	return result;
 }
+
+
+// PLANE 
+
+typedef struct 
+{
+    vec3_t normal;
+    vec3_t point;
+} plane_t;
+
+

@@ -80,6 +80,18 @@ typedef struct
 
 // CAMERA DATA
 
+
+typedef enum 
+{
+    plane_top,
+    plane_bottom,
+    plane_right,
+    plane_left,
+    plane_near,
+    plane_far,
+    fustrum_plane_num
+} enum_fustrum_plane;
+
 typedef struct 
 {
     vec3_t position;
@@ -90,6 +102,7 @@ typedef struct
 	f32 pitch;
 	f32 roll;
     f32 fov_angle;
+    plane_t fustrum_planes[fustrum_plane_num];
 } camera_t;
 
 
@@ -130,7 +143,7 @@ typedef struct
 	// -- MESH --
 	mesh_t *meshes;
 	u32 meshes_num;
-		
+    
 	// -- ENGINE FLAGS --
 	bool b_is_engine_running;
 	
@@ -149,5 +162,5 @@ typedef struct
 	
 	texture_manager_t texture_manager;
 	
-				
+    
 } engine_shared_data_t;
