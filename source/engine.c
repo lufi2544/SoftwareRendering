@@ -50,7 +50,7 @@ initialize_engine_data()
 }
 
 
-intenal_f void
+internal_f void
 engine_camera_init()
 {
     
@@ -65,8 +65,8 @@ engine_camera_init()
 	g_engine_shared_data.camera.rotation = null;
 	g_engine_shared_data.camera.rotation = null;
     
-    vec3_t znear_position = {pos.x, pos.y, pos.z + g_engine_shared_data.render_settings.znear};
-    vec3_t zfar_position = {pos.x, pos.y, pos.z + g_engine_shared_data.render_settings.zfar};
+    vec3_t znear_position = {pos.x, pos.y, pos.z + g_engine_shared_data.settings->znear};
+    vec3_t zfar_position = {pos.x, pos.y, pos.z + g_engine_shared_data.settings->zfar};
     
     // Camera view fustrum set up.
     // TODO separate this in to anohter function.
@@ -77,7 +77,7 @@ engine_camera_init()
 	g_engine_shared_data.camera.fustrum_planes[plane_far].point = zfar_position;
 	g_engine_shared_data.camera.fustrum_planes[plane_near].point = znear_position;
     
-    f32 fov_halfs = g_engine_shared_data.render_settings.fov / 2;
+    f32 fov_halfs = g_engine_shared_data.settings->fov / 2;
     
     // Camera view fustrum normals set up
     // right plane
