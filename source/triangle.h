@@ -14,6 +14,14 @@ typedef struct
 } triangle_t;
 
 
+global const u8 g_max_vertex_num = 10;
+
+typedef struct 
+{
+    vec3_t verteces[g_max_vertex_num];
+    u8 num_verteces;
+} polygon_t;
+
 internal_f void 
 print_face(face_t _face)
 {

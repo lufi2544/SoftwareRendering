@@ -19,7 +19,7 @@ render(mat4_t *projection_matrix, engine_shared_data_t *engine_data)
     
     SDL_RenderClear(renderer);   
     map_texture_to_pixels_buffer(engine_data);    	
-	        
+    
 	clear_color_buffer(COLOR_BLACK, engine_data);
 	clear_z_buffer(engine_data);
 	g_app_code.app_render(engine_data);
@@ -145,7 +145,7 @@ f32_swap_values(f32 *a, f32 *b)
 	f32 temp = *a;
 	*a = *b;
 	*b = temp;
-
+    
 }
 
 internal_f void
@@ -229,11 +229,11 @@ draw_texel(s32 _x, s32 _y, vec4_t _a, vec4_t _b, vec4_t _c, texture_uv_t _uv_a, 
 	
 	interpolated_u /= interpolated_reciprocal_w;
 	interpolated_v /= interpolated_reciprocal_w;
-
+    
 	// Convert normalized UV coordinates (0.0-1.0) to texture pixel coordinates
 	s32 tex_x = (s32)(interpolated_u * _texture->w);
 	s32 tex_y = (s32)(interpolated_v * _texture->h);
-
+    
 	// Clamp texture coordinates to valid range
 	if(tex_x < 0) tex_x = 0;
 	if(tex_x >= _texture->w) tex_x = _texture->w - 1;
@@ -275,7 +275,7 @@ internal_f f32 safe_inv_slope(float dx, float dy)
 internal_f void
 fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_shared_data_t *engine_shared_data)
 {
-			
+    
 	// Render the upper part of the triangle (flat-bottom): from y0 to y1
 	vec4_t a = _triangle->points[0];  // y0 (top)
 	vec4_t b = _triangle->points[1];  // y1 (middle)
@@ -284,19 +284,19 @@ fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 	texture_uv_t a_uv = _triangle->texture_coords[0];
 	texture_uv_t b_uv = _triangle->texture_coords[1];
 	texture_uv_t c_uv = _triangle->texture_coords[2];
-
+    
 	f32 inv_slope_1 = 0;
 	f32 inv_slope_2 = 0;
-
+    
 	// Calculate inverse slopes (dx/dy) for left and right edges
 	// Only check for division by zero
 	if (b.y - a.y != 0)
 	{
 		inv_slope_1 = safe_inv_slope((b.x - a.x) , ((b.y - a.y)));
-									 
+        
 		f32_clamp(&inv_slope_1, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
-
+    
 	if (c.y - a.y != 0)
 	{
 		inv_slope_2 = safe_inv_slope((c.x - a.x), (c.y - a.y));
@@ -316,7 +316,7 @@ fill_triangle_top_textured(triangle_t *_triangle, texture_t *_texture, engine_sh
 			{
 				int_swap(&x_start, &x_end);
 			}
-
+            
 			for(s32 x = x_start; x < x_end; x++)
 			{
 				draw_texel(x, y, a, b, c, a_uv, b_uv, c_uv, _texture, engine_shared_data);
@@ -335,14 +335,14 @@ fill_triangle_bottom_textured(triangle_t *_triangle, texture_t *_texture, engine
 	vec4_t a = _triangle->points[0];  // y0 (top)
 	vec4_t b = _triangle->points[1];  // y1 (middle)
 	vec4_t c = _triangle->points[2];  // y2 (bottom)
-
+    
 	texture_uv_t a_uv = _triangle->texture_coords[0];
 	texture_uv_t b_uv = _triangle->texture_coords[1];
 	texture_uv_t c_uv = _triangle->texture_coords[2];
-
+    
 	f32 inv_slope_1 = 0;
 	f32 inv_slope_2 = 0;
-
+    
 	// Calculate inverse slopes (dx/dy) for left and right edges
 	// Only check for division by zero
 	if (c.y - b.y != 0)
@@ -350,26 +350,26 @@ fill_triangle_bottom_textured(triangle_t *_triangle, texture_t *_texture, engine
 		inv_slope_1 = safe_inv_slope((b.x - c.x), (b.y - c.y));
 		f32_clamp(&inv_slope_1, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
-
+    
 	if (c.y - a.y != 0)
 	{
 		inv_slope_2 = safe_inv_slope((a.x - c.x), (a.y - c.y));
 		f32_clamp(&inv_slope_2, -MAX_TEXTURED_TRIANGLE_SLOPE, MAX_TEXTURED_TRIANGLE_SLOPE);
 	}
 	
-
+    
 	if (c.y - b.y != 0)
 	{
 		for(s32 y = c.y; y >= b.y; --y)
 		{
 			s32 x_start = c.x + (y - c.y) * inv_slope_1;
 			s32 x_end = c.x + (y - c.y) * inv_slope_2;
-
+            
 			if(x_end < x_start)
 			{
 				int_swap(&x_start, &x_end);
 			}
-
+            
 			for(s32 x = x_start; x < x_end; x++)
 			{
 				draw_texel(x, y, a, b, c, a_uv, b_uv, c_uv, _texture, engine_shared_data);
@@ -515,7 +515,7 @@ draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared
 		f32_swap_values(&a.y, &b.y);
 		f32_swap_values(&a.z, &b.z);
 		f32_swap_values(&a.w, &b.w);
-
+        
 		f32_swap_values(&_triangle->texture_coords[0].u, &_triangle->texture_coords[1].u);
 		f32_swap_values(&_triangle->texture_coords[0].v, &_triangle->texture_coords[1].v);
 	}
@@ -526,13 +526,13 @@ draw_textured_triangle(triangle_t *_triangle, texture_t* _texture, engine_shared
 	_triangle->texture_coords[0].v = 1 -  _triangle->texture_coords[0].v;
 	_triangle->texture_coords[1].v = 1 -  _triangle->texture_coords[1].v;
 	_triangle->texture_coords[2].v = 1 -  _triangle->texture_coords[2].v;
-
-
+    
+    
 	// Update triangle with sorted vertices - keep original for barycentric interpolation
 	_triangle->points[0] = a;
 	_triangle->points[1] = b;
 	_triangle->points[2] = c;
-
+    
 	// Render both flat-bottom and flat-top parts using the SAME original triangle
 	// The barycentric interpolation in draw_texel uses the original a,b,c for correct texture mapping
 	fill_triangle_bottom_textured(_triangle, _texture, engine_shared_data);
@@ -574,7 +574,7 @@ draw_filled_triangle(triangle_t *_triangle, u32 _color, engine_shared_data_t *en
 		f32_swap_values(&a.w, &b.w);		
 	}
 	
-		
+    
 	// Update triangle with sorted vertices - keep original for barycentric interpolation
 	_triangle->points[0] = a;
 	_triangle->points[1] = b;

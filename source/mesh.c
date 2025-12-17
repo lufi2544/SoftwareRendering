@@ -41,6 +41,81 @@ compare_triangle(const void *_a, const void *_b)
 }
 
 
+// TODO thing where I can put this polygon methods, since they are not directly related to the mesh.
+
+
+internal_f bool
+is_point_inside_plane(vec3_t point, vec3_t plane_normal)
+{
+    return vec3_dot(point, plane_normal) >= 0;
+}
+
+
+internal_f polygon_t
+polygon_from_triangle(vec4_t a, vec4_t b, vec4_t c)
+{
+    vec3_t a_ = vec3_from_vec4(a);
+    vec3_t b_ = vec3_from_vec4(b);
+    vec3_t c_ = vec3_from_vec4(c);
+    
+    polygon_t result;
+    result.verteces[0] = a_;
+    result.verteces[1] = b_;
+    result.verteces[2] = c_;
+    result.num_verteces = 3;
+    
+    return result;
+}
+
+
+internal_f void
+intersect_polygon_with_plane(engine_shared_data_t *engine_data, enum_fustrum_plane target_plane, polygon_t *polygon)
+{
+    plane_t plane = engine_data->camera.fustrum_planes[target_plane];
+    vec3_t plane_point = plane.point;
+    vec3_t plane_normal = plane.normal;
+    
+    // We have to see if each polygon point is inside the plane or outside the plane.
+    // we keep track of the iterated vercetes(current and prev) and if any of those is outside
+    // the plane, then what we do is to calculate the point of intersection between the 2 points against the plane.
+    
+    u8 vertex_idx = 0;
+    vec3_t prev_vertex = polygon->verteces[0];
+    vec3_t current_vertex = polygon->verteces[1];
+    
+    list_t inside_plane_points;
+    
+    
+    
+    // for now lets iterate thorugh all the polygon verteces, separate them in a list and then after completion, just create a new polygon with the ones in the "inside" list
+    
+    while(vertex_idx < polygon->num_verteces)
+    {
+        bool prev_inside = is_point_inside_plane(prev_vertex, plane_normal);
+        bool current_inside= is_point_inside_plane(current_vertex, plane_normal);
+        
+        
+        vertex_idx++;
+    }
+    
+    
+    
+    
+}
+
+
+
+
+internal_f void
+clip_polygon(engine_shared_data_t * engine_data, polygon_t *polygon)
+{
+    intersect_polygon_with_plane(engine_data, plane_top, polygon);
+    intersect_polygon_with_plane(engine_data, plane_bottom, polygon);
+    intersect_polygon_with_plane(engine_data, plane_left, polygon);
+    intersect_polygon_with_plane(engine_data, plane_right, polygon);
+    intersect_polygon_with_plane(engine_data, plane_near, polygon);
+    intersect_polygon_with_plane(engine_data, plane_far, polygon);
+}
 
 void
 mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_projection_matrix, engine_shared_data_t *_shared_data)
@@ -75,7 +150,7 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 	vec3_normalize(camera_up);
 	
 	mat4_t view_matrix = mat4_make_view_matrix(camera_position, camera_target, camera_up);
-		
+    
 	
 	list_t mesh_triangles_list = LIST(temp_arena);
 	for(u32 i = 0; i < _mesh->face_num; ++i)
@@ -162,8 +237,11 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 		}
 */
 		
+        polygon_t clipped_polygon = polygon_from_triangle(transformed_verteces[0], transformed_verteces[1], transformed_verteces[2]);
 		
-		
+		//clip_polygon(_shared_data, &clip_polygon);
+        
+        
 		// Project the verteces to screen space and create a triangle
 		triangle_t projected_triangle;		
 		for(u32 k = 0; k < 3; ++k)			
@@ -204,10 +282,10 @@ mesh_render(memory_t *engine_memory, mesh_t *_mesh, camera_t *_camera, mat4_t *_
 			projected_triangle.points[k].x = (s32)projected_triangle.points[k].x;
 			projected_triangle.points[k].y = (s32)projected_triangle.points[k].y;
 			projected_triangle.points[k].z = (s32)projected_triangle.points[k].z;
-
+            
 		}
 		
-//		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
+        //		projected_triangle.avg_depth = (((f32)transformed_verteces[0].z + (f32)transformed_verteces[1].z + (f32)transformed_verteces[2].z) / 3);
 		
 		///// Triangles UVs Creation
 		projected_triangle.texture_coords[0] = mesh_face.a_uv;

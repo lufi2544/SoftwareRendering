@@ -42,8 +42,6 @@ initialize_engine_data()
 	g_engine_shared_data.meshes_num = 0;
 	g_engine_shared_data.memory = &g_memory;
 	
-	
-	
 	// input
 	g_engine_shared_data.input_keyboard_flags = 0;
 	g_engine_shared_data.input_mouse_flags = 0;
